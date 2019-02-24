@@ -4,7 +4,7 @@ const initialState = {
     profile: {},
     isLoading: false,
     snackOpen: true,
-    snackMessage: ''
+    snackMessage: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -12,13 +12,14 @@ const reducer = (state = initialState, action) => {
         case types.SIGNUPSUCCESS: {
             return {
                 ...state,
-                profile: action.payload,
                 isLoading: false,
+                snackOpen: true,
+                snackMessage: 'Email Created Successfully'
             }
         }
         default: {
             return {
-                ...state
+                ...state,
             }
         }
     }
