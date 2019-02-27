@@ -1,4 +1,3 @@
-// import axios from 'axios';
 import types from '../constants';
 
 const actions = {
@@ -10,6 +9,16 @@ const actions = {
     signUpSuccess: payload => {
         return {
             type: types.SIGNUPSUCCESS, payload
+        }
+    },
+    signIn: payload => {
+        return {
+            type: types.SIGNIN, payload
+        }
+    },
+    signInSuccess: payload => {
+        return {
+            type: types.SIGNINSUCCESS, payload
         }
     },
 };

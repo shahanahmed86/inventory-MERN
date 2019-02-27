@@ -32,8 +32,10 @@ class SignUp extends Component {
         });
     }
     gotoSignIn = () => {
+        this.props.history.push('/');
+    }
+    onSignUpHandler = () => {
         this.props.signUp(this.state);
-        // this.props.history.push('/');
     }
     render() {
         const {
@@ -158,7 +160,7 @@ class SignUp extends Component {
                         children='Sign Up'
                         color='primary'
                         size='large'
-                        onClick={this.gotoSignIn}
+                        onClick={this.onSignUpHandler}
                     /><hr />
                     <div className='ask-signup'>
                         <Typography

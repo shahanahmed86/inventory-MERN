@@ -3,15 +3,17 @@ import {
     Paper, Typography, TextField,
     Button
 } from '@material-ui/core';
+import { connect } from 'react-redux';
 
+import actions from '../store/actions';
 import '../App.css';
 
 class SignIn extends Component {
     constructor() {
         super();
         this.state = {
-            email: '',
-            password: '',
+            email: 'shahan@domain.com',
+            password: '123abc456',
         }
     }
     handleChange = ev => {
@@ -20,18 +22,17 @@ class SignIn extends Component {
             [name]: value
         });
     }
-    onSignIn = () => {
-        this.props.history.push('/dashboard');
+    onSignInHandler = () => {
+        const { email, password } = this.state;
+        this.props.signIn({ email, password })
+        // this.props.history.push('/dashboard');
     }
-    forgotPassword = () => {
-        this.props.history.push('/forgot');
-    }
-    onSignUp = () => {
+    gotoSignUp = () => {
         this.props.history.push('/signup');
     }
     render() {
         const { email, password } = this.state;
-        return(
+        return (
             <div className='paper-style'>
                 <Paper
                     elevation={4}
@@ -60,7 +61,7 @@ class SignIn extends Component {
                         fullWidth={true}
                         variant='outlined'
                         margin='dense'
-                        />
+                    />
                     <TextField
                         type='password'
                         name='password' value={password}
@@ -76,7 +77,7 @@ class SignIn extends Component {
                         children='Sign In'
                         color='primary'
                         size='large'
-                        onClick={this.onSignIn}
+                        onClick={this.onSignInHandler}
                     /><hr />
                     <div className='ask-signup'>
                         <Typography
@@ -89,7 +90,7 @@ class SignIn extends Component {
                             children='Create Account Now'
                             color='secondary'
                             size='medium'
-                            onClick={this.onSignUp}
+                            onClick={this.gotoSignUp}
                         />
                     </div>
                 </Paper>
@@ -98,4 +99,14 @@ class SignIn extends Component {
     }
 }
 
-export default SignIn
+const mapStateToProps = store => {
+    return { store }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        signIn: (email, password) => dispatch(actions.signIn(email, password))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignIn);
