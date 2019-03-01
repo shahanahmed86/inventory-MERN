@@ -12,8 +12,8 @@ class SignIn extends Component {
     constructor() {
         super();
         this.state = {
-            email: 'shahan@domain.com',
-            password: '123abc456',
+            email: '',
+            password: '',
         }
     }
     handleChange = ev => {
@@ -24,7 +24,7 @@ class SignIn extends Component {
     }
     onSignInHandler = () => {
         const { email, password } = this.state;
-        this.props.signIn({ email, password })
+        this.props.signIn({ email, password });
         // this.props.history.push('/dashboard');
     }
     gotoSignUp = () => {
@@ -105,7 +105,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        signIn: (email, password) => dispatch(actions.signIn(email, password))
+        signIn: (email, password) => dispatch(actions.signIn(email, password)),
     }
 }
 

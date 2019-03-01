@@ -1,14 +1,19 @@
 import types from '../constants';
 
 const actions = {
+    onCloseSnack: payload => {
+        return {
+            type: types.ONCLOSESNACK, payload
+        }
+    },
     signUp: payload => {
         return {
             type: types.SIGNUP, payload
         }
     },
-    signUpSuccess: payload => {
+    signUpAccess: payload => {
         return {
-            type: types.SIGNUPSUCCESS, payload
+            type: types.SIGNUPACCESS, payload
         }
     },
     signIn: payload => {
@@ -16,9 +21,9 @@ const actions = {
             type: types.SIGNIN, payload
         }
     },
-    signInSuccess: payload => {
+    signInAccess: payload => {
         return {
-            type: types.SIGNINSUCCESS, payload
+            type: types.SIGNINACCESS, payload
         }
     },
 };

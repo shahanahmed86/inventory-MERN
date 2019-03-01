@@ -13,16 +13,16 @@ class SignUp extends Component {
     constructor() {
         super();
         this.state = {
-            email: 'shahan@domain.com',
-            password: '123abc456',
-            confirmPassword: '123abc456',
-            mobile: '0336-2122588',
-            dob: '1986-01-29',
-            first: 'Shahan',
-            last: 'Ahmed Khan',
-            gender: 'Male',
-            maritalStatus: 'Married',
-            cnic: '42301-8964999-9',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            mobile: '',
+            dob: '',
+            first: '',
+            last: '',
+            gender: '',
+            maritalStatus: '',
+            cnic: '',
         }
     }
     handleChange = ev => {
