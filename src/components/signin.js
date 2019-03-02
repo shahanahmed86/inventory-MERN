@@ -12,8 +12,8 @@ class SignIn extends Component {
     constructor() {
         super();
         this.state = {
-            email: '',
-            password: '',
+            email: 'shahan@domain.com',
+            password: '123abc456',
         }
     }
     handleChange = ev => {
@@ -25,8 +25,12 @@ class SignIn extends Component {
     onSignInHandler = () => {
         const { email, password } = this.state;
         this.props.signIn({ email, password });
-        // this.props.history.push('/dashboard');
     }
+    // componentDidMount() {
+    //     const { loginSuccess } = this.props.store;
+    //     if (loginSuccess) return this.props.history.push('/dashboard');
+    //     return this.props.history.push('/');
+    // }
     gotoSignUp = () => {
         this.props.history.push('/signup');
     }
@@ -107,6 +111,6 @@ const mapDispatchToProps = dispatch => {
     return {
         signIn: (email, password) => dispatch(actions.signIn(email, password)),
     }
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SignIn);

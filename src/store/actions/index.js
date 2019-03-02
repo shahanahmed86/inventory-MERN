@@ -21,9 +21,14 @@ const actions = {
             type: types.SIGNIN, payload
         }
     },
-    signInAccess: payload => {
+    signInSuccess: payload => {
         return {
-            type: types.SIGNINACCESS, payload
+            type: types.SIGNINSUCCESS, payload
+        }
+    },
+    signInFailure: payload => {
+        return {
+            type: types.SIGNINFAILURE, payload
         }
     },
 };

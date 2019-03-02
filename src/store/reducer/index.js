@@ -4,9 +4,11 @@ const initialState = {
     profile: {},
     
     isLoading: false,
+
     isSnackOpen: false,
     snackMessage: '',
-    token: '',
+
+    loginSuccess: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -38,12 +40,22 @@ const reducer = (state = initialState, action) => {
                 isLoading: true,
             }
         }
-        case types.SIGNINACCESS: {
+        case types.SIGNINSUCCESS: {
             return {
                 ...state,
                 isLoading: false,
                 isSnackOpen: true,
                 snackMessage: action.payload,
+                loginSuccess: true,
+            }
+        }
+        case types.SIGNINFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload,
+                loginSuccess: false,
             }
         }
         default: {

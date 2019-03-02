@@ -5,30 +5,35 @@ import types from '../constants';
 import actions from '../actions';
 
 const epics = {
-    signup: action$ => action$.ofType(types.SIGNUP).switchMap(({ payload }) => {
+    signUp: action$ => action$.ofType(types.SIGNUP).switchMap(({ payload }) => {
         return Observable.ajax({
             method: 'POST',
             url: 'http://localhost:8080/user/signup',
             body: payload,
             async: true
-        })
-            .switchMap(res => Observable.of(actions.signUpAccess(res.response)))
-            .catch(() => Observable.of(actions.signUpAccess('Network Error')))
+        }).switchMap(res => {
+            return Observable.of(actions.signUpAccess(res.response));
+        }).catch(err => {
+            //below line should be check
+            if (err.response) return Observable.of(actions.signUpAccess(err.response));
+            return Observable.of(actions.signUpAccess('Network Error'))
+        });
     }),
-    signin: action$ => action$.ofType(types.SIGNIN).switchMap(({ payload }) => {
-        const isMatch = Object.values(payload).every(x => Boolean(x));
+    signIn: action$ => action$.ofType(types.SIGNIN).switchMap(({ payload }) => {
+        const isMatch = Object.values(payload).every(x => Boolean(x) === true);
         if (isMatch) return Observable.ajax({
             method: 'POST',
             url: 'http://localhost:8080/user/signin',
             body: payload,
             async: true
-        })
-            .switchMap(res => {
-                localStorage.setItem('token', JSON.stringify(res.response));
-                return Observable.of(actions.signInAccess('Signed In Successfully'));
-            })
-            .catch((err) => Observable.of(actions.signInAccess(err.response)));
-        return Observable.of(actions.signInAccess('Fields can\'t be left empty'));
+        }).switchMap(res => {
+            document.cookie = res.response.token;
+            return Observable.of(actions.signInSuccess('Signed In Successfully'));
+        }).catch((err) => {
+            if (err.response) return Observable.of(actions.signInFailure(err.response));
+            return Observable.of(actions.signInFailure('Network Error'));
+        });
+        return Observable.of(actions.signInFailure('Fields can\'t be left empty'));
     }),
 };
 
