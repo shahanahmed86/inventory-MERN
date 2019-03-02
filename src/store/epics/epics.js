@@ -29,11 +29,29 @@ const epics = {
         }).switchMap(res => {
             document.cookie = res.response.token;
             return Observable.of(actions.signInSuccess('Signed In Successfully'));
-        }).catch((err) => {
+        }).catch(err => {
             if (err.response) return Observable.of(actions.signInFailure(err.response));
             return Observable.of(actions.signInFailure('Network Error'));
         });
         return Observable.of(actions.signInFailure('Fields can\'t be left empty'));
+    }),
+    isLoggedIn: action$ => action$.ofType(types.ISLOGGEDIN).switchMap(({ payload }) => {
+        //payload is cookie
+        return Observable.ajax({
+            method: 'POST',
+            url: 'http://localhost:8080/user',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `bearer ${payload}`
+            },
+            async: true
+        }).switchMap(res => {
+            if (res.response.doc) return Observable.of(actions.isLoggedInSuccess(res.response.doc));
+            return Observable.of(actions.isLoggedInFailure('Token Expired'));
+        }).catch(err => {
+            if (err.response) return Observable.of(actions.isLoggedInFailure(err.response));
+            return Observable.of(actions.isLoggedInFailure('Network Error'));
+        })
     }),
 };
 

@@ -31,6 +31,21 @@ const actions = {
             type: types.SIGNINFAILURE, payload
         }
     },
+    isLoggedIn: payload => {
+        return {
+            type: types.ISLOGGEDIN, payload
+        }
+    },
+    isLoggedInSuccess: payload => {
+        return {
+            type: types.ISLOGGEDINSUCCESS, payload
+        }
+    },
+    isLoggedInFailure: payload => {
+        return {
+            type: types.ISLOGGEDINFAILURE, payload
+        }
+    },
 };
 
 export default actions;

@@ -25,6 +25,11 @@ class SignUp extends Component {
             cnic: '',
         }
     }
+    componentDidMount() {
+        this.props.isLoggedIn(document.cookie);
+        if (document.cookie) return this.props.history.push('/dashboard');
+        return this.props.history.push('/signup');
+    }
     handleChange = ev => {
         const { name, value } = ev.target;
         this.setState({
@@ -189,6 +194,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         signUp: data => dispatch(actions.signUp(data)),
+        isLoggedIn: data => dispatch(actions.isLoggedIn(data)),
     }
 }
 

@@ -16,6 +16,11 @@ class SignIn extends Component {
             password: '123abc456',
         }
     }
+    componentDidMount() {
+        this.props.isLoggedIn(document.cookie);
+        if (document.cookie) return this.props.history.push('/dashboard');
+        return this.props.history.push('/');
+    }
     handleChange = ev => {
         const { name, value } = ev.target;
         this.setState({
@@ -26,11 +31,6 @@ class SignIn extends Component {
         const { email, password } = this.state;
         this.props.signIn({ email, password });
     }
-    // componentDidMount() {
-    //     const { loginSuccess } = this.props.store;
-    //     if (loginSuccess) return this.props.history.push('/dashboard');
-    //     return this.props.history.push('/');
-    // }
     gotoSignUp = () => {
         this.props.history.push('/signup');
     }
@@ -110,6 +110,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         signIn: (email, password) => dispatch(actions.signIn(email, password)),
+        isLoggedIn: data => dispatch(actions.isLoggedIn(data)),
     }
 };
 

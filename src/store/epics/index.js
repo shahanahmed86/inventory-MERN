@@ -4,5 +4,6 @@ import epics from './epics';
 
 export default combineEpics(
     epics.signUp,
-    epics.signIn
+    epics.signIn,
+    epics.isLoggedIn
 );

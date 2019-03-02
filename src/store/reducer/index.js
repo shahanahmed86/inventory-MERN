@@ -7,8 +7,6 @@ const initialState = {
 
     isSnackOpen: false,
     snackMessage: '',
-
-    loginSuccess: false,
 };
 
 const reducer = (state = initialState, action) => {
@@ -46,7 +44,6 @@ const reducer = (state = initialState, action) => {
                 isLoading: false,
                 isSnackOpen: true,
                 snackMessage: action.payload,
-                loginSuccess: true,
             }
         }
         case types.SIGNINFAILURE: {
@@ -55,7 +52,27 @@ const reducer = (state = initialState, action) => {
                 isLoading: false,
                 isSnackOpen: true,
                 snackMessage: action.payload,
-                loginSuccess: false,
+            }
+        }
+        case types.ISLOGGEDIN: {
+            return {
+                ...state,
+                // isLoading: true,
+            }
+        }
+        case types.ISLOGGEDINSUCCESS: {
+            return {
+                ...state,
+                isLoading: false,
+                profile: action.payload,
+            }
+        }
+        case types.ISLOGGEDINFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload,
             }
         }
         default: {

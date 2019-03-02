@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import SignIn from './components/signin';
 import SignUp from './components/login/signup';
+import Dashboard from './components/dashboard';
 import PositionedSnackbar from './components/snackbar';
 
 import './App.css';
@@ -23,6 +24,7 @@ class App extends Component {
         <div className='container'>
           <Route path='/' exact component={SignIn} />
           <Route path='/signup' exact component={SignUp} />
+          <Route path='/dashboard' component={Dashboard} />
           <PositionedSnackbar />
         </div>
       </Router>
