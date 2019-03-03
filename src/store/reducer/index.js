@@ -11,11 +11,11 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case types.ONCLOSESNACK: {
+        case types.ONSNACK: {
             return {
                 ...state,
-                isSnackOpen: action.payload,
-                snackMessage: '',
+                isSnackOpen: action.payload.snack,
+                snackMessage: action.payload.message,
             }
         }
         case types.SIGNUP: {
@@ -71,8 +71,6 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 isLoading: false,
-                isSnackOpen: true,
-                snackMessage: action.payload,
             }
         }
         default: {

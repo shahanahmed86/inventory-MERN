@@ -1,9 +1,9 @@
 import types from '../constants';
 
 const actions = {
-    onCloseSnack: payload => {
+    onSnackHandler: payload => {
         return {
-            type: types.ONCLOSESNACK, payload
+            type: types.ONSNACK, payload
         }
     },
     signUp: payload => {

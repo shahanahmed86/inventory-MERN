@@ -18,7 +18,8 @@ class PositionedSnackbar extends Component {
                 <Snackbar
                     anchorOrigin={{ vertical, horizontal }}
                     open={isSnackOpen}
-                    onClose={this.props.onCloseSnack}
+                    autoHideDuration={3000}
+                    onClose={() => this.props.onSnackHandler(false, '')}
                     ContentProps={{
                         'aria-describedby': 'message-id',
                     }}
@@ -35,7 +36,7 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onCloseSnack: () => dispatch(actions.onCloseSnack(false))
+        onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message }))
     }
 }
 

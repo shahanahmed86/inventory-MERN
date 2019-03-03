@@ -40,7 +40,10 @@ class SignUp extends Component {
         this.props.history.push('/');
     }
     onSignUpHandler = () => {
-        this.props.signUp(this.state);
+        const isFilled = Object.values(this.state).every(x => Boolean(x) === true);
+        console.log(isFilled);
+        if (isFilled) return this.props.signUp(this.state);
+        return this.props.onSnackHandler(true, 'All Fields must be filled');
     }
     render() {
         const {
@@ -69,6 +72,7 @@ class SignUp extends Component {
                         Sign Up Form
                     </Typography>
                     <TextField
+                        autoFocus
                         type='text'
                         name='email' value={email}
                         label='Email'
@@ -195,6 +199,7 @@ const mapDispatchToProps = dispatch => {
     return {
         signUp: data => dispatch(actions.signUp(data)),
         isLoggedIn: data => dispatch(actions.isLoggedIn(data)),
+        onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
     }
 }
 

@@ -1,5 +1,5 @@
 body {
-  background: url('./images/back.jpg') fixed;
+  background: url('./images/back.jpg') fixed !important;
   font: 16px/2em Verdana, Tahoma, sans-serif;
   overflow-y: scroll;
 }

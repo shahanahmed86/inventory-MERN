@@ -33,7 +33,7 @@ const epics = {
             if (err.response) return Observable.of(actions.signInFailure(err.response));
             return Observable.of(actions.signInFailure('Network Error'));
         });
-        return Observable.of(actions.signInFailure('Fields can\'t be left empty'));
+        return Observable.of(actions.signInFailure('Please Enter Email & Password, in order to logins'));
     }),
     isLoggedIn: action$ => action$.ofType(types.ISLOGGEDIN).switchMap(({ payload }) => {
         //payload is cookie

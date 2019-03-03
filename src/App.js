@@ -8,6 +8,7 @@ import SignUp from './components/login/signup';
 import Dashboard from './components/dashboard';
 import PositionedSnackbar from './components/snackbar';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 class App extends Component {

@@ -58,6 +58,7 @@ class SignIn extends Component {
                         Sign In
                     </Typography>
                     <TextField
+                        autoFocus
                         type='text'
                         name='email' value={email}
                         label='Email'
