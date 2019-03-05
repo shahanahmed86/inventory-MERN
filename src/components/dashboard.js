@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import actions from '../store/actions';
 
 class Dashboard extends Component {
-    componentDidMount() {
-        this.props.isLoggedIn(document.cookie);
-        if (document.cookie) return this.props.history.push('/dashboard');
-        return this.props.history.push('/');
-    }
+    // componentDidMount() {
+    //     this.props.isLoggedIn(document.cookie);
+    //     if (document.cookie) return this.props.history.push('/dashboard');
+    //     return this.props.history.push('/');
+    // }
     render() {
         return (
             <div>

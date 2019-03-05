@@ -31,9 +31,9 @@ const actions = {
             type: types.SIGNINFAILURE, payload
         }
     },
-    isLoggedIn: payload => {
+    isLoggedIn: () => {
         return {
-            type: types.ISLOGGEDIN, payload
+            type: types.ISLOGGEDIN,
         }
     },
     isLoggedInSuccess: payload => {
