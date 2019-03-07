@@ -1,5 +1,6 @@
 body {
-  background: url('./images/back.jpg') fixed !important;
+  /* background: url('./images/back.jpg') fixed !important; */
+  background-color: #f4f4f4;
   font: 16px/2em Verdana, Tahoma, sans-serif;
   overflow-y: scroll;
 }

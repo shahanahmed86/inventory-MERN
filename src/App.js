@@ -11,6 +11,7 @@ import PositionedSnackbar from './components/snackbar';
 import actions from './store/actions';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import './App.css';
 
 class App extends Component {
@@ -27,7 +28,7 @@ class App extends Component {
     );
     return (
       <Router>
-        <div className='container'>
+        <div>
           <Route path='/' exact component={SignIn} />
           <Route path='/signup' exact component={SignUp} />
           <Route path='/dashboard' component={Dashboard} />

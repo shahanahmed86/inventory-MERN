@@ -1,10 +1,5 @@
 /* global styling */
 
-.container {
-  margin: auto;
-  overflow: hidden;
-}
-
 .loader-container {
   width: 100vw;
   height: 100vh;

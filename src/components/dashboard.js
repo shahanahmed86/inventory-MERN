@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import Header from './dashboard/header';
+
 class Dashboard extends Component {
     componentDidMount() {
         if (this.props.store.profile.email) return this.props.history.push('/dashboard');
@@ -8,8 +10,8 @@ class Dashboard extends Component {
     }
     render() {
         return (
-            <div>
-                Dashboard                
+            <div className='container'>
+                <Header />
             </div>
         );
     }
