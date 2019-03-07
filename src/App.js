@@ -8,10 +8,15 @@ import SignUp from './components/login/signup';
 import Dashboard from './components/dashboard';
 import PositionedSnackbar from './components/snackbar';
 
+import actions from './store/actions';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
 class App extends Component {
+  componentDidMount() {
+    this.props.isLoggedIn();
+  }
   render() {
     if (this.props.store.isLoading) return (
       <div className='loader-container'>
@@ -37,4 +42,10 @@ const mapStateToProps = store => {
   return { store }
 };
 
-export default connect(mapStateToProps, null)(App);
+const mapDispatchToProps = dispatch => {
+  return {
+    isLoggedIn: () => dispatch(actions.isLoggedIn()),
+  }
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

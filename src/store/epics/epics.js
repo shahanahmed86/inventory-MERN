@@ -8,15 +8,13 @@ const epics = {
     signUp: action$ => action$.ofType(types.SIGNUP).switchMap(({ payload }) => {
         return Observable.ajax({
             url: 'http://localhost:8080/user/signup',
-            method: 'POST',
             body: payload,
-            headers: {
-                'Content-Type': 'application/json'
-            },
             async: true,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             crossDomain: true,
+            createXHR: () => new XMLHttpRequest(),
             responseType: 'json',
-            createXHR: () => new XMLHttpRequest()
         }).switchMap(res => {
             return Observable.of(actions.signUpAccess(res.response));
         }).catch(err => {
@@ -31,15 +29,17 @@ const epics = {
             url: 'http://localhost:8080/user/signin',
             method: 'POST',
             body: payload,
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             async: true,
             crossDomain: true,
+            withCredentials: true,
+            createXHR: () => new XMLHttpRequest(),
             responseType: 'json',
-            createXHR: () => new XMLHttpRequest()
         }).switchMap(res => {
-            return Observable.of(actions.signInSuccess(res.response));
+            return Observable.of(
+                actions.signInSuccess(res.response),
+                actions.isLoggedIn()
+            );
         }).catch(err => {
             if (err.response) return Observable.of(actions.signInFailure(err.response));
             return Observable.of(actions.signInFailure('Network Error'));
@@ -47,21 +47,20 @@ const epics = {
         return Observable.of(actions.signInFailure('Please Enter Email & Password, in order to login'));
     }),
     isLoggedIn: action$ => action$.ofType(types.ISLOGGEDIN).switchMap(() => {
-        //payload is cookie
         return Observable.ajax({
             url: 'http://localhost:8080/user',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
             async: true,
             crossDomain: true,
-            responseType: 'json',
             withCredentials: true,
+            createXHR: () => new XMLHttpRequest(),
+            responseType: 'json',
         }).switchMap(res => {
             if (res.response.doc) return Observable.of(actions.isLoggedInSuccess(res.response.doc));
             return Observable.of(actions.isLoggedInFailure('Token Expired'));
         }).catch(err => {
+            console.log(err);
             if (err.response) return Observable.of(actions.isLoggedInFailure(err.response));
             return Observable.of(actions.isLoggedInFailure('Network Error'));
         })

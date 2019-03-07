@@ -17,9 +17,8 @@ class SignIn extends Component {
         }
     }
     componentDidMount() {
-        this.props.isLoggedIn();
-        // if (document.cookie) return this.props.history.push('/dashboard');
-        // return this.props.history.push('/');
+        if (this.props.store.profile.email) return this.props.history.push('/dashboard');
+        return this.props.history.push('/');
     }
     handleChange = ev => {
         const { name, value } = ev.target;
@@ -111,7 +110,6 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         signIn: (email, password) => dispatch(actions.signIn(email, password)),
-        isLoggedIn: () => dispatch(actions.isLoggedIn()),
     }
 };
 

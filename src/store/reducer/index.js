@@ -57,7 +57,7 @@ const reducer = (state = initialState, action) => {
         case types.ISLOGGEDIN: {
             return {
                 ...state,
-                // isLoading: true,
+                isLoading: true,
             }
         }
         case types.ISLOGGEDINSUCCESS: {
