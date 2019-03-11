@@ -2,11 +2,15 @@ import types from '../constants';
 
 const initialState = {
     profile: {},
+    products: {},
     
     isLoading: false,
 
     isSnackOpen: false,
     snackMessage: '',
+
+    isDialogOpen: false,
+    dialogMessage: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -16,6 +20,12 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isSnackOpen: action.payload.snack,
                 snackMessage: action.payload.message,
+            }
+        }
+        case types.ONDIALOG: {
+            return {
+                ...state,
+                isDialogOpen: action.payload,
             }
         }
         case types.SIGNUP: {
@@ -38,14 +48,7 @@ const reducer = (state = initialState, action) => {
                 isLoading: true,
             }
         }
-        case types.SIGNINSUCCESS: {
-            return {
-                ...state,
-                isLoading: false,
-                isSnackOpen: true,
-                snackMessage: action.payload,
-            }
-        }
+        case types.SIGNINSUCCESS:
         case types.SIGNINFAILURE: {
             return {
                 ...state,
@@ -79,7 +82,8 @@ const reducer = (state = initialState, action) => {
                 isLoading: true,
             }
         }
-        case types.PRODUCTSAVESUCCESS: {
+        case types.PRODUCTSAVESUCCESS: 
+        case types.PRODUCTSAVEFAILURE: {
             return {
                 ...state,
                 isLoading: false,
@@ -87,12 +91,27 @@ const reducer = (state = initialState, action) => {
                 snackMessage: action.payload
             }
         }
-        case types.PRODUCTSAVEFAILURE: {
+        case types.GETPRODUCT: {
+            return {
+                ...state,
+                isLoading: true,
+            }
+        }
+        case types.GETPRODUCTSUCCESS: {
             return {
                 ...state,
                 isLoading: false,
-                isSnackOpen: true,
-                snackMessage: action.payload
+                isDialogOpen: true,
+                dialogMessage: 'Products Fetch',
+                products: action.payload,
+            }
+        }
+        case types.GETPRODUCTFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isDialogOpen: true,
+                dialogMessage: action.payload,
             }
         }
         default: {

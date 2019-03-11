@@ -6,6 +6,11 @@ const actions = {
             type: types.ONSNACK, payload
         }
     },
+    onDialog: payload => {
+        return {
+            type: types.ONDIALOG, payload
+        }
+    },
     signUp: payload => {
         return {
             type: types.SIGNUP, payload
@@ -59,6 +64,21 @@ const actions = {
     productSaveFailure: payload => {
         return {
             type: types.PRODUCTSAVEFAILURE, payload
+        }
+    },
+    getProduct: payload => {
+        return {
+            type: types.GETPRODUCT, payload
+        }
+    },
+    getProductSuccess: payload => {
+        return {
+            type: types.GETPRODUCTSUCCESS, payload
+        }
+    },
+    getProductFailure: payload => {
+        return {
+            type: types.GETPRODUCTFAILURE, payload
         }
     },
 };

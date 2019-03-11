@@ -16,7 +16,7 @@ import './App.css';
 
 class App extends Component {
   componentDidMount() {
-    this.props.isLoggedIn();
+    if (!this.props.store.profile.email) return this.props.isLoggedIn();
   }
   render() {
     if (this.props.store.isLoading) return (

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
 
 import Header from './header';
-import Product from './dashboard/product';
+import Product from './dashboard/product/product';
 
 const routes = [
     {

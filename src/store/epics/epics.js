@@ -83,6 +83,24 @@ const epics = {
         });
         return Observable.of(actions.productSaveFailure('All fields are required'));
     }),
+    getProduct: action$ => action$.ofType(types.GETPRODUCT).switchMap(() => {
+        return Observable.ajax({
+            url: 'http://localhost:8080/product',
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            async: true,
+            crossDomain: true,
+            withCredentials: true,
+            createXHR: () => new XMLHttpRequest(),
+            responseType: 'json'
+        }).switchMap(docs => {
+            if (docs.response) return Observable.of(actions.getProductSuccess(docs.response.products));
+            return Observable.of(actions.getProductFailure('Token Expired'));
+        }).catch(err => {
+            if (err.response) return Observable.of(actions.getProductFailure(err.response));
+            return Observable.of(actions.getProductFailure('Network Error'));
+        });
+    }),
 };
 
 export default epics;

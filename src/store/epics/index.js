@@ -6,5 +6,6 @@ export default combineEpics(
     epics.signUp,
     epics.signIn,
     epics.isLoggedIn,
-    epics.productSave
+    epics.productSave,
+    epics.getProduct,
 );
