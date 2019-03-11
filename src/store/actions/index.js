@@ -46,6 +46,21 @@ const actions = {
             type: types.ISLOGGEDINFAILURE, payload
         }
     },
+    productSave: payload => {
+        return {
+            type: types.PRODUCTSAVE, payload
+        }
+    },
+    productSaveSuccess: payload => {
+        return {
+            type: types.PRODUCTSAVESUCCESS, payload
+        }
+    },
+    productSaveFailure: payload => {
+        return {
+            type: types.PRODUCTSAVEFAILURE, payload
+        }
+    },
 };
 
 export default actions;

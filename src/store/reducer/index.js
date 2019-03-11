@@ -73,6 +73,28 @@ const reducer = (state = initialState, action) => {
                 isLoading: false,
             }
         }
+        case types.PRODUCTSAVE: {
+            return {
+                ...state,
+                isLoading: true,
+            }
+        }
+        case types.PRODUCTSAVESUCCESS: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload
+            }
+        }
+        case types.PRODUCTSAVEFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload
+            }
+        }
         default: {
             return {
                 ...state,

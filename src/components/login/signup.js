@@ -42,7 +42,7 @@ class SignUp extends Component {
         const isFilled = Object.values(this.state).every(x => Boolean(x) === true);
         console.log(isFilled);
         if (isFilled) return this.props.signUp(this.state);
-        return this.props.onSnackHandler(true, 'All Fields must be filled');
+        return this.props.onSnackHandler(true, 'All Fields are required');
     }
     render() {
         const {
