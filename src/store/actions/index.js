@@ -66,6 +66,21 @@ const actions = {
             type: types.PRODUCTSAVEFAILURE, payload
         }
     },
+    updateProduct: payload => {
+        return {
+            type: types.UPDATEPRODUCT, payload
+        }
+    },
+    updateProductSuccess: payload => {
+        return {
+            type: types.UPDATEPRODUCTSUCCESS, payload
+        }
+    },
+    updateProductFailure: payload => {
+        return {
+            type: types.UPDATEPRODUCTFAILURE, payload
+        }
+    },
     getProduct: payload => {
         return {
             type: types.GETPRODUCT, payload

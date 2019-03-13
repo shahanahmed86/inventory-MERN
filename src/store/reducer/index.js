@@ -91,6 +91,21 @@ const reducer = (state = initialState, action) => {
                 snackMessage: action.payload
             }
         }
+        case types.UPDATEPRODUCT: {
+            return {
+                ...state,
+                isLoading: true,
+            }
+        }
+        case types.UPDATEPRODUCTSUCCESS:
+        case types.UPDATEPRODUCTFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload,
+            }
+        }
         case types.GETPRODUCT: {
             return {
                 ...state,

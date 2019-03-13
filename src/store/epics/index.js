@@ -8,4 +8,5 @@ export default combineEpics(
     epics.isLoggedIn,
     epics.productSave,
     epics.getProduct,
+    epics.updateProduct,
 );

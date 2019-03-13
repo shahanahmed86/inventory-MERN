@@ -66,7 +66,7 @@ const epics = {
     productSave: action$ => action$.ofType(types.PRODUCTSAVE).switchMap(({ payload }) => {
         const isMatch = Object.values(payload).every(val => Boolean(val));
         if (isMatch) return Observable.ajax({
-            url: 'http://localhost:8080/product/save',
+            url: 'http://localhost:8080/product',
             method: 'POST',
             body: payload,
             headers: { 'Content-Type': 'application/json' },
@@ -76,12 +76,38 @@ const epics = {
             createXHR: () => new XMLHttpRequest(),
             responseType: 'json',
         }).switchMap(() => {
-            return Observable.of(actions.productSaveSuccess('Product Saved Successfully'));
+            return Observable.of(
+                actions.productSaveSuccess('Product Saved Successfully'),
+                actions.getProduct(),
+            );
         }).catch(err => {
             if (err.response) return Observable.of(actions.productSaveFailure(err.response));
             return Observable.of(actions.productSaveFailure('Network Error'));
         });
         return Observable.of(actions.productSaveFailure('All fields are required'));
+    }),
+    updateProduct: action$ => action$.ofType(types.UPDATEPRODUCT).switchMap(({ payload }) => {
+        const isMatch = Object.values(payload).entries(val => Boolean(val));
+        if (isMatch) return Observable.ajax({
+            url: `http://localhost:8080/product/${payload._id}`,
+            method: 'PUT',
+            body: payload,
+            headers: { 'Content-Type': 'application/json' },
+            async: true,
+            crossDomain: true,
+            withCredentials: true,
+            createXHR: () => new XMLHttpRequest(),
+            responseType: 'json',
+        }).switchMap(resp => {
+            if (resp.response) return Observable.of(
+                actions.updateProductSuccess(resp.response),
+                actions.getProduct()
+            );
+            return Observable.of(actions.updateProductFailure('Something went Wrong'));
+        }).catch(() => {
+            return Observable.of(actions.updateProductFailure('Network Failure'));
+        });
+        return Observable.of(actions.updateProductFailure('All fields are required'));
     }),
     getProduct: action$ => action$.ofType(types.GETPRODUCT).switchMap(() => {
         return Observable.ajax({

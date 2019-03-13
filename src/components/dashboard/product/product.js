@@ -12,9 +12,11 @@ class Product extends Component {
     constructor() {
         super();
         this.state = {
+            _id: '',
             productName: '',
             manufacturer: '',
             description: '',
+            editing: false,
         }
     }
     handleChange = ev => {
@@ -23,17 +25,29 @@ class Product extends Component {
             [name]: value
         });
     }
+    getRow = id => {
+        const obj = this.props.store.products.find(val => val._id === id);
+        const { _id, productName, manufacturer, description } = obj;
+        this.setState({
+            editing: true,
+            _id, productName, manufacturer, description
+        });
+    }
     onSaveHandler = () => {
-        this.props.productSave(this.state);
+        const { _id, productName, manufacturer, description, editing } = this.state;
+        if (!editing) return this.props.productSave({ productName, manufacturer, description });
+        return this.props.updateProduct({ _id, productName, manufacturer, description });
     }
     onBrowseHandler = () => {
         this.props.getProduct();
     }
     onClearHandler = () => {
         this.setState({
+            _id: '',
             productName: '',
             manufacturer: '',
             description: '',
+            editing: false,
         });
     }
     render() {
@@ -85,27 +99,29 @@ class Product extends Component {
                             aria-label="Basic example"
                         >
                             <button
-                                className="btn btn-success"
+                                className={this.state.editing ? "btn btn-secondary" : "btn btn-primary"}
                                 onClick={this.onSaveHandler}
                             >
-                                Save
-                        </button>
+                                {this.state.editing ? 'Update' : 'Save'}
+                            </button>
                             <button
-                                className="btn btn-secondary"
+                                className='btn btn-success'
                                 onClick={this.onBrowseHandler}
                             >
                                 Browse
-                        </button>
+                            </button>
                             <button
                                 className="btn btn-danger"
                                 onClick={this.onClearHandler}
                             >
                                 Clear
-                        </button>
+                            </button>
                         </div>
                     </div>
                 </Paper>
-                <CustomTableCell />
+                <CustomTableCell
+                    onEdit={this.getRow}
+                />
             </div>
         );
     }
@@ -118,6 +134,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         productSave: data => dispatch(actions.productSave(data)),
+        updateProduct: data => dispatch(actions.updateProduct(data)),
         getProduct: () => dispatch(actions.getProduct()),
     }
 }

@@ -57,3 +57,12 @@
   display: flex;
   justify-content: space-evenly
 }
+
+/* Dialog Box Styling */
+
+.dialog-styling {
+  display: flex;
+  min-width: 100%;
+  min-height: 100%;
+  justify-content: center;
+}
