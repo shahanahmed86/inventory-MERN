@@ -1,8 +1,8 @@
 /* global styling */
 
 .loader-container {
-  width: 100vw;
-  height: 100vh;
+  width: 95vw;
+  height: 95vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -56,13 +56,4 @@
   margin-top: 8px;
   display: flex;
   justify-content: space-evenly
-}
-
-/* Dialog Box Styling */
-
-.dialog-styling {
-  display: flex;
-  min-width: 100%;
-  min-height: 100%;
-  justify-content: center;
 }

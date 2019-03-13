@@ -2,7 +2,7 @@ import types from '../constants';
 
 const initialState = {
     profile: {},
-    products: {},
+    products: [],
     
     isLoading: false,
 
@@ -10,7 +10,6 @@ const initialState = {
     snackMessage: '',
 
     isDialogOpen: false,
-    dialogMessage: '',
 };
 
 const reducer = (state = initialState, action) => {
@@ -106,27 +105,26 @@ const reducer = (state = initialState, action) => {
                 snackMessage: action.payload,
             }
         }
-        case types.GETPRODUCT: {
-            return {
-                ...state,
-                isLoading: true,
-            }
-        }
         case types.GETPRODUCTSUCCESS: {
             return {
                 ...state,
-                isLoading: false,
                 isDialogOpen: true,
-                dialogMessage: 'Products Fetch',
                 products: action.payload,
             }
         }
         case types.GETPRODUCTFAILURE: {
             return {
                 ...state,
-                isLoading: false,
-                isDialogOpen: true,
-                dialogMessage: action.payload,
+                isSnackOpen: true,
+                snackMessage: action.payload,
+            }
+        }
+        case types.DELETEPRODUCTSUCCESS: 
+        case types.DELETEPRODUCTFAILURE: {
+            return {
+                ...state,
+                isSnackOpen: true,
+                snackMessage: action.payload,
             }
         }
         default: {

@@ -96,6 +96,21 @@ const actions = {
             type: types.GETPRODUCTFAILURE, payload
         }
     },
+    deleteProduct: payload => {
+        return {
+            type: types.DELETEPRODUCT, payload
+        }
+    },
+    deleteProductSuccess: payload => {
+        return {
+            type: types.DELETEPRODUCTSUCCESS, payload
+        }
+    },
+    deleteProductFailure: payload => {
+        return {
+            type: types.DELETEPRODUCTFAILURE, payload
+        }
+    },
 };
 
 export default actions;

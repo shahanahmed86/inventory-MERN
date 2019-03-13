@@ -75,11 +75,9 @@ const epics = {
             withCredentials: true,
             createXHR: () => new XMLHttpRequest(),
             responseType: 'json',
-        }).switchMap(() => {
-            return Observable.of(
-                actions.productSaveSuccess('Product Saved Successfully'),
-                actions.getProduct(),
-            );
+        }).switchMap(resp => {
+            if (resp.response) return Observable.of(actions.productSaveSuccess(resp.response));
+            return Observable.of(actions.productSaveFailure('Something went wrong'));
         }).catch(err => {
             if (err.response) return Observable.of(actions.productSaveFailure(err.response));
             return Observable.of(actions.productSaveFailure('Network Error'));
@@ -99,15 +97,32 @@ const epics = {
             createXHR: () => new XMLHttpRequest(),
             responseType: 'json',
         }).switchMap(resp => {
-            if (resp.response) return Observable.of(
-                actions.updateProductSuccess(resp.response),
-                actions.getProduct()
-            );
+            if (resp.response) return Observable.of(actions.updateProductSuccess(resp.response));
             return Observable.of(actions.updateProductFailure('Something went Wrong'));
         }).catch(() => {
             return Observable.of(actions.updateProductFailure('Network Failure'));
         });
         return Observable.of(actions.updateProductFailure('All fields are required'));
+    }),
+    deleteProduct: action$ => action$.ofType(types.DELETEPRODUCT).switchMap(({ payload }) => {
+        return Observable.ajax({
+            url: `http://localhost:8080/product/${payload}`,
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            async: true,
+            crossDomain: true,
+            withCredentials: true,
+            createXHR: () => new XMLHttpRequest(),
+            responseType: 'json',
+        }).switchMap(resp => {
+            if (resp.response) return Observable.of(
+                actions.deleteProductSuccess(resp.response),
+                actions.getProduct(),
+            );
+            return Observable.of(actions.deleteProductFailure('Something went Wrong'));
+        }).catch(() => {
+            return Observable.of(actions.deleteProductFailure('Network Failure'));
+        });
     }),
     getProduct: action$ => action$.ofType(types.GETPRODUCT).switchMap(() => {
         return Observable.ajax({
@@ -119,9 +134,16 @@ const epics = {
             withCredentials: true,
             createXHR: () => new XMLHttpRequest(),
             responseType: 'json'
-        }).switchMap(docs => {
-            if (docs.response) return Observable.of(actions.getProductSuccess(docs.response.products));
-            return Observable.of(actions.getProductFailure('Token Expired'));
+        }).switchMap(resp => {
+            if (resp.response.products.length) {
+                return Observable.of(actions.getProductSuccess(resp.response.products));
+            } else {
+                return Observable.of(
+                    actions.getProductSuccess([]),
+                    actions.onDialog(false),
+                    actions.onSnackHandler({ snack: true, message: 'Product Data is empty' }),
+                );
+            }
         }).catch(err => {
             if (err.response) return Observable.of(actions.getProductFailure(err.response));
             return Observable.of(actions.getProductFailure('Network Error'));

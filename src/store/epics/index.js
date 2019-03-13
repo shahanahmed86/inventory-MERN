@@ -9,4 +9,5 @@ export default combineEpics(
     epics.productSave,
     epics.getProduct,
     epics.updateProduct,
+    epics.deleteProduct,
 );

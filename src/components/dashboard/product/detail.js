@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
     withStyles, withMobileDialog,
     Table, TableBody, TableCell, TableHead, TableRow,
-    Paper, Dialog, DialogTitle, DialogContent, DialogActions,
+    Dialog, DialogTitle, DialogContent, DialogActions,
     Button, Fab
 } from '@material-ui/core';
 import Icon from '@material-ui/core/Icon';
@@ -24,8 +24,8 @@ const CustomTableCell = withStyles(theme => ({
 const styles = theme => ({
     root: {
         width: 'fit-content',
-        padding: 15,
-        marginTop: theme.spacing.unit * 3,
+        padding: 5,
+        marginTop: theme.spacing.unit,
         overflowX: 'auto',
     },
     table: {
@@ -55,7 +55,7 @@ class CustomizedTable extends Component {
     render() {
         const { classes, fullScreen } = this.props;
         const { products, isDialogOpen } = this.props.store;
-        if (isDialogOpen) return (
+        if (isDialogOpen && products.length) return (
             <Dialog
                 open={this.props.store.isDialogOpen}
                 onClose={this.handleClose}
@@ -64,62 +64,63 @@ class CustomizedTable extends Component {
                 scroll='paper'
                 aria-labelledby="responsive-dialog-title"
             >
-                <div className='dialog-styling'>
-                    <Paper className={classes.root}>
-                        <DialogTitle id="responsive-dialog-title">{"Products Details"}</DialogTitle>
-                        <DialogContent>
-                            <Table className={classes.table}>
-                                <TableHead>
-                                    <TableRow>
-                                        <CustomTableCell>Serial</CustomTableCell>
-                                        <CustomTableCell>Product Name</CustomTableCell>
-                                        <CustomTableCell>Manufacturer</CustomTableCell>
-                                        <CustomTableCell>Options</CustomTableCell>
+                <DialogTitle style={{ paddingBottom: 0 }} id="responsive-dialog-title">{"Products Details"}</DialogTitle>
+                <div className={classes.root}>
+                    <DialogContent>
+                        <Table className={classes.table}>
+                            <TableHead>
+                                <TableRow>
+                                    <CustomTableCell>Serial</CustomTableCell>
+                                    <CustomTableCell>Product Name</CustomTableCell>
+                                    <CustomTableCell>Manufacturer</CustomTableCell>
+                                    <CustomTableCell>Description</CustomTableCell>
+                                    <CustomTableCell>Options</CustomTableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {products.map((row, ind) => (
+                                    <TableRow className={classes.row} key={ind}>
+                                        <CustomTableCell component="th" scope="row">
+                                            {ind + 1}
+                                        </CustomTableCell>
+                                        <CustomTableCell>{row.productName}</CustomTableCell>
+                                        <CustomTableCell>{row.manufacturer}</CustomTableCell>
+                                        <CustomTableCell>{row.description}</CustomTableCell>
+                                        <CustomTableCell>
+                                            <div style={{
+                                                display: 'flex',
+                                                justifyContent: 'space-evenly'
+                                            }}>
+                                                <Fab
+                                                    size='small'
+                                                    color="secondary"
+                                                    aria-label="Edit"
+                                                    className={classes.fab}
+                                                    onClick={() => this.getRow(row._id)}
+                                                >
+                                                    <Icon>edit_icon</Icon>
+                                                </Fab>
+                                                <Fab
+                                                    size='small'
+                                                    aria-label="Delete"
+                                                    className={classes.fab}
+                                                    onClick={() => this.props.deleteProduct(row._id)}
+                                                >
+                                                    <DeleteIcon />
+                                                </Fab>
+                                            </div>
+                                        </CustomTableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {products.map((row, ind) => (
-                                        <TableRow className={classes.row} key={ind}>
-                                            <CustomTableCell component="th" scope="row">
-                                                {ind + 1}
-                                            </CustomTableCell>
-                                            <CustomTableCell>{row.productName}</CustomTableCell>
-                                            <CustomTableCell>{row.manufacturer}</CustomTableCell>
-                                            <CustomTableCell>
-                                                <div style={{
-                                                    display:'flex',
-                                                    justifyContent: 'space-evenly'
-                                                }}>
-                                                    <Fab
-                                                        size='small'
-                                                        color="secondary"
-                                                        aria-label="Edit"
-                                                        className={classes.fab}
-                                                        onClick={() => this.getRow(row._id)}
-                                                    >
-                                                        <Icon>edit_icon</Icon>
-                                                    </Fab>
-                                                    <Fab
-                                                        size='small'
-                                                        aria-label="Delete"
-                                                        className={classes.fab}
-                                                    >
-                                                        <DeleteIcon />
-                                                    </Fab>
-                                                </div>
-                                            </CustomTableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={this.handleClose} color="primary">
-                                Close
-                            </Button>
-                        </DialogActions>
-                    </Paper>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </DialogContent>
                 </div>
+                <DialogActions>
+                    <Button onClick={this.handleClose} color="secondary">
+                        Close
+                    </Button>
+                </DialogActions>
             </Dialog>
         );
         return null;
@@ -137,6 +138,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         onDialog: data => dispatch(actions.onDialog(data)),
+        deleteProduct: id => dispatch(actions.deleteProduct(id)),
     }
 }
 
