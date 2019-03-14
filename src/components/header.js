@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+
+import actions from '../store/actions';
 
 class Header extends Component {
   render() {
@@ -29,7 +32,7 @@ class Header extends Component {
                 <div className="dropdown-menu" aria-labelledby="dropdown09">
                   <Link
                     to='/dashboard/product'
-                    children='Products'
+                    children='Product'
                     className='dropdown-item'
                   />
                   <Link
@@ -45,6 +48,13 @@ class Header extends Component {
                 </div>
               </li>
             </ul>
+            <button
+              type="button"
+              className="btn btn-outline-primary my-2 my-sm-0"
+              onClick={() => this.props.signOut()}
+            >
+              Logout
+            </button>
           </div>
         </nav>
       </div>
@@ -52,4 +62,10 @@ class Header extends Component {
   }
 }
 
-export default Header;
+const mapDispatchToProps = dispatch => {
+  return {
+    signOut: () => dispatch(actions.signOut())
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Header);

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { CircularProgress } from '@material-ui/core';
 import { connect } from 'react-redux';
 
-import SignIn from './components/signin';
+import SignIn from './components/login/signin';
 import SignUp from './components/login/signup';
 import Dashboard from './components/dashboard';
 import PositionedSnackbar from './components/snackbar';

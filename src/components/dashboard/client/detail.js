@@ -54,8 +54,8 @@ class CustomizedTable extends Component {
     }
     render() {
         const { classes, fullScreen } = this.props;
-        const { products, isDialogOpen } = this.props.store;
-        if (isDialogOpen && products.length) return (
+        const { clients, isDialogOpen } = this.props.store;
+        if (isDialogOpen && clients.length) return (
             <Dialog
                 open={this.props.store.isDialogOpen}
                 onClose={this.handleClose}
@@ -64,28 +64,32 @@ class CustomizedTable extends Component {
                 scroll='paper'
                 aria-labelledby="responsive-dialog-title"
             >
-                <DialogTitle style={{ paddingBottom: 0 }} id="responsive-dialog-title">{"Products Details"}</DialogTitle>
+                <DialogTitle style={{ paddingBottom: 0 }} id="responsive-dialog-title">{"Clients' Details"}</DialogTitle>
                 <div className={classes.root}>
                     <DialogContent>
                         <Table className={classes.table}>
                             <TableHead>
                                 <TableRow>
                                     <CustomTableCell>Serial</CustomTableCell>
-                                    <CustomTableCell>Product Name</CustomTableCell>
-                                    <CustomTableCell>Manufacturer</CustomTableCell>
-                                    <CustomTableCell>Description</CustomTableCell>
+                                    <CustomTableCell>Client Name</CustomTableCell>
+                                    <CustomTableCell>Address</CustomTableCell>
+                                    <CustomTableCell>Telephone</CustomTableCell>
+                                    <CustomTableCell>Email</CustomTableCell>
+                                    <CustomTableCell>NTN</CustomTableCell>
                                     <CustomTableCell>Options</CustomTableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {products.map((row, ind) => (
+                                {clients.map((row, ind) => (
                                     <TableRow className={classes.row} key={ind}>
                                         <CustomTableCell component="th" scope="row">
                                             {ind + 1}
                                         </CustomTableCell>
-                                        <CustomTableCell>{row.productName}</CustomTableCell>
-                                        <CustomTableCell>{row.manufacturer}</CustomTableCell>
-                                        <CustomTableCell>{row.description}</CustomTableCell>
+                                        <CustomTableCell>{row.clientName}</CustomTableCell>
+                                        <CustomTableCell>{row.address}</CustomTableCell>
+                                        <CustomTableCell>{row.telephone}</CustomTableCell>
+                                        <CustomTableCell>{row.email}</CustomTableCell>
+                                        <CustomTableCell>{row.ntn}</CustomTableCell>
                                         <CustomTableCell>
                                             <div style={{
                                                 display: 'flex',
@@ -105,7 +109,7 @@ class CustomizedTable extends Component {
                                                     color='secondary'
                                                     aria-label="Delete"
                                                     className={classes.fab}
-                                                    onClick={() => this.props.deleteProduct(row._id)}
+                                                    onClick={() => this.props.deleteClient(row._id)}
                                                 >
                                                     <DeleteIcon />
                                                 </Fab>
@@ -139,7 +143,7 @@ const mapStateToProps = store => {
 const mapDispatchToProps = dispatch => {
     return {
         onDialog: data => dispatch(actions.onDialog(data)),
-        deleteProduct: id => dispatch(actions.deleteProduct(id)),
+        deleteClient: id => dispatch(actions.deleteClient(id)),
     }
 }
 

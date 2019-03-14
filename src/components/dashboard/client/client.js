@@ -8,14 +8,16 @@ import CustomTableCell from './detail';
 
 import actions from '../../../store/actions';
 
-class Product extends Component {
+class Client extends Component {
     constructor() {
         super();
         this.state = {
             _id: '',
-            productName: '',
-            manufacturer: '',
-            description: '',
+            clientName: '',
+            address: '',
+            telephone: '',
+            email: '',
+            ntn: '',
             editing: false,
         }
     }
@@ -26,32 +28,34 @@ class Product extends Component {
         });
     }
     getRow = id => {
-        const obj = this.props.store.products.find(val => val._id === id);
-        const { _id, productName, manufacturer, description } = obj;
+        const obj = this.props.store.clients.find(val => val._id === id);
+        const { _id, clientName, address, telephone, email, ntn } = obj;
         this.setState({
             editing: true,
-            _id, productName, manufacturer, description
+            _id, clientName, address, telephone, email, ntn
         });
     }
     onSaveHandler = () => {
-        const { _id, productName, manufacturer, description, editing } = this.state;
-        if (!editing) return this.props.productSave({ productName, manufacturer, description });
-        return this.props.updateProduct({ _id, productName, manufacturer, description });
+        const { _id, clientName, address, telephone, email, ntn, editing } = this.state;
+        if (!editing) return this.props.clientSave({ clientName, address, telephone, email, ntn });
+        return this.props.updateClient({ _id, clientName, address, telephone, email, ntn });
     }
     onBrowseHandler = () => {
-        this.props.getProduct();
+        this.props.getClient();
     }
     onClearHandler = () => {
         this.setState({
             _id: '',
-            productName: '',
-            manufacturer: '',
-            description: '',
+            clientName: '',
+            address: '',
+            telephone: '',
+            email: '',
+            ntn: '',
             editing: false,
         });
     }
     render() {
-        const { productName, manufacturer, description } = this.state;
+        const { clientName, address, telephone, email, ntn } = this.state;
         return (
             <div>
                 <Paper
@@ -59,7 +63,7 @@ class Product extends Component {
                     className='the-form'
                 >
                     <Typography
-                        children='Product Form'
+                        children='Client Form'
                         align='center'
                         color='secondary'
                         gutterBottom={true}
@@ -68,8 +72,8 @@ class Product extends Component {
                     <TextField
                         type='text'
                         margin='dense'
-                        label='Product Name'
-                        name='productName' value={productName}
+                        label='Vendor Name'
+                        name='clientName' value={clientName}
                         onChange={this.handleChange}
                         variant='filled'
                         fullWidth={true}
@@ -77,8 +81,8 @@ class Product extends Component {
                     <TextField
                         type='text'
                         margin='dense'
-                        label='Manufacturer'
-                        name='manufacturer' value={manufacturer}
+                        label='Address'
+                        name='address' value={address}
                         onChange={this.handleChange}
                         variant='filled'
                         fullWidth={true}
@@ -86,8 +90,26 @@ class Product extends Component {
                     <TextField
                         type='text'
                         margin='dense'
-                        label='Description'
-                        name='description' value={description}
+                        label='Telephone'
+                        name='telephone' value={telephone}
+                        onChange={this.handleChange}
+                        variant='filled'
+                        fullWidth={true}
+                    />
+                    <TextField
+                        type='text'
+                        margin='dense'
+                        label='Email Address'
+                        name='email' value={email}
+                        onChange={this.handleChange}
+                        variant='filled'
+                        fullWidth={true}
+                    />
+                    <TextField
+                        type='text'
+                        margin='dense'
+                        label='National Tax Number'
+                        name='ntn' value={ntn}
                         onChange={this.handleChange}
                         variant='filled'
                         fullWidth={true}
@@ -133,10 +155,10 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        productSave: data => dispatch(actions.productSave(data)),
-        updateProduct: data => dispatch(actions.updateProduct(data)),
-        getProduct: () => dispatch(actions.getProduct()),
+        clientSave: data => dispatch(actions.clientSave(data)),
+        updateClient: data => dispatch(actions.updateClient(data)),
+        getClient: () => dispatch(actions.getClient()),
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Product);
+export default connect(mapStateToProps, mapDispatchToProps)(Client);

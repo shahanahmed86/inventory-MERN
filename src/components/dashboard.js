@@ -4,12 +4,24 @@ import { Route } from 'react-router-dom';
 
 import Header from './header';
 import Product from './dashboard/product/product';
+import Vendor from './dashboard/vendor/vendor';
+import Client from './dashboard/client/client';
 
 const routes = [
     {
         path: '/dashboard/product',
         exact: true,
         main: props => <Product {...props} />
+    },
+    {
+        path: '/dashboard/vendor',
+        exact: true,
+        main: props => <Vendor {...props} />
+    },
+    {
+        path: '/dashboard/client',
+        exact: true,
+        main: props => <Client {...props} />
     },
 ];
 

@@ -5,8 +5,8 @@ import {
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 
-import actions from '../store/actions';
-import '../App.css';
+import actions from '../../store/actions';
+import '../../App.css';
 
 class SignIn extends Component {
     constructor() {
