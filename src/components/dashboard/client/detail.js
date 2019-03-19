@@ -15,21 +15,24 @@ const CustomTableCell = withStyles(theme => ({
     head: {
         backgroundColor: theme.palette.common.black,
         color: theme.palette.common.white,
+        textAlign: 'center',
+        padding: 5
     },
     body: {
         fontSize: 14,
+        padding: 5
     },
 }))(TableCell);
 
 const styles = theme => ({
     root: {
-        width: 'fit-content',
+        width: '100%',
         padding: 5,
         marginTop: theme.spacing.unit,
         overflowX: 'auto',
     },
     table: {
-        minWidth: 700,
+        minWidth: 1100,
     },
     row: {
         '&:nth-of-type(odd)': {
