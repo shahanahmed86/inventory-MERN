@@ -5,6 +5,7 @@ const initialState = {
     products: [],
     vendors: [],
     clients: [],
+    purchases: [],
     
     isLoading: false,
 

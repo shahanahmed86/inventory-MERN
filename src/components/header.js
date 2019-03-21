@@ -47,6 +47,39 @@ class Header extends Component {
                   />
                 </div>
               </li>
+              <li className="nav-item dropdown">
+                <Link
+                  to='/dashboard'
+                  children='Transaction'
+                  id="dropdown09"
+                  className="nav-link active dropdown-toggle"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                />
+                <div className="dropdown-menu" aria-labelledby="dropdown09">
+                  <Link
+                    to='/dashboard/cashReceipt'
+                    children='Cash Receipt Book'
+                    className='dropdown-item'
+                  />
+                  <Link
+                    to='/dashboard/cashPayment'
+                    children='Cash Payment Book'
+                    className='dropdown-item'
+                  />
+                  <Link
+                    to='/dashboard/purchase'
+                    children='Purchase Book'
+                    className='dropdown-item'
+                  />
+                  <Link
+                    to='/dashboard/sale'
+                    children='Sale Book'
+                    className='dropdown-item'
+                  />
+                </div>
+              </li>
             </ul>
             <button
               type="button"

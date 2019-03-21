@@ -6,6 +6,7 @@ import Header from './header';
 import Product from './dashboard/product/product';
 import Vendor from './dashboard/vendor/vendor';
 import Client from './dashboard/client/client';
+import Purchase from './dashboard/purchase/purchase';
 
 const routes = [
     {
@@ -22,6 +23,11 @@ const routes = [
         path: '/dashboard/client',
         exact: true,
         main: props => <Client {...props} />
+    },
+    {
+        path: '/dashboard/purchase',
+        exact: true,
+        main: props => <Purchase {...props} />
     },
 ];
 
