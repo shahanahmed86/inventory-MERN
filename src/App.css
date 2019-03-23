@@ -23,6 +23,14 @@
   justify-content: space-evenly
 }
 
+.simple-flex {
+  min-height: 25vh;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Sign In Page Styling */
 
 .outline-it {
@@ -71,4 +79,17 @@
   overflow-x: auto;
   padding: 0px 15px;
   margin-top: 10px;
+}
+
+.popout-block {
+  position: absolute;
+  min-height: 200px;
+  max-height: 250px;
+  min-width: 300px;
+  max-width: 350px;
+  z-index: 10;
+  width: fit-content;
+  padding: 15px 5px 0px 5px;
+  overflow: auto;
+  font-size: 12px;
 }

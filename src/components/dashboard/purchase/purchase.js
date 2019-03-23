@@ -9,7 +9,6 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
-import GetVendors from './getlistVendors';
 import actions from "../../../store/actions";
 
 const CustomTableCell = withStyles(theme => ({
@@ -65,30 +64,25 @@ class Purchase extends Component {
                 value: 0,
             }],
             editing: false,
+            vendorList: false
         }
-    }
-    handleChange = ev => {
-        const { name, value } = ev.target;
-        this.setState({
-            [name]: value
-        });
-    }
-    handleChangeTab = (ev, ind) => {
-        const { name, value } = ev.target;
-        const inputProducts = [...this.state.inputProducts];
-        inputProducts[ind][name] = value;
-        this.setState({ inputProducts });
     }
     onAddRow = () => {
         const inputProducts = [...this.state.inputProducts];
-        inputProducts.push({
-            productId: '',
-            productName: '',
-            quantity: 0,
-            costPrice: 0,
-            value: 0,
-        });
-        this.setState({ inputProducts });
+        const lastRow = inputProducts[inputProducts.length - 1];
+        const isFilled = Object.values(lastRow).every(val => val === false || Boolean(val));
+        if (isFilled) {
+            inputProducts.push({
+                productId: '',
+                productName: '',
+                quantity: '0',
+                costPrice: '0',
+                value: '0',
+            });
+            return this.setState({ inputProducts });
+        } else {
+            return this.props.onSnackHandler(true, 'Please fill previous row first');
+        }
     }
     onRemoveRow = ind => {
         const inputProducts = [...this.state.inputProducts];
@@ -100,16 +94,37 @@ class Purchase extends Component {
             inputProducts: [{
                 productId: '',
                 productName: '',
-                quantity: 0,
-                costPrice: 0,
-                value: 0,
+                quantity: '0',
+                costPrice: '0',
+                value: '0',
             }]
         });
     }
+    handleChange = ev => {
+        const { name, value } = ev.target;
+        this.setState({
+            [name]: value
+        });
+    }
+    handleChangeTab = (ev, ind) => {
+        const { name, value } = ev.target;
+        const inputProducts = [...this.state.inputProducts];
+        if (name === 'quantity' || name === 'costPrice') {
+            inputProducts[ind][name] = value;
+            return this.calcValue(ind);
+        }
+        inputProducts[ind][name] = value;
+        this.setState({ inputProducts });
+    }
+    calcValue = ind => {
+        const inputProducts = [...this.state.inputProducts];
+        inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
+        this.setState({ inputProducts });
+    }
     onSaveHandler = () => {
         const { _id, date, invoice, vendorId, inputProducts, editing } = this.state;
-        if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, inputProducts });
-        return this.props.updatePurchase({ _id, date, invoice, vendorId, inputProducts });
+        if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
+        return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
     }
     onBrowseHandler = () => {
         console.log('empty block')
@@ -124,19 +139,111 @@ class Purchase extends Component {
             inputProducts: [{
                 productId: '',
                 productName: '',
-                quantity: 0,
-                costPrice: 0,
-                value: 0,
+                quantity: '0',
+                costPrice: '0',
+                value: '0',
             }],
             editing: false,
         })
     }
-    getItemVendor = id => {
-        const vendor = this.props.store.vendors.find(val => val._id === id);
+    validateVendor = () => {
+        this.props.getVendor();
+        this.setState({ vendorList: true });
+    }
+    renderSearchBlockVendor = () => {
+        const search = this.state.vendorName.toLowerCase();
+        const vendors = this.props.store.vendors.filter(val => val.vendorName.toLowerCase().indexOf(search) !== -1);
+        return (
+            <Paper
+                elevation={24}
+                className='popout-block'
+            >
+                {vendors.length ? vendors.map((val, ind) => {
+                    return (
+                        <ul className="list-group" key={ind}>
+                            <li className="list-group-item">
+                                <button
+                                    className='btn btn-secondary'
+                                    onClick={() => this.getVendorFields(val._id, val.vendorName)}
+                                >
+                                    {val.vendorName}
+                                </button>
+                            </li>
+                            <li className="list-group-item">Address: {val.address}</li>
+                            <li className="list-group-item">Telephone: {val.telephone}</li>
+                            <li className="list-group-item">Email: {val.email}</li>
+                            <li className="list-group-item">NTN: {val.ntn}</li>
+                        </ul>
+                    );
+                }) : <h4 className='simple-flex'>Not found such request</h4>}
+            </Paper>
+        )
+    }
+    getVendorFields = (vendorId, vendorName) => {
         this.setState({
-            vendorId: vendor._id,
-            vendorName: vendor.vendorName,
+            vendorId, vendorName,
+            vendorList: false
         });
+        this.props.onDialog(false);
+    }
+    onCloseVendorList = () => {
+        setTimeout(() => {
+            this.setState({ vendorList: false });
+        }, 1500);
+    }
+    validateProduct = ind => {
+        this.props.getProduct();
+        const inputProducts = [...this.state.inputProducts];
+        inputProducts[ind].productList = true;
+        this.setState({ ind, inputProducts });
+    }
+    renderSearchBlockProduct = () => {
+        const search = this.state.inputProducts[this.state.ind].productName.toLowerCase();
+        const products = this.props.store.products.filter(val => val.productName.toLowerCase().indexOf(search) !== -1);
+        return (
+            <Paper
+                elevation={24}
+                className='popout-block'
+            >
+                {products.length ? products.map((val, ind) => {
+                    return (
+                        <ul className="list-group" key={ind}>
+                            <li className="list-group-item">
+                                <button
+                                    className='btn btn-secondary'
+                                    onClick={() => this.getProductFields(val._id, val.productName)}
+                                >
+                                    {val.productName}
+                                </button>
+                            </li>
+                            <li className="list-group-item">Manufacturer: {val.manufacturer}</li>
+                            <li className="list-group-item">Description: {val.description}</li>
+                        </ul>
+                    );
+                }) : <h4 className='simple-flex'>Not found such request</h4>}
+            </Paper>
+        )
+    }
+    getProductFields = (id, name) => {
+        const inputProducts = [...this.state.inputProducts];
+        const ind = this.state.ind;
+        inputProducts.forEach((val, i) => {
+            if (i !== ind) {
+                if (val.productName === name) return this.props.onSnackHandler(true, 'can\'t enter same product');
+            }
+        });
+        inputProducts[ind].productId = id;
+        inputProducts[ind].productName = name;
+        inputProducts[ind].productList = false;
+        this.setState({ inputProducts });
+        this.props.onDialog(false);
+    }
+    onCloseProductList = ind => {
+        const inputProducts = [...this.state.inputProducts];
+        inputProducts[ind].productList = false;
+        setTimeout(() => {
+            this.setState({ inputProducts });
+        }, 1500);
     }
     render() {
         const {
@@ -175,18 +282,16 @@ class Purchase extends Component {
                         variant='standard'
                     /><br />
                     <TextField
-                        disabled={true}
                         type='text'
                         margin='dense'
+                        variant='standard'
                         label='Vendor'
                         name='vendorName' value={vendorName}
                         onChange={this.handleChange}
-                        variant='standard'
+                        onFocus={this.validateVendor}
+                        onBlur={this.onCloseVendorList}
                     />
-                    <button
-                        style={{ marginTop: 15, marginLeft: 3 }}
-                        onClick={() => this.props.getVendor()}
-                    >?</button>
+                    {this.state.vendorList && this.renderSearchBlockVendor()}
                     <div className='row'>
                         <div className='col-xs-12'>
                             <Table className={classes.table}>
@@ -212,7 +317,10 @@ class Purchase extends Component {
                                                     variant='standard'
                                                     name='productName' value={row.productName}
                                                     onChange={ev => this.handleChangeTab(ev, ind)}
+                                                    onFocus={() => this.validateProduct(ind)}
+                                                    onBlur={() => this.onCloseProductList(ind)}
                                                 />
+                                                {(!this.state.vendorList && row.productList) && this.renderSearchBlockProduct()}
                                             </CustomTableCell>
                                             <CustomTableCell>
                                                 <TextField
@@ -293,9 +401,6 @@ class Purchase extends Component {
                         </div>
                     </div>
                 </Paper>
-                <GetVendors
-                    getItem={this.getItemVendor}
-                />
             </div>
         );
     }
@@ -307,8 +412,11 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
     return {
+        onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
+        onDialog: data => dispatch(actions.onDialog(data)),
         getVendor: () => dispatch(actions.getVendor()),
         getProduct: () => dispatch(actions.getProduct()),
+        purchaseSave: data => dispatch(actions.purchaseSave(data))
     }
 }
 

@@ -246,6 +246,21 @@ const actions = {
             type: types.DELETECLIENTFAILURE, payload
         }
     },
+    purchaseSave: payload => {
+        return {
+            type: types.PURCHASESAVE, payload
+        }
+    },
+    purchaseSaveSuccess: payload => {
+        return {
+            type: types.PURCHASESAVESUCCESS, payload
+        }
+    },
+    purchaseSaveFailure: payload => {
+        return {
+            type: types.PURCHASESAVEFAILURE, payload
+        }
+    },
 };
 
 export default actions;

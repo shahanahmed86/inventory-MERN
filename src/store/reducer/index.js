@@ -254,6 +254,21 @@ const reducer = (state = initialState, action) => {
                 snackMessage: action.payload,
             }
         }
+        case types.PURCHASESAVE: {
+            return {
+                ...state,
+                isLoading: true,
+            }
+        }
+        case types.PURCHASESAVESUCCESS: 
+        case types.PURCHASESAVEFAILURE: {
+            return {
+                ...state,
+                isLoading: false,
+                isSnackOpen: true,
+                snackMessage: action.payload
+            }
+        }
         default: {
             return {
                 ...state,

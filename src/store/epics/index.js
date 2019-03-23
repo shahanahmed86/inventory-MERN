@@ -1,6 +1,7 @@
 import { combineEpics } from 'redux-observable';
 
 import epics from './epics';
+import purchase from './purchase';
 
 export default combineEpics(
     epics.signUp,
@@ -25,4 +26,9 @@ export default combineEpics(
     epics.getClient,
     epics.updateClient,
     epics.deleteClient,
+
+    purchase.purchaseSave,
+    // purchase.getClient,
+    // purchase.updateClient,
+    // purchase.deleteClient,
 );

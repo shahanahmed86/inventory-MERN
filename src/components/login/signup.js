@@ -27,7 +27,7 @@ class SignUp extends Component {
     }
     componentDidMount() {
         if (this.props.store.profile.email) return this.props.history.push('/dashboard');
-        return this.props.history.push('/');
+        return this.props.history.push('/signup');
     }
     handleChange = ev => {
         const { name, value } = ev.target;
