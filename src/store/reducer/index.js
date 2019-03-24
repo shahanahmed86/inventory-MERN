@@ -30,6 +30,12 @@ const reducer = (state = initialState, action) => {
                 isDialogOpen: action.payload,
             }
         }
+        case types.ONLOADER: {
+            return {
+                ...state,
+                isLoading: action.payload,
+            }
+        }
         case types.SIGNUP: {
             return {
                 ...state,
@@ -257,16 +263,33 @@ const reducer = (state = initialState, action) => {
         case types.PURCHASESAVE: {
             return {
                 ...state,
-                isLoading: true,
             }
         }
         case types.PURCHASESAVESUCCESS: 
         case types.PURCHASESAVEFAILURE: {
             return {
                 ...state,
-                isLoading: false,
                 isSnackOpen: true,
                 snackMessage: action.payload
+            }
+        }
+        case types.GETPURCHASE: {
+            return {
+                ...state,
+            }
+        }
+        case types.GETPURCHASESUCCESS: {
+            return {
+                ...state,
+                isDialogOpen: true,
+                purchases: action.payload,
+            }
+        }
+        case types.GETPURCHASEFAILURE: {
+            return {
+                ...state,
+                isSnackOpen: true,
+                snackMessage: action.payload,
             }
         }
         default: {

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
     withStyles,
     Paper, Typography,
-    TextField, Fab,
+    TextField, Fab, Icon,
     Table, TableBody, TableCell, TableHead, TableRow,
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
@@ -62,9 +62,12 @@ class Purchase extends Component {
                 quantity: 0,
                 costPrice: 0,
                 value: 0,
+                productList: false,
             }],
             editing: false,
-            vendorList: false
+            vendorList: false,
+            search: '',
+            options: false,
         }
     }
     onAddRow = () => {
@@ -127,7 +130,83 @@ class Purchase extends Component {
         return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
     }
     onBrowseHandler = () => {
-        console.log('empty block')
+        this.setState(state => ({
+            options: !state.options
+        }));
+    }
+    toShowOptions = () => {
+        const { search } = this.state;
+        return (
+            <div className='simple-flex'>
+                <TextField
+                    type='text'
+                    margin='dense'
+                    variant='standard'
+                    label='Type Invoice #'
+                    name='search' value={search}
+                    onChange={this.handleChange}
+                    onFocus={this.validateSearch}
+                    onBlur={this.onClosePurchaseList}
+                />
+                <div className="btn-group">
+                    <Fab
+                        size='small'
+                        color="primary"
+                        aria-label="Edit"
+                    >
+                        <Icon>edit_icon</Icon>
+                    </Fab>
+                    <Fab
+                        size='small'
+                        color='secondary'
+                        aria-label="Delete"
+                    >
+                        <DeleteIcon />
+                    </Fab>
+                </div>
+            </div>
+        );
+    }
+    validateSearch = () => {
+        this.props.getPurchase();
+        this.setState({ getPur: true });
+    }
+    renderSearchBlock = () => {
+        const invoice = this.state.invoice.toLowerCase();
+        const purchases = this.props.store.purchases.filter(val => val.invoice.toLowerCase().indexOf(invoice) !== -1);
+        return (
+            <Paper
+                elevation={24}
+                className='popout-block'
+            >
+                {purchases.length ? purchases.map((val, ind) => {
+                    return (
+                        <ul className="list-group" key={ind}>
+                            <li className="list-group-item">
+                                <button
+                                    className='btn btn-secondary'
+                                    onClick={() => this.getPurchaseFields(val._id)}
+                                >
+                                    {val.invoice}
+                                </button>
+                            </li>
+                            <li className="list-group-item">Date: {val.date}</li>
+                            <li className="list-group-item">Vendor: {val.vendor}</li>
+                        </ul>
+                    );
+                }) : <h4 className='simple-flex'>Empty</h4>}
+            </Paper>
+        )
+    }
+    getPurchaseFields = id => {
+        const purchase = this.props.store.purchases.find(val => val._id === id);
+        this.props.onDialog(false);
+        console.log({ purchase });
+    }
+    onClosePurchaseList = () => {
+        setTimeout(() => {
+            this.setState({ getPur: false });
+        }, 500);
     }
     onClearHandler = () => {
         this.setState({
@@ -175,7 +254,7 @@ class Purchase extends Component {
                             <li className="list-group-item">NTN: {val.ntn}</li>
                         </ul>
                     );
-                }) : <h4 className='simple-flex'>Not found such request</h4>}
+                }) : <h4 className='simple-flex'>Empty</h4>}
             </Paper>
         )
     }
@@ -189,7 +268,7 @@ class Purchase extends Component {
     onCloseVendorList = () => {
         setTimeout(() => {
             this.setState({ vendorList: false });
-        }, 1500);
+        }, 500);
     }
     validateProduct = ind => {
         this.props.getProduct();
@@ -220,7 +299,7 @@ class Purchase extends Component {
                             <li className="list-group-item">Description: {val.description}</li>
                         </ul>
                     );
-                }) : <h4 className='simple-flex'>Not found such request</h4>}
+                }) : <h4 className='simple-flex'>Empty</h4>}
             </Paper>
         )
     }
@@ -243,7 +322,7 @@ class Purchase extends Component {
         inputProducts[ind].productList = false;
         setTimeout(() => {
             this.setState({ inputProducts });
-        }, 1500);
+        }, 500);
     }
     render() {
         const {
@@ -400,6 +479,8 @@ class Purchase extends Component {
                             </button>
                         </div>
                     </div>
+                    {this.state.options && this.toShowOptions()}
+                    {(this.state.options && this.state.getPur) && this.renderSearchBlock()}
                 </Paper>
             </div>
         );
@@ -416,7 +497,8 @@ const mapDispatchToProps = dispatch => {
         onDialog: data => dispatch(actions.onDialog(data)),
         getVendor: () => dispatch(actions.getVendor()),
         getProduct: () => dispatch(actions.getProduct()),
-        purchaseSave: data => dispatch(actions.purchaseSave(data))
+        purchaseSave: data => dispatch(actions.purchaseSave(data)),
+        getPurchase: () => dispatch(actions.getPurchase()),
     }
 }
 

@@ -11,6 +11,11 @@ const actions = {
             type: types.ONDIALOG, payload
         }
     },
+    onLoader: payload => {
+        return {
+            type: types.ONLOADER, payload
+        }
+    },
     signUp: payload => {
         return {
             type: types.SIGNUP, payload
@@ -259,6 +264,21 @@ const actions = {
     purchaseSaveFailure: payload => {
         return {
             type: types.PURCHASESAVEFAILURE, payload
+        }
+    },
+    getPurchase: () => {
+        return {
+            type: types.GETPURCHASE,
+        }
+    },
+    getPurchaseSuccess: payload => {
+        return {
+            type: types.GETPURCHASESUCCESS, payload
+        }
+    },
+    getPurchaseFailure: payload => {
+        return {
+            type: types.GETPURCHASEFAILURE, payload
         }
     },
 };

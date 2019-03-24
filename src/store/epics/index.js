@@ -28,7 +28,7 @@ export default combineEpics(
     epics.deleteClient,
 
     purchase.purchaseSave,
-    // purchase.getClient,
-    // purchase.updateClient,
-    // purchase.deleteClient,
+    purchase.getPurchase,
+    // purchase.updatePurchase,
+    // purchase.deletePurchase,
 );
