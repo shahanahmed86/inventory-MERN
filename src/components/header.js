@@ -59,16 +59,6 @@ class Header extends Component {
                 />
                 <div className="dropdown-menu" aria-labelledby="dropdown09">
                   <Link
-                    to='/dashboard/cashReceipt'
-                    children='Cash Receipt Book'
-                    className='dropdown-item'
-                  />
-                  <Link
-                    to='/dashboard/cashPayment'
-                    children='Cash Payment Book'
-                    className='dropdown-item'
-                  />
-                  <Link
                     to='/dashboard/purchase'
                     children='Purchase Book'
                     className='dropdown-item'
