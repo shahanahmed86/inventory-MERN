@@ -1,22 +1,59 @@
 import React, { Component } from 'react';
-import { TextField } from '@material-ui/core';
+import { Paper, TextField } from '@material-ui/core';
 import { connect } from 'react-redux';
 
 class PopupProduct extends Component {
+	renderSearchBlockProduct = () => {
+		const { productName, getProductFields, store } = this.props;
+		const search = productName.toLowerCase();
+		const products = store.products.filter((val) => val.productName.toLowerCase().indexOf(search) !== -1);
+		return (
+			<Paper elevation={24} className="popout-block">
+				{products.length ? (
+					products.map((val, ind) => {
+						return (
+							<ul className="list-group" key={ind}>
+								<li className="list-group-item">
+									<button
+										className="btn btn-secondary"
+										onClick={() => getProductFields(val._id, val.productName)}
+									>
+										{val.productName}
+									</button>
+								</li>
+								<li className="list-group-item">Manufacturer: {val.manufacturer}</li>
+								<li className="list-group-item">Description: {val.description}</li>
+							</ul>
+						);
+					})
+				) : (
+					<h4 className="simple-flex">Empty</h4>
+				)}
+			</Paper>
+		);
+	};
 	render() {
-		const { row, ind, handleChangeTab, validateProduct, onCloseProductList, vendorList } = this.props;
+		const {
+			productName,
+			ind,
+			inputProducts,
+			handleChangeTab,
+			validateProduct,
+			vendorList,
+			onCloseProductList
+		} = this.props;
 		return (
 			<div>
 				<TextField
 					type="text"
 					variant="standard"
 					name="productName"
-					value={row.productName}
+					value={productName}
 					onChange={(ev) => handleChangeTab(ev, ind)}
-					onFocus={() => validateProduct(ind)}
 					onBlur={() => onCloseProductList(ind)}
+					onFocus={() => validateProduct(ind)}
 				/>
-				{!vendorList && row.productList && this.renderSearchBlockProduct()}
+				{!vendorList && inputProducts[ind].productList && this.renderSearchBlockProduct()}
 			</div>
 		);
 	}

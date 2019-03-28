@@ -74,9 +74,10 @@ class Purchase extends Component {
 				{
 					productId: '',
 					productName: '',
-					quantity: 0,
-					costPrice: 0,
-					value: 0,
+					quantity: '',
+					costPrice: '',
+					value: '',
+					sellingPrice: '',
 					productList: false
 				}
 			],
@@ -98,9 +99,10 @@ class Purchase extends Component {
 				{
 					productId: '',
 					productName: '',
-					quantity: '0',
-					costPrice: '0',
-					value: '0'
+					quantity: '',
+					costPrice: '',
+					value: '',
+					sellingPrice: ''
 				}
 			],
 			editing: false
@@ -108,24 +110,28 @@ class Purchase extends Component {
 	};
 	onAddRow = () => {
 		const inputProducts = [ ...this.state.inputProducts ];
-		const lastRow = inputProducts[inputProducts.length - 1];
-		const isFilled = Object.values(lastRow).every((val) => val === false || Boolean(val));
-		if (isFilled) {
+		const isFilled = [];
+		inputProducts.forEach((x) => {
+			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)))
+		});
+		if (isFilled.every(val => Boolean(val))) {
 			inputProducts.push({
 				productId: '',
 				productName: '',
-				quantity: '0',
-				costPrice: '0',
-				value: '0'
+				quantity: '',
+				costPrice: '',
+				value: '',
+				sellingPrice: '',
+				productList: false
 			});
 			return this.setState({ inputProducts });
-		} else {
-			return this.props.onSnackHandler(true, 'Please fill previous row first');
 		}
+		return this.props.onSnackHandler(true, 'Please fill previous row first');
 	};
 	onRemoveRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts.length > 1) {
+			inputProducts[ind].productList = false;
 			inputProducts.splice(ind, 1);
 			return this.setState({ inputProducts });
 		}
@@ -134,9 +140,11 @@ class Purchase extends Component {
 				{
 					productId: '',
 					productName: '',
-					quantity: '0',
-					costPrice: '0',
-					value: '0'
+					quantity: '',
+					costPrice: '',
+					value: '',
+					sellingPrice: '',
+					productList: false
 				}
 			]
 		});
@@ -163,9 +171,9 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 	};
 	onSaveHandler = () => {
-		const { _id, date, invoice, vendorId, inputProducts, editing } = this.state;
+		const { date, invoice, vendorId, inputProducts, editing } = this.state;
 		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
-		return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
+		// return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
@@ -177,8 +185,8 @@ class Purchase extends Component {
 		this.setState({ getPur: true });
 	};
 	getPurchaseFields = (id) => {
-		const purchase = this.props.store.purchases.find((val) => val._id === id);
-		const { _id, date, invoice, vendorId, products } = purchase;
+		const purchases = this.props.store.purchases.find((val) => val._id === id);
+		const { _id, date, invoice, vendorId, products } = purchases;
 		this.props.onDialog(false);
 		this.setState({
 			_id,
@@ -193,18 +201,14 @@ class Purchase extends Component {
 					productName: val.productId.productName,
 					quantity: val.quantity,
 					costPrice: val.costPrice,
-					value: val.value
+					value: val.value,
+					sellingPrice: val.sellingPrice
 				};
 			}),
 			editing: true,
 			getPur: false,
 			options: false
 		});
-	};
-	onClosePurchaseList = () => {
-		setTimeout(() => {
-			this.setState({ getPur: false });
-		}, 1500);
 	};
 	validateVendor = () => {
 		this.props.getVendor();
@@ -218,46 +222,11 @@ class Purchase extends Component {
 		});
 		this.props.onDialog(false);
 	};
-	onCloseVendorList = () => {
-		setTimeout(() => {
-			this.setState({ vendorList: false });
-		}, 1500);
-	};
 	validateProduct = (ind) => {
 		this.props.getProduct();
 		const inputProducts = [ ...this.state.inputProducts ];
 		inputProducts[ind].productList = true;
 		this.setState({ ind, inputProducts });
-	};
-	renderSearchBlockProduct = () => {
-		const search = this.state.inputProducts[this.state.ind].productName.toLowerCase();
-		const products = this.props.store.products.filter(
-			(val) => val.productName.toLowerCase().indexOf(search) !== -1
-		);
-		return (
-			<Paper elevation={24} className="popout-block">
-				{products.length ? (
-					products.map((val, ind) => {
-						return (
-							<ul className="list-group" key={ind}>
-								<li className="list-group-item">
-									<button
-										className="btn btn-secondary"
-										onClick={() => this.getProductFields(val._id, val.productName)}
-									>
-										{val.productName}
-									</button>
-								</li>
-								<li className="list-group-item">Manufacturer: {val.manufacturer}</li>
-								<li className="list-group-item">Description: {val.description}</li>
-							</ul>
-						);
-					})
-				) : (
-					<h4 className="simple-flex">Empty</h4>
-				)}
-			</Paper>
-		);
 	};
 	getProductFields = (id, name) => {
 		const inputProducts = [ ...this.state.inputProducts ];
@@ -273,21 +242,31 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 		this.props.onDialog(false);
 	};
-	onCloseProductList = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].productList = false;
+	onCloseSearch = () => {
 		setTimeout(() => {
-			this.setState({ inputProducts });
+			this.setState({
+				getPur: false
+			});
+		}, 1500);
+	};
+	onCloseVendorList = () => {
+		setTimeout(() => {
+			this.setState({
+				vendorList: false
+			});
+		}, 1500);
+	};
+	onCloseProductList = (ind) => {
+		setTimeout(() => {
+			const inputProducts = [ ...this.state.inputProducts ];
+			if (inputProducts[ind]) {
+				inputProducts[ind].productList = false;
+				this.setState({ inputProducts });
+			}
 		}, 1500);
 	};
 	render() {
-		const {
-			date,
-			invoice,
-			// vendorName,
-			inputProducts,
-			editing
-		} = this.state;
+		const { date, invoice, vendorName, inputProducts, editing } = this.state;
 		const { classes } = this.props;
 		return (
 			<div>
@@ -304,27 +283,29 @@ class Purchase extends Component {
 						margin="dense"
 						InputLabelProps={{ shrink: true }}
 						label="Date"
+						variant="standard"
 						name="date"
 						value={date}
 						onChange={this.handleChange}
-						variant="standard"
 					/>
 					<br />
 					<TextField
 						type="text"
 						margin="dense"
 						label="Invoice"
+						variant="standard"
 						name="invoice"
 						value={invoice}
 						onChange={this.handleChange}
-						variant="standard"
 					/>
 					<br />
 					<PopupVendor
+						vendorName={vendorName}
+						handleChange={this.handleChange}
 						validateVendor={this.validateVendor}
 						vendorList={this.state.vendorList}
-						onCloseVendorList={this.onCloseVendorList}
 						getVendorFields={this.getVendorFields}
+						onCloseVendorList={this.onCloseVendorList}
 					/>
 					<div className="row">
 						<div className="col-xs-12">
@@ -335,6 +316,7 @@ class Purchase extends Component {
 										<CustomTableCell>Quantity</CustomTableCell>
 										<CustomTableCell>Cost</CustomTableCell>
 										<CustomTableCell>Value</CustomTableCell>
+										<CustomTableCell>Selling</CustomTableCell>
 										<CustomTableCell
 											style={{
 												padding: 3
@@ -348,23 +330,16 @@ class Purchase extends Component {
 									{inputProducts.map((row, ind) => (
 										<TableRow className={classes.row} key={ind}>
 											<CustomTableCell>
-                                                <PopupProduct
-                                                    row={row}
-                                                    ind={ind}
-                                                    handleChangeTab={(ev) => this.handleChangeTab(ev, ind)}
-                                                />
-												{/* <TextField
-													type="text"
-													variant="standard"
-													name="productName"
-													value={row.productName}
-													onChange={(ev) => this.handleChangeTab(ev, ind)}
-													onFocus={() => this.validateProduct(ind)}
-													onBlur={() => this.onCloseProductList(ind)}
+												<PopupProduct
+													getProductFields={this.getProductFields}
+													productName={row.productName}
+													ind={ind}
+													inputProducts={inputProducts}
+													handleChangeTab={this.handleChangeTab}
+													validateProduct={this.validateProduct}
+													vendorList={this.state.vendorList}
+													onCloseProductList={this.onCloseProductList}
 												/>
-												{!this.state.vendorList &&
-													row.productList &&
-													this.renderSearchBlockProduct()} */}
 											</CustomTableCell>
 											<CustomTableCell>
 												<TextField
@@ -391,6 +366,15 @@ class Purchase extends Component {
 													variant="standard"
 													name="value"
 													value={parseInt(row.value).toLocaleString()}
+													onChange={(ev) => this.handleChangeTab(ev, ind)}
+												/>
+											</CustomTableCell>
+											<CustomTableCell>
+												<TextField
+													type="text"
+													variant="standard"
+													name="sellingPrice"
+													value={row.sellingPrice}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -457,7 +441,7 @@ class Purchase extends Component {
 							getPur={this.state.getPur}
 							validateSearch={this.validateSearch}
 							getPurchaseFields={this.getPurchaseFields}
-							onClosePurchaseList={this.onClosePurchaseList}
+							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
 				</Paper>

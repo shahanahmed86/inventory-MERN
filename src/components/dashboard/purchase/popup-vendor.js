@@ -3,25 +3,10 @@ import { TextField, Paper } from '@material-ui/core';
 import { connect } from 'react-redux';
 
 class PopupVendor extends Component {
-	constructor() {
-		super();
-		this.state = {
-			vendorName: ''
-		};
-	}
-	handleChange = (ev) => {
-		const { name, value } = ev.target;
-		this.setState({
-			[name]: value
-		});
-    };
-    getVendorFields = (id, vendorName) => {
-        this.setState({ vendorName });
-        this.props.getVendorFields(id, vendorName);
-    }
 	renderSearchBlockVendor = () => {
-		const search = this.state.vendorName.toLowerCase();
-		const vendors = this.props.store.vendors.filter((val) => val.vendorName.toLowerCase().indexOf(search) !== -1);
+		const { vendorName, store, getVendorFields } = this.props;
+		const search = vendorName.toLowerCase();
+		const vendors = store.vendors.filter((val) => val.vendorName.toLowerCase().indexOf(search) !== -1);
 		return (
 			<Paper elevation={24} className="popout-block">
 				{vendors.length ? (
@@ -31,7 +16,7 @@ class PopupVendor extends Component {
 								<li className="list-group-item">
 									<button
 										className="btn btn-secondary"
-										onClick={() => this.getVendorFields(val._id, val.vendorName)}
+										onClick={() => getVendorFields(val._id, val.vendorName)}
 									>
 										{val.vendorName}
 									</button>
@@ -50,8 +35,7 @@ class PopupVendor extends Component {
 		);
 	};
 	render() {
-		const { vendorName } = this.state;
-		const { validateVendor, onCloseVendorList, vendorList } = this.props;
+		const { vendorName, validateVendor, vendorList, handleChange, onCloseVendorList } = this.props;
 		return (
 			<div>
 				<TextField
@@ -61,7 +45,7 @@ class PopupVendor extends Component {
 					label="Vendor"
 					name="vendorName"
 					value={vendorName}
-					onChange={this.handleChange}
+					onChange={handleChange}
 					onFocus={validateVendor}
 					onBlur={onCloseVendorList}
 				/>

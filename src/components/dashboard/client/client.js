@@ -72,7 +72,7 @@ class Client extends Component {
                     <TextField
                         type='text'
                         margin='dense'
-                        label='Vendor Name'
+                        label='Client Name'
                         name='clientName' value={clientName}
                         onChange={this.handleChange}
                         variant='filled'

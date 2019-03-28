@@ -11,9 +11,9 @@ class Search extends Component {
 		};
 	}
 	renderSearchBlock = () => {
-		const { getPurchaseFields } = this.props;
+		const { getPurchaseFields, store } = this.props;
 		const search = this.state.search.toLowerCase();
-		const purchases = this.props.store.purchases.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
+		const purchases = store.purchases.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
 		return (
 			<Paper elevation={24} className="popout-block">
 				{purchases.length ? (
@@ -52,7 +52,7 @@ class Search extends Component {
 		});
 	};
 	render() {
-		const { options, getPur, validateSearch, onClosePurchaseList } = this.props;
+		const { options, getPur, validateSearch, onCloseSearch } = this.props;
 		const { search } = this.state;
 		return (
 			<div className="simple-flex">
@@ -68,7 +68,7 @@ class Search extends Component {
 							value={search}
 							onChange={this.handleChange}
 							onFocus={validateSearch}
-							onBlur={onClosePurchaseList}
+							onBlur={onCloseSearch}
 						/>
 					</div>
 					<div>{options && getPur && this.renderSearchBlock()}</div>
