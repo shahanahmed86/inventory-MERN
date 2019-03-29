@@ -281,6 +281,36 @@ const actions = {
             type: types.GETPURCHASEFAILURE, payload
         }
     },
+    saleSave: payload => {
+        return {
+            type: types.SALESAVE, payload
+        }
+    },
+    saleSaveSuccess: payload => {
+        return {
+            type: types.SALESAVESUCCESS, payload
+        }
+    },
+    saleSaveFailure: payload => {
+        return {
+            type: types.SALESAVEFAILURE, payload
+        }
+    },
+    getSale: () => {
+        return {
+            type: types.GETSALE,
+        }
+    },
+    getSaleSuccess: payload => {
+        return {
+            type: types.GETSALESUCCESS, payload
+        }
+    },
+    getSaleFailure: payload => {
+        return {
+            type: types.GETSALEFAILURE, payload
+        }
+    },
 };
 
 export default actions;

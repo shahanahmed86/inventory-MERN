@@ -1,34 +1,40 @@
 import { combineEpics } from 'redux-observable';
 
-import epics from './epics';
+import login from './login';
+import product from './product';
+import vendor from './vendor';
+import client from './client';
 import purchase from './purchase';
+import sale from './sale';
 
 export default combineEpics(
-    epics.signUp,
+    login.signUp,
+    login.signIn,
+    login.signOut,
+    login.isLoggedIn,
 
-    epics.signIn,
-    
-    epics.signOut,
+    product.productSave,
+    product.getProduct,
+    product.updateProduct,
+    product.deleteProduct,
 
-    epics.isLoggedIn,
+    vendor.vendorSave,
+    vendor.getVendor,
+    vendor.updateVendor,
+    vendor.deleteVendor,
 
-    epics.productSave,
-    epics.getProduct,
-    epics.updateProduct,
-    epics.deleteProduct,
-
-    epics.vendorSave,
-    epics.getVendor,
-    epics.updateVendor,
-    epics.deleteVendor,
-
-    epics.clientSave,
-    epics.getClient,
-    epics.updateClient,
-    epics.deleteClient,
+    client.clientSave,
+    client.getClient,
+    client.updateClient,
+    client.deleteClient,
 
     purchase.purchaseSave,
     purchase.getPurchase,
     // purchase.updatePurchase,
     // purchase.deletePurchase,
+
+    sale.saleSave,
+    sale.getSale,
+    // sale.updateSale,
+    // sale.deleteSale,
 );

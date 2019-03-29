@@ -17,7 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
 import Search from './search';
-import PopupVendor from './popup-vendor';
+import PopupClient from './popup-client';
 import PopupProduct from './../popup-product';
 import actions from '../../../store/actions';
 
@@ -61,28 +61,27 @@ const styles = (theme) => ({
 	}
 });
 
-class Purchase extends Component {
+class Sale extends Component {
 	constructor() {
 		super();
 		this.state = {
 			_id: '',
 			date: '',
 			invoice: '',
-			vendorId: '',
-			vendorName: '',
+			clientId: '',
+			clientName: '',
 			inputProducts: [
 				{
 					productId: '',
 					productName: '',
 					quantity: '0',
-					costPrice: '0',
-					value: '0',
 					sellingPrice: '0',
+					value: '0',
 					productList: false
 				}
 			],
 			editing: false,
-			vendorList: false,
+			clientList: false,
 			search: '',
 			options: false,
 			getPur: false
@@ -93,16 +92,15 @@ class Purchase extends Component {
 			_id: '',
 			date: '',
 			invoice: '',
-			vendorId: '',
-			vendorName: '',
+			clientId: '',
+			clientName: '',
 			inputProducts: [
 				{
 					productId: '',
 					productName: '',
 					quantity: '0',
-					costPrice: '0',
-					value: '0',
-					sellingPrice: ''
+					sellingPrice: '0',
+					value: ''
 				}
 			],
 			editing: false
@@ -112,16 +110,15 @@ class Purchase extends Component {
 		const inputProducts = [ ...this.state.inputProducts ];
 		const isFilled = [];
 		inputProducts.forEach((x) => {
-			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)))
+			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
 		});
-		if (isFilled.every(val => Boolean(val))) {
+		if (isFilled.every((val) => Boolean(val))) {
 			inputProducts.push({
 				productId: '',
 				productName: '',
 				quantity: '0',
-				costPrice: '0',
-				value: '0',
 				sellingPrice: '0',
+				value: '0',
 				productList: false
 			});
 			return this.setState({ inputProducts });
@@ -141,9 +138,8 @@ class Purchase extends Component {
 					productId: '',
 					productName: '',
 					quantity: '0',
-					costPrice: '0',
-					value: '0',
 					sellingPrice: '0',
+					value: '0',
 					productList: false
 				}
 			]
@@ -158,7 +154,7 @@ class Purchase extends Component {
 	handleChangeTab = (ev, ind) => {
 		const { name, value } = ev.target;
 		const inputProducts = [ ...this.state.inputProducts ];
-		if (name === 'quantity' || name === 'costPrice') {
+		if (name === 'quantity' || name === 'sellingPrice') {
 			inputProducts[ind][name] = value;
 			return this.calcValue(ind);
 		}
@@ -167,13 +163,13 @@ class Purchase extends Component {
 	};
 	calcValue = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
+		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].sellingPrice;
 		this.setState({ inputProducts });
 	};
 	onSaveHandler = () => {
-		const { date, invoice, vendorId, inputProducts, editing } = this.state;
-		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
-		// return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
+		const { date, invoice, clientId, inputProducts, editing } = this.state;
+		if (!editing) return this.props.purchaseSave({ date, invoice, clientId, products: inputProducts });
+		// return this.props.updatePurchase({ _id, date, invoice, clientId, products: inputProducts });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
@@ -181,28 +177,27 @@ class Purchase extends Component {
 		}));
 	};
 	validateSearch = () => {
-		this.props.getPurchase();
+		this.props.getSale();
 		this.setState({ getPur: true });
 	};
-	getPurchaseFields = (id) => {
-		const purchases = this.props.store.purchases.find((val) => val._id === id);
-		const { _id, date, invoice, vendorId, products } = purchases;
+	getSaleFields = (id) => {
+		const sales = this.props.store.sales.find((val) => val._id === id);
+		const { _id, date, invoice, clientId, products } = sales;
 		this.props.onDialog(false);
 		this.setState({
 			_id,
 			date: date.slice(0, 10),
 			invoice,
-			vendorId: vendorId._id,
-			vendorName: vendorId.vendorName,
+			clientId: clientId._id,
+			clientName: clientId.clientName,
 			inputProducts: products.map((val) => {
 				return {
 					_id: val._id,
 					productId: val.productId._id,
 					productName: val.productId.productName,
 					quantity: val.quantity,
-					costPrice: val.costPrice,
-					value: val.value,
-					sellingPrice: val.sellingPrice
+					sellingPrice: val.sellingPrice,
+					value: val.value
 				};
 			}),
 			editing: true,
@@ -210,15 +205,15 @@ class Purchase extends Component {
 			options: false
 		});
 	};
-	validateVendor = () => {
-		this.props.getVendor();
-		this.setState({ vendorList: true });
+	validateClient = () => {
+		this.props.getClient();
+		this.setState({ clientList: true });
 	};
-	getVendorFields = (vendorId, vendorName) => {
+	getClientFields = (clientId, clientName) => {
 		this.setState({
-			vendorId,
-			vendorName,
-			vendorList: false
+			clientId,
+			clientName,
+			clientList: false
 		});
 		this.props.onDialog(false);
 	};
@@ -249,10 +244,10 @@ class Purchase extends Component {
 			});
 		}, 1500);
 	};
-	onCloseVendorList = () => {
+	onCloseClientList = () => {
 		setTimeout(() => {
 			this.setState({
-				vendorList: false
+				clientList: false
 			});
 		}, 1500);
 	};
@@ -266,13 +261,13 @@ class Purchase extends Component {
 		}, 1500);
 	};
 	render() {
-		const { date, invoice, vendorName, inputProducts, editing } = this.state;
+		const { date, invoice, clientName, inputProducts, editing } = this.state;
 		const { classes } = this.props;
 		return (
 			<div>
 				<Paper elevation={24} className="pb-form">
 					<Typography
-						children="Purchase Form"
+						children="Sale Form"
 						align="center"
 						color="secondary"
 						gutterBottom={true}
@@ -299,13 +294,13 @@ class Purchase extends Component {
 						onChange={this.handleChange}
 					/>
 					<br />
-					<PopupVendor
-						vendorName={vendorName}
+					<PopupClient
+						clientName={clientName}
 						handleChange={this.handleChange}
-						validateVendor={this.validateVendor}
-						vendorList={this.state.vendorList}
-						getVendorFields={this.getVendorFields}
-						onCloseVendorList={this.onCloseVendorList}
+						validateClient={this.validateClient}
+						clientList={this.state.clientList}
+						getClientFields={this.getClientFields}
+						onCloseClientList={this.onCloseClientList}
 					/>
 					<div className="row">
 						<div className="col-xs-12">
@@ -314,9 +309,8 @@ class Purchase extends Component {
 									<TableRow>
 										<CustomTableCell>Product</CustomTableCell>
 										<CustomTableCell>Quantity</CustomTableCell>
-										<CustomTableCell>Cost</CustomTableCell>
-										<CustomTableCell>Value</CustomTableCell>
 										<CustomTableCell>Selling</CustomTableCell>
+										<CustomTableCell>Value</CustomTableCell>
 										<CustomTableCell
 											style={{
 												padding: 3
@@ -337,7 +331,7 @@ class Purchase extends Component {
 													inputProducts={inputProducts}
 													handleChangeTab={this.handleChangeTab}
 													validateProduct={this.validateProduct}
-													vendorList={this.state.vendorList}
+													clientList={this.state.clientList}
 													onCloseProductList={this.onCloseProductList}
 												/>
 											</CustomTableCell>
@@ -354,8 +348,8 @@ class Purchase extends Component {
 												<TextField
 													type="text"
 													variant="standard"
-													name="costPrice"
-													value={row.costPrice}
+													name="sellingPrice"
+													value={row.sellingPrice}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -366,15 +360,6 @@ class Purchase extends Component {
 													variant="standard"
 													name="value"
 													value={parseInt(row.value).toLocaleString()}
-													onChange={(ev) => this.handleChangeTab(ev, ind)}
-												/>
-											</CustomTableCell>
-											<CustomTableCell>
-												<TextField
-													type="text"
-													variant="standard"
-													name="sellingPrice"
-													value={row.sellingPrice}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -440,7 +425,7 @@ class Purchase extends Component {
 							options={this.state.options}
 							getPur={this.state.getPur}
 							validateSearch={this.validateSearch}
-							getPurchaseFields={this.getPurchaseFields}
+							getSaleFields={this.getSaleFields}
 							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
@@ -458,11 +443,11 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
 		onDialog: (data) => dispatch(actions.onDialog(data)),
-		getVendor: () => dispatch(actions.getVendor()),
+		getClient: () => dispatch(actions.getClient()),
 		getProduct: () => dispatch(actions.getProduct()),
-		purchaseSave: (data) => dispatch(actions.purchaseSave(data)),
-		getPurchase: () => dispatch(actions.getPurchase())
+		saleSave: (data) => dispatch(actions.saleSave(data)),
+		getSale: () => dispatch(actions.getSale())
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Purchase));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Sale));

@@ -7,6 +7,7 @@ import Product from './dashboard/product/product';
 import Vendor from './dashboard/vendor/vendor';
 import Client from './dashboard/client/client';
 import Purchase from './dashboard/purchase/purchase';
+import Sale from './dashboard/sale/sale';
 
 const routes = [
     {
@@ -28,6 +29,11 @@ const routes = [
         path: '/dashboard/purchase',
         exact: true,
         main: props => <Purchase {...props} />
+    },
+    {
+        path: '/dashboard/sale',
+        exact: true,
+        main: props => <Sale {...props} />
     },
 ];
 
