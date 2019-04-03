@@ -168,7 +168,7 @@ class Sale extends Component {
 	};
 	onSaveHandler = () => {
 		const { date, invoice, clientId, inputProducts, editing } = this.state;
-		if (!editing) return this.props.purchaseSave({ date, invoice, clientId, products: inputProducts });
+		if (!editing) return this.props.saleSave({ date, invoice, clientId, products: inputProducts });
 		// return this.props.updatePurchase({ _id, date, invoice, clientId, products: inputProducts });
 	};
 	onBrowseHandler = () => {
@@ -252,6 +252,8 @@ class Sale extends Component {
 		}, 1500);
 	};
 	onCloseProductList = (ind) => {
+		this.props.getPurchase();
+		this.props.getSale();
 		setTimeout(() => {
 			const inputProducts = [ ...this.state.inputProducts ];
 			if (inputProducts[ind]) {
@@ -259,6 +261,46 @@ class Sale extends Component {
 				this.setState({ inputProducts });
 			}
 		}, 1500);
+	};
+	checkQty = (ind) => {
+		const inputProducts = [ ...this.state.inputProducts ];
+		if (inputProducts[ind].productId) {
+			const { purchases, sales } = this.props.store;
+			const stockIn = [];
+			const errorFound = { match: false };
+			purchases.forEach((val) => {
+				val.products.forEach((value) => {
+					if (value.productId._id === inputProducts[ind].productId) {
+						inputProducts[ind].sellingPrice = value.sellingPrice;
+						stockIn.push(value);
+					} else {
+						inputProducts[ind].sellingPrice = 0;
+					}
+				});
+			});
+			const stockOut = [];
+			sales.forEach((val) => {
+				val.products.forEach((value) => {
+					if (value.productId._id === inputProducts[ind].productId) {
+						stockOut.push(value);
+					}
+				});
+			});
+			if (errorFound.match) return this.props.onSnackHandler(true, 'Stock is not available');
+			this.setState({
+				inputProducts
+			});
+			const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
+			if (qty < 0)
+				return this.props.onSnackHandler(true, `${inputProducts[ind].productName} will be negative by ${qty}`);
+		} else {
+			return this.props.onSnackHandler(true, 'Please select the product first');
+		}
+	};
+	isStockFound = (stockIn, stockOut) => {
+		const sumStockIn = Object.values(stockIn).reduce((prev, curr) => prev + curr.quantity, 0);
+		const sumStockOut = Object.values(stockOut).reduce((prev, curr) => prev + curr.quantity, 0);
+		return sumStockIn - sumStockOut;
 	};
 	render() {
 		const { date, invoice, clientName, inputProducts, editing } = this.state;
@@ -274,6 +316,7 @@ class Sale extends Component {
 						variant="h5"
 					/>
 					<TextField
+						autoFocus
 						type="date"
 						margin="dense"
 						InputLabelProps={{ shrink: true }}
@@ -341,6 +384,7 @@ class Sale extends Component {
 													variant="standard"
 													name="quantity"
 													value={row.quantity}
+													onBlur={() => this.checkQty(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -350,6 +394,7 @@ class Sale extends Component {
 													variant="standard"
 													name="sellingPrice"
 													value={row.sellingPrice}
+													onBlur={() => this.calcValue(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -446,7 +491,8 @@ const mapDispatchToProps = (dispatch) => {
 		getClient: () => dispatch(actions.getClient()),
 		getProduct: () => dispatch(actions.getProduct()),
 		saleSave: (data) => dispatch(actions.saleSave(data)),
-		getSale: () => dispatch(actions.getSale())
+		getSale: () => dispatch(actions.getSale()),
+		getPurchase: () => dispatch(actions.getPurchase())
 	};
 };
 

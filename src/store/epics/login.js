@@ -18,11 +18,18 @@ const login = {
 				responseType: 'json'
 			})
 				.switchMap((res) => {
-					return Observable.of(actions.signUpAccess(res.response));
+					return Observable.of(
+						actions.onLoader(true),
+						actions.onLoader(false),
+						actions.signUpAccess(),
+						actions.onSnackHandler({ snack: true, message: res.response })
+					);
 				})
 				.catch((err) => {
-					if (err.response) return Observable.of(actions.signUpAccess(err.response));
-					return Observable.of(actions.signUpAccess('Network Error'));
+					return Observable.of(
+						actions.signUpAccess(),
+						actions.onSnackHandler({ snack: true, message: err.response })
+					);
 				});
 		}),
 	signIn: (action$) =>
@@ -41,13 +48,22 @@ const login = {
 					responseType: 'json'
 				})
 					.switchMap((res) => {
-						return Observable.of(actions.signInSuccess(res.response), actions.isLoggedIn());
+						return Observable.of(
+							actions.signInSuccess(),
+							actions.isLoggedIn(),
+							actions.onSnackHandler({ snack: true, message: res.response })
+						);
 					})
 					.catch((err) => {
-						if (err.response) return Observable.of(actions.signInFailure(err.response));
-						return Observable.of(actions.signInFailure('Network Error'));
+						return Observable.of(
+							actions.signInFailure(),
+							actions.onSnackHandler({ snack: true, message: err.response })
+						);
 					});
-			return Observable.of(actions.signInFailure('Please Enter Email & Password, in order to login'));
+			return Observable.of(
+				actions.signInFailure(),
+				actions.onSnackHandler({ snack: true, message: 'Please Enter Email & Password, in order to login' })
+			);
 		}),
 	signOut: (action$) =>
 		action$.ofType(types.SIGNOUT).switchMap(() => {
@@ -62,11 +78,22 @@ const login = {
 				responseType: 'json'
 			})
 				.switchMap((res) => {
-					if (res.response) return Observable.of(actions.signOutSuccess(res.response));
-					return Observable.of(actions.signOutFailure('Something went wrong'));
+					if (res.response)
+						return Observable.of(
+							actions.signOutSuccess(),
+							actions.onSnackHandler({ snack: true, message: res.response })
+						);
+					return Observable.of(
+						actions.signOutFailure(),
+						actions.onSnackHandler({ snack: true, message: 'Something went wrong' })
+					);
 				})
 				.catch((err) => {
-					if (err.response) return Observable.of(actions.signOutFailure(err.response));
+					if (err.response)
+						return Observable.of(
+							actions.signOutFailure(),
+							actions.onSnackHandler({ snack: true, message: err.response })
+						);
 					return Observable.of(actions.signOutFailure('Network Error'));
 				});
 		}),

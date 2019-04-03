@@ -42,7 +42,7 @@ const sale = {
             responseType: 'json'
         }).switchMap(resp => {
             if (resp.response.length) {
-                return Observable.of(actions.getsaleSuccess(resp.response));
+                return Observable.of(actions.getSaleSuccess(resp.response));
             } else {
                 return Observable.of(
                     actions.getSaleSuccess([]),

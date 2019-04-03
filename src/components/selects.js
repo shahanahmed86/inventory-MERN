@@ -36,7 +36,6 @@ class NativeSelects extends React.Component {
 
     render() {
         const { classes, range, criteria, theLabel, theField, toChange } = this.props;
-        console.log(range);
         return (
             <div className={classes.root}>
                 <FormControl variant="outlined" className={classes.formControl}>

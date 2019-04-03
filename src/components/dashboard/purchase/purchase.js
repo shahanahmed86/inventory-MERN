@@ -112,9 +112,9 @@ class Purchase extends Component {
 		const inputProducts = [ ...this.state.inputProducts ];
 		const isFilled = [];
 		inputProducts.forEach((x) => {
-			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)))
+			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
 		});
-		if (isFilled.every(val => Boolean(val))) {
+		if (isFilled.every((val) => Boolean(val))) {
 			inputProducts.push({
 				productId: '',
 				productName: '',
@@ -279,6 +279,7 @@ class Purchase extends Component {
 						variant="h5"
 					/>
 					<TextField
+						autoFocus
 						type="date"
 						margin="dense"
 						InputLabelProps={{ shrink: true }}

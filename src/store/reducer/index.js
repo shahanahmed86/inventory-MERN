@@ -6,6 +6,7 @@ const initialState = {
     vendors: [],
     clients: [],
     purchases: [],
+    sales: [],
     
     isLoading: false,
 
@@ -36,35 +37,6 @@ const reducer = (state = initialState, action) => {
                 isLoading: action.payload,
             }
         }
-        case types.SIGNUP: {
-            return {
-                ...state,
-                isLoading: true,
-            }
-        }
-        case types.SIGNUPACCESS: {
-            return {
-                ...state,
-                isLoading: false,
-                isSnackOpen: true,
-                snackMessage: action.payload
-            }
-        }
-        case types.SIGNIN: {
-            return {
-                ...state,
-                isLoading: true,
-            }
-        }
-        case types.SIGNINSUCCESS:
-        case types.SIGNINFAILURE: {
-            return {
-                ...state,
-                isLoading: false,
-                isSnackOpen: true,
-                snackMessage: action.payload,
-            }
-        }
         case types.SIGNOUT: {
             return {
                 ...state,
@@ -77,8 +49,6 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 isDialogOpen: false,
-                isSnackOpen: true,
-                snackMessage: action.payload,
                 profile: {},
                 products: [],
                 vendors: [],
@@ -286,6 +256,19 @@ const reducer = (state = initialState, action) => {
             }
         }
         case types.GETPURCHASEFAILURE: {
+            return {
+                ...state,
+                isSnackOpen: true,
+                snackMessage: action.payload,
+            }
+        }
+        case types.GETSALESUCCESS: {
+            return {
+                ...state,
+                sales: action.payload,
+            }
+        }
+        case types.GETSALEFAILURE: {
             return {
                 ...state,
                 isSnackOpen: true,

@@ -13,21 +13,20 @@ class SignUp extends Component {
     constructor() {
         super();
         this.state = {
-            email: '',
-            password: '',
-            confirmPassword: '',
-            mobile: '',
-            dob: '',
-            first: '',
-            last: '',
-            gender: '',
-            maritalStatus: '',
-            cnic: '',
+            email: 'shahan@domain.com',
+            password: '123abc456',
+            confirmPassword: '123abc456',
+            mobile: '0336-2122588',
+            dob: '1986-01-29',
+            first: 'Shahan',
+            last: 'Ahmed Khan',
+            gender: 'Male',
+            maritalStatus: 'Married',
+            cnic: '42301-8964999-9',
         }
     }
     componentDidMount() {
         if (this.props.store.profile.email) return this.props.history.push('/dashboard');
-        return this.props.history.push('/signup');
     }
     handleChange = ev => {
         const { name, value } = ev.target;
@@ -40,7 +39,6 @@ class SignUp extends Component {
     }
     onSignUpHandler = () => {
         const isFilled = Object.values(this.state).every(x => Boolean(x) === true);
-        console.log(isFilled);
         if (isFilled) return this.props.signUp(this.state);
         return this.props.onSnackHandler(true, 'All Fields are required');
     }
