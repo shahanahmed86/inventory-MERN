@@ -11,7 +11,7 @@ class Search extends Component {
 		};
 	}
 	renderSearchBlock = () => {
-		const { getSaleFields, store } = this.props;
+		const { getSaleFields, onDelete, store } = this.props;
 		const search = this.state.search.toLowerCase();
 		const sales = store.sales.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
 		return (
@@ -29,7 +29,12 @@ class Search extends Component {
 									>
 										<Icon>edit_icon</Icon>
 									</Fab>
-									<Fab size="small" color="secondary" aria-label="Delete">
+									<Fab
+										size="small"
+										color="secondary"
+										aria-label="Delete"
+										onClick={() => onDelete(val._id)}
+									>
 										<DeleteIcon />
 									</Fab>
 								</li>
@@ -52,7 +57,7 @@ class Search extends Component {
 		});
 	};
 	render() {
-		const { options, getPur, validateSearch, onCloseSearch } = this.props;
+		const { options, getSal, validateSearch, onCloseSearch } = this.props;
 		const { search } = this.state;
 		return (
 			<div className="simple-flex">
@@ -71,7 +76,7 @@ class Search extends Component {
 							onBlur={onCloseSearch}
 						/>
 					</div>
-					<div>{options && getPur && this.renderSearchBlock()}</div>
+					<div>{options && getSal && this.renderSearchBlock()}</div>
 				</div>
 			</div>
 		);

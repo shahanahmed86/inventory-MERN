@@ -77,15 +77,21 @@ class Sale extends Component {
 					quantity: '0',
 					sellingPrice: '0',
 					value: '0',
-					productList: false
+					productList: false,
+					err: false
 				}
 			],
 			editing: false,
 			clientList: false,
 			search: '',
 			options: false,
-			getPur: false
+			getSal: false
 		};
+	}
+	componentDidMount() {
+		this.props.getProduct();
+		this.props.getPurchase();
+		this.props.getSale();
 	}
 	onClearHandler = () => {
 		this.setState({
@@ -100,18 +106,22 @@ class Sale extends Component {
 					productName: '',
 					quantity: '0',
 					sellingPrice: '0',
-					value: ''
+					value: '0',
+					productList: false,
+					err: false
 				}
 			],
-			editing: false
+			editing: false,
+			clientList: false,
+			search: '',
+			options: false,
+			getSal: false
 		});
 	};
 	onAddRow = () => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		const isFilled = [];
-		inputProducts.forEach((x) => {
-			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
-		});
+		inputProducts.forEach((x) => isFilled.push(Object.values(x).every((y) => y === false || Boolean(y))));
 		if (isFilled.every((val) => Boolean(val))) {
 			inputProducts.push({
 				productId: '',
@@ -123,7 +133,7 @@ class Sale extends Component {
 			});
 			return this.setState({ inputProducts });
 		}
-		return this.props.onSnackHandler(true, 'Please fill previous row first');
+		return this.props.onSnackHandler(true, 'Please fill previous row(s) first');
 	};
 	onRemoveRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
@@ -167,9 +177,9 @@ class Sale extends Component {
 		this.setState({ inputProducts });
 	};
 	onSaveHandler = () => {
-		const { date, invoice, clientId, inputProducts, editing } = this.state;
+		const { _id, date, invoice, clientId, inputProducts, editing } = this.state;
 		if (!editing) return this.props.saleSave({ date, invoice, clientId, products: inputProducts });
-		// return this.props.updatePurchase({ _id, date, invoice, clientId, products: inputProducts });
+		return this.props.updateSale({ _id, date, invoice, clientId, products: inputProducts });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
@@ -177,8 +187,7 @@ class Sale extends Component {
 		}));
 	};
 	validateSearch = () => {
-		this.props.getSale();
-		this.setState({ getPur: true });
+		this.setState({ getSal: true });
 	};
 	getSaleFields = (id) => {
 		const sales = this.props.store.sales.find((val) => val._id === id);
@@ -192,17 +201,18 @@ class Sale extends Component {
 			clientName: clientId.clientName,
 			inputProducts: products.map((val) => {
 				return {
-					_id: val._id,
 					productId: val.productId._id,
 					productName: val.productId.productName,
 					quantity: val.quantity,
 					sellingPrice: val.sellingPrice,
-					value: val.value
+					value: val.value,
+					oldProductId: val.productId._id,
+					oldQuantity: val.quantity
 				};
 			}),
 			editing: true,
-			getPur: false,
-			options: false
+			options: false,
+			getSal: false
 		});
 	};
 	validateClient = () => {
@@ -218,7 +228,6 @@ class Sale extends Component {
 		this.props.onDialog(false);
 	};
 	validateProduct = (ind) => {
-		this.props.getProduct();
 		const inputProducts = [ ...this.state.inputProducts ];
 		inputProducts[ind].productList = true;
 		this.setState({ ind, inputProducts });
@@ -228,7 +237,8 @@ class Sale extends Component {
 		const ind = this.state.ind;
 		inputProducts.forEach((val, i) => {
 			if (i !== ind) {
-				if (val.productName === name) return this.props.onSnackHandler(true, "can't enter same product");
+				if (val.productName === name)
+					return this.props.onSnackHandler(true, `can't enter same product (${name}) again`);
 			}
 		});
 		inputProducts[ind].productId = id;
@@ -240,7 +250,7 @@ class Sale extends Component {
 	onCloseSearch = () => {
 		setTimeout(() => {
 			this.setState({
-				getPur: false
+				getSal: false
 			});
 		}, 1500);
 	};
@@ -252,8 +262,6 @@ class Sale extends Component {
 		}, 1500);
 	};
 	onCloseProductList = (ind) => {
-		this.props.getPurchase();
-		this.props.getSale();
 		setTimeout(() => {
 			const inputProducts = [ ...this.state.inputProducts ];
 			if (inputProducts[ind]) {
@@ -266,8 +274,8 @@ class Sale extends Component {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts[ind].productId) {
 			const { purchases, sales } = this.props.store;
-			const stockIn = [];
 			const errorFound = { match: false };
+			const stockIn = [];
 			purchases.forEach((val) => {
 				val.products.forEach((value) => {
 					if (value.productId._id === inputProducts[ind].productId) {
@@ -286,20 +294,48 @@ class Sale extends Component {
 					}
 				});
 			});
-			if (errorFound.match) return this.props.onSnackHandler(true, 'Stock is not available');
+			if (errorFound.match) {
+				return (inputProducts[ind].err = 'Stock is not available');
+			} else {
+				inputProducts[ind].err = false;
+			}
+			if (!this.state.editing) {
+				const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
+				if (qty < 0) {
+					return (inputProducts[ind].err = `will be negative by ${qty}`);
+				} else {
+					inputProducts[ind].err = false;
+				}
+			} else {
+				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
+					const qty =
+						this.isStockFound(stockIn, stockOut) +
+						+inputProducts[ind].oldQuantity -
+						+inputProducts[ind].quantity;
+					if (qty < 0) {
+						return (inputProducts[ind].err = `will be negative by ${qty}`);
+					} else {
+						inputProducts[ind].err = false;
+					}
+				} else {
+					const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
+					if (qty < 0) {
+						return (inputProducts[ind].err = `will be negative by ${qty}`);
+					} else {
+						inputProducts[ind].err = false;
+					}
+				}
+			}
 			this.setState({
 				inputProducts
 			});
-			const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
-			if (qty < 0)
-				return this.props.onSnackHandler(true, `${inputProducts[ind].productName} will be negative by ${qty}`);
 		} else {
-			return this.props.onSnackHandler(true, 'Please select the product first');
+			return (inputProducts[ind].err = 'Please select the product first');
 		}
 	};
 	isStockFound = (stockIn, stockOut) => {
-		const sumStockIn = Object.values(stockIn).reduce((prev, curr) => prev + curr.quantity, 0);
-		const sumStockOut = Object.values(stockOut).reduce((prev, curr) => prev + curr.quantity, 0);
+		const sumStockIn = Object.values(stockIn).reduce((cum, cur) => cum + cur.quantity, 0);
+		const sumStockOut = Object.values(stockOut).reduce((cum, cur) => cum + cur.quantity, 0);
 		return sumStockIn - sumStockOut;
 	};
 	render() {
@@ -328,6 +364,7 @@ class Sale extends Component {
 					/>
 					<br />
 					<TextField
+						disabled={editing ? true : false}
 						type="text"
 						margin="dense"
 						label="Invoice"
@@ -394,7 +431,7 @@ class Sale extends Component {
 													variant="standard"
 													name="sellingPrice"
 													value={row.sellingPrice}
-													onBlur={() => this.calcValue(ind)}
+													onFocus={() => this.calcValue(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -404,6 +441,8 @@ class Sale extends Component {
 													type="text"
 													variant="standard"
 													name="value"
+													error={Boolean(row.err)}
+													helperText={row.err && row.err}
 													value={parseInt(row.value).toLocaleString()}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
@@ -468,9 +507,10 @@ class Sale extends Component {
 					{this.state.options && (
 						<Search
 							options={this.state.options}
-							getPur={this.state.getPur}
+							getSal={this.state.getSal}
 							validateSearch={this.validateSearch}
 							getSaleFields={this.getSaleFields}
+							onDelete={this.props.deleteSale}
 							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
@@ -492,6 +532,8 @@ const mapDispatchToProps = (dispatch) => {
 		getProduct: () => dispatch(actions.getProduct()),
 		saleSave: (data) => dispatch(actions.saleSave(data)),
 		getSale: () => dispatch(actions.getSale()),
+		updateSale: (data) => dispatch(actions.updateSale(data)),
+		deleteSale: (id) => dispatch(actions.deleteSale(id)),
 		getPurchase: () => dispatch(actions.getPurchase())
 	};
 };

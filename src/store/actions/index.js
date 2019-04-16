@@ -1,6 +1,11 @@
 import types from '../constants';
 
 const actions = {
+	onRealTimeData: () => {
+		return {
+			type: types.ONREALTIME
+		};
+	},
 	onSnackHandler: (payload) => {
 		return {
 			type: types.ONSNACK,
@@ -364,6 +369,42 @@ const actions = {
 	getSaleFailure: (payload) => {
 		return {
 			type: types.GETSALEFAILURE,
+			payload
+		};
+	},
+	updateSale: (payload) => {
+		return {
+			type: types.UPDATESALE,
+			payload
+		};
+	},
+	updateSaleSuccess: (payload) => {
+		return {
+			type: types.UPDATESALESUCCESS,
+			payload
+		};
+	},
+	updateSaleFailure: (payload) => {
+		return {
+			type: types.UPDATESALEFAILURE,
+			payload
+		};
+	},
+	deleteSale: (payload) => {
+		return {
+			type: types.DELETESALE,
+			payload
+		};
+	},
+	deleteSaleSuccess: (payload) => {
+		return {
+			type: types.DELETESALESUCCESS,
+			payload
+		};
+	},
+	deleteSaleFailure: (payload) => {
+		return {
+			type: types.DELETESALEFAILURE,
 			payload
 		};
 	}
