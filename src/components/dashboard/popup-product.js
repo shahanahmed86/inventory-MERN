@@ -33,15 +33,7 @@ class PopupProduct extends Component {
 		);
 	};
 	render() {
-		const {
-			productName,
-			ind,
-			inputProducts,
-			handleChangeTab,
-			validateProduct,
-			vendorList,
-			onCloseProductList
-		} = this.props;
+		const { productName, ind, inputProducts, handleChangeTab, validateProduct, vendorList } = this.props;
 		return (
 			<div>
 				<TextField
@@ -50,8 +42,7 @@ class PopupProduct extends Component {
 					name="productName"
 					value={productName}
 					onChange={(ev) => handleChangeTab(ev, ind)}
-					onBlur={() => onCloseProductList(ind)}
-					onFocus={() => validateProduct(ind)}
+					onKeyDown={(ev) => validateProduct(ev, ind)}
 				/>
 				{!vendorList && inputProducts[ind].productList && this.renderSearchBlockProduct()}
 			</div>

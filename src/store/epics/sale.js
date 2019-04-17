@@ -74,7 +74,7 @@ const sale = {
 					if (resp.response.length) {
 						return Observable.of(actions.getSaleSuccess(resp.response));
 					} else {
-						return Observable.of(actions.getSaleSuccess([]), actions.onDialog(false));
+						return Observable.of(actions.getSaleSuccess([]));
 					}
 				})
 				.catch((err) => {
@@ -148,7 +148,7 @@ const sale = {
 				responseType: 'json'
 			}).switchMap((resp) => {
 				if (typeof resp.response === 'string')
-					return Observable.of(actions.deleteSaleSuccess(resp.response), actions.getSale());
+					return Observable.of(actions.deleteSaleSuccess(resp.response));
 				return Observable.of(actions.deleteSaleFailure('something wrong'));
 			});
 		})

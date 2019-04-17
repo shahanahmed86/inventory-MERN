@@ -21,7 +21,8 @@ const vendor = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.vendorSaveSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.vendorSaveSuccess(resp.response));
 						return Observable.of(actions.vendorSaveFailure('Something went wrong'));
 					})
 					.catch((err) => {
@@ -48,7 +49,6 @@ const vendor = {
 					} else {
 						return Observable.of(
 							actions.getVendorSuccess([]),
-							actions.onDialog(false),
 							actions.onSnackHandler({ snack: true, message: 'Vendor Data is empty' })
 						);
 					}
@@ -96,7 +96,7 @@ const vendor = {
 			})
 				.switchMap((resp) => {
 					if (resp.response)
-						return Observable.of(actions.deleteVendorSuccess(resp.response), actions.getVendor());
+						return Observable.of(actions.deleteVendorSuccess(resp.response));
 					return Observable.of(actions.deleteVendorFailure('Something went Wrong'));
 				})
 				.catch(() => {

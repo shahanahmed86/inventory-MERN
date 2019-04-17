@@ -16,6 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
+import channel from '../../../config';
 import Search from './search';
 import PopupClient from './popup-client';
 import PopupProduct from './../popup-product';
@@ -89,9 +90,22 @@ class Sale extends Component {
 		};
 	}
 	componentDidMount() {
+		this.props.getClient();
 		this.props.getProduct();
-		this.props.getPurchase();
 		this.props.getSale();
+		this.props.getPurchase();
+		channel.bind('sales', () => {
+			this.props.getSale();
+		});
+		channel.bind('purhcases', () => {
+			this.props.getPurchase();
+		});
+		channel.bind('products', () => {
+			this.props.getProduct();
+		});
+		channel.bind('clients', () => {
+			this.props.getClient();
+		});
 	}
 	onClearHandler = () => {
 		this.setState({
@@ -186,13 +200,13 @@ class Sale extends Component {
 			options: !state.options
 		}));
 	};
-	validateSearch = () => {
-		this.setState({ getSal: true });
+	validateSearch = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ getSal: true });
+		if (ev.keyCode === 27) return this.setState({ getSal: false });
 	};
 	getSaleFields = (id) => {
 		const sales = this.props.store.sales.find((val) => val._id === id);
 		const { _id, date, invoice, clientId, products } = sales;
-		this.props.onDialog(false);
 		this.setState({
 			_id,
 			date: date.slice(0, 10),
@@ -215,9 +229,9 @@ class Sale extends Component {
 			getSal: false
 		});
 	};
-	validateClient = () => {
-		this.props.getClient();
-		this.setState({ clientList: true });
+	validateClient = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ clientList: true });
+		if (ev.keyCode === 27) return this.setState({ clientList: false });
 	};
 	getClientFields = (clientId, clientName) => {
 		this.setState({
@@ -225,11 +239,11 @@ class Sale extends Component {
 			clientName,
 			clientList: false
 		});
-		this.props.onDialog(false);
 	};
-	validateProduct = (ind) => {
+	validateProduct = (ev, ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].productList = true;
+		if (ev.keyCode === 13) inputProducts[ind].productList = true;
+		if (ev.keyCode === 27) inputProducts[ind].productList = false;
 		this.setState({ ind, inputProducts });
 	};
 	getProductFields = (id, name) => {
@@ -245,30 +259,6 @@ class Sale extends Component {
 		inputProducts[ind].productName = name;
 		inputProducts[ind].productList = false;
 		this.setState({ inputProducts });
-		this.props.onDialog(false);
-	};
-	onCloseSearch = () => {
-		setTimeout(() => {
-			this.setState({
-				getSal: false
-			});
-		}, 1500);
-	};
-	onCloseClientList = () => {
-		setTimeout(() => {
-			this.setState({
-				clientList: false
-			});
-		}, 1500);
-	};
-	onCloseProductList = (ind) => {
-		setTimeout(() => {
-			const inputProducts = [ ...this.state.inputProducts ];
-			if (inputProducts[ind]) {
-				inputProducts[ind].productList = false;
-				this.setState({ inputProducts });
-			}
-		}, 1500);
 	};
 	checkQty = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
@@ -380,7 +370,6 @@ class Sale extends Component {
 						validateClient={this.validateClient}
 						clientList={this.state.clientList}
 						getClientFields={this.getClientFields}
-						onCloseClientList={this.onCloseClientList}
 					/>
 					<div className="row">
 						<div className="col-xs-12">
@@ -412,7 +401,6 @@ class Sale extends Component {
 													handleChangeTab={this.handleChangeTab}
 													validateProduct={this.validateProduct}
 													clientList={this.state.clientList}
-													onCloseProductList={this.onCloseProductList}
 												/>
 											</CustomTableCell>
 											<CustomTableCell>
@@ -511,7 +499,6 @@ class Sale extends Component {
 							validateSearch={this.validateSearch}
 							getSaleFields={this.getSaleFields}
 							onDelete={this.props.deleteSale}
-							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
 				</Paper>
@@ -527,12 +514,12 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
-		onDialog: (data) => dispatch(actions.onDialog(data)),
 		getClient: () => dispatch(actions.getClient()),
 		getProduct: () => dispatch(actions.getProduct()),
 		saleSave: (data) => dispatch(actions.saleSave(data)),
-		getSale: () => dispatch(actions.getSale()),
 		updateSale: (data) => dispatch(actions.updateSale(data)),
+		getSale: () => dispatch(actions.getSale()),
+		getSaleSuccess: () => dispatch(actions.getSaleSuccess()),
 		deleteSale: (id) => dispatch(actions.deleteSale(id)),
 		getPurchase: () => dispatch(actions.getPurchase())
 	};

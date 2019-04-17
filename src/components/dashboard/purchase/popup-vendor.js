@@ -35,7 +35,7 @@ class PopupVendor extends Component {
 		);
 	};
 	render() {
-		const { vendorName, validateVendor, vendorList, handleChange, onCloseVendorList } = this.props;
+		const { vendorName, validateVendor, vendorList, handleChange } = this.props;
 		return (
 			<div>
 				<TextField
@@ -46,8 +46,7 @@ class PopupVendor extends Component {
 					name="vendorName"
 					value={vendorName}
 					onChange={handleChange}
-					onFocus={validateVendor}
-					onBlur={onCloseVendorList}
+					onKeyDown={validateVendor}
 				/>
 				{vendorList && this.renderSearchBlockVendor()}
 			</div>

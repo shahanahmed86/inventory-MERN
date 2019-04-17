@@ -35,7 +35,7 @@ class PopupClient extends Component {
 		);
 	};
 	render() {
-		const { clientName, validateClient, clientList, handleChange, onCloseClientList } = this.props;
+		const { clientName, validateClient, clientList, handleChange } = this.props;
 		return (
 			<div>
 				<TextField
@@ -46,8 +46,7 @@ class PopupClient extends Component {
 					name="clientName"
 					value={clientName}
 					onChange={handleChange}
-					onFocus={validateClient}
-					onBlur={onCloseClientList}
+					onKeyDown={validateClient}
 				/>
 				{clientList && this.renderSearchBlockClient()}
 			</div>

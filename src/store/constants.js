@@ -1,6 +1,4 @@
 const types = {
-    ONREALTIME: 'ONREALTIME',
-    
     ONSNACK: 'ONSNACK',
     
     ONDIALOG: 'ONDIALOG',

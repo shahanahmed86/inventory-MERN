@@ -21,7 +21,8 @@ const product = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.productSaveSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.productSaveSuccess(resp.response));
 						return Observable.of(actions.productSaveFailure('Something went wrong'));
 					})
 					.catch((err) => {
@@ -48,7 +49,6 @@ const product = {
 					} else {
 						return Observable.of(
 							actions.getProductSuccess([]),
-							actions.onDialog(false),
 							actions.onSnackHandler({ snack: true, message: 'Product Data is empty' })
 						);
 					}
@@ -96,7 +96,7 @@ const product = {
 			})
 				.switchMap((resp) => {
 					if (resp.response)
-						return Observable.of(actions.deleteProductSuccess(resp.response), actions.getProduct());
+						return Observable.of(actions.deleteProductSuccess(resp.response));
 					return Observable.of(actions.deleteProductFailure('Something went Wrong'));
 				})
 				.catch(() => {

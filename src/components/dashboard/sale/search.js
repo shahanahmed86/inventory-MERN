@@ -57,7 +57,7 @@ class Search extends Component {
 		});
 	};
 	render() {
-		const { options, getSal, validateSearch, onCloseSearch } = this.props;
+		const { options, getSal, validateSearch } = this.props;
 		const { search } = this.state;
 		return (
 			<div className="simple-flex">
@@ -72,8 +72,7 @@ class Search extends Component {
 							name="search"
 							value={search}
 							onChange={this.handleChange}
-							onFocus={validateSearch}
-							onBlur={onCloseSearch}
+							onKeyDown={validateSearch}
 						/>
 					</div>
 					<div>{options && getSal && this.renderSearchBlock()}</div>

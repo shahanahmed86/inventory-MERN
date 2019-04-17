@@ -6,15 +6,12 @@ import vendor from './vendor';
 import client from './client';
 import purchase from './purchase';
 import sale from './sale';
-import real from './real';
 
 export default combineEpics(
     login.signUp,
     login.signIn,
     login.signOut,
     login.isLoggedIn,
-
-    real.onRealTimeData,
 
     product.productSave,
     product.getProduct,

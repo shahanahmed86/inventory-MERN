@@ -54,7 +54,7 @@ class Search extends Component {
 	};
 	render() {
 		const { search } = this.state;
-		const { isPopup, validateSearch, onCloseSearch } = this.props;
+		const { isPopup, validateSearch } = this.props;
 		return (
 			<div className="simple-flex">
 				<div>
@@ -68,8 +68,7 @@ class Search extends Component {
 							name="search"
 							value={search}
 							onChange={this.handleChange}
-							onFocus={validateSearch}
-							onBlur={onCloseSearch}
+							onKeyDown={validateSearch}
 						/>
 					</div>
 					<div>{isPopup && this.renderSearchBlock()}</div>
@@ -85,7 +84,6 @@ const mapStateToProps = (store) => {
 
 const mapDispatchToProps = (dispatch) => {
 	return {
-		onDialog: (data) => dispatch(actions.onDialog(data)),
 		deleteProduct: (id) => dispatch(actions.deleteProduct(id))
 	};
 };

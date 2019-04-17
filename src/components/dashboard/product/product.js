@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Paper, TextField, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
 
+import channel from '../../../config';
 import Search from './search';
 import actions from '../../../store/actions';
 
@@ -17,6 +18,12 @@ class Product extends Component {
 			isPopup: false,
 			isSearch: false
 		};
+	}
+	componentDidMount() {
+		this.props.getProduct();
+		channel.bind('inventory', 'products', () => {
+			this.props.getProduct();
+		});
 	}
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
@@ -58,18 +65,9 @@ class Product extends Component {
 			isPopup: false
 		});
 	};
-	onCloseSearch = () => {
-		setTimeout(() => {
-			this.setState({
-				isPopup: false
-			});
-		}, 1500);
-	};
-	validateSearch = () => {
-		this.props.getProduct();
-		this.setState({
-			isPopup: true
-		});
+	validateSearch = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ isPopup: true });
+		if (ev.keyCode === 27) return this.setState({ isPopup: false });
 	};
 	render() {
 		const { productName, manufacturer, description } = this.state;
@@ -134,7 +132,6 @@ class Product extends Component {
 							getRow={this.getRow}
 							isPopup={this.state.isPopup}
 							validateSearch={this.validateSearch}
-							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
 				</Paper>

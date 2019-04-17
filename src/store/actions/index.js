@@ -1,11 +1,6 @@
 import types from '../constants';
 
 const actions = {
-	onRealTimeData: () => {
-		return {
-			type: types.ONREALTIME
-		};
-	},
 	onSnackHandler: (payload) => {
 		return {
 			type: types.ONSNACK,

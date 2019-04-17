@@ -74,12 +74,6 @@ const reducer = (state = initialState, action) => {
 				isLoading: false
 			};
 		}
-		case types.PRODUCTSAVE: {
-			return {
-				...state,
-				isLoading: true
-			};
-		}
 		case types.PRODUCTSAVESUCCESS:
 		case types.PRODUCTSAVEFAILURE: {
 			return {
@@ -92,7 +86,6 @@ const reducer = (state = initialState, action) => {
 		case types.GETPRODUCTSUCCESS: {
 			return {
 				...state,
-				isDialogOpen: true,
 				products: action.payload
 			};
 		}
@@ -101,12 +94,6 @@ const reducer = (state = initialState, action) => {
 				...state,
 				isSnackOpen: true,
 				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPRODUCT: {
-			return {
-				...state,
-				isLoading: true
 			};
 		}
 		case types.UPDATEPRODUCTSUCCESS:
@@ -126,12 +113,6 @@ const reducer = (state = initialState, action) => {
 				snackMessage: action.payload
 			};
 		}
-		case types.VENDORSAVE: {
-			return {
-				...state,
-				isLoading: true
-			};
-		}
 		case types.VENDORSAVESUCCESS:
 		case types.VENDORSAVEFAILURE: {
 			return {
@@ -144,7 +125,6 @@ const reducer = (state = initialState, action) => {
 		case types.GETVENDORSUCCESS: {
 			return {
 				...state,
-				isDialogOpen: true,
 				vendors: action.payload
 			};
 		}
@@ -155,17 +135,10 @@ const reducer = (state = initialState, action) => {
 				snackMessage: action.payload
 			};
 		}
-		case types.UPDATEVENDOR: {
-			return {
-				...state,
-				isLoading: true
-			};
-		}
 		case types.UPDATEVENDORSUCCESS:
 		case types.UPDATEVENDORFAILURE: {
 			return {
 				...state,
-				isLoading: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};
@@ -176,12 +149,6 @@ const reducer = (state = initialState, action) => {
 				...state,
 				isSnackOpen: true,
 				snackMessage: action.payload
-			};
-		}
-		case types.CLIENTSAVE: {
-			return {
-				...state,
-				isLoading: true
 			};
 		}
 		case types.CLIENTSAVESUCCESS:
@@ -196,7 +163,6 @@ const reducer = (state = initialState, action) => {
 		case types.GETCLIENTSUCCESS: {
 			return {
 				...state,
-				isDialogOpen: true,
 				clients: action.payload
 			};
 		}
@@ -205,12 +171,6 @@ const reducer = (state = initialState, action) => {
 				...state,
 				isSnackOpen: true,
 				snackMessage: action.payload
-			};
-		}
-		case types.UPDATECLIENT: {
-			return {
-				...state,
-				isLoading: true
 			};
 		}
 		case types.UPDATECLIENTSUCCESS:
@@ -230,28 +190,18 @@ const reducer = (state = initialState, action) => {
 				snackMessage: action.payload
 			};
 		}
-		case types.PURCHASESAVE: {
-			return {
-				...state
-			};
-		}
 		case types.PURCHASESAVESUCCESS:
 		case types.PURCHASESAVEFAILURE: {
 			return {
 				...state,
+				isLoading: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
-			};
-		}
-		case types.GETPURCHASE: {
-			return {
-				...state
 			};
 		}
 		case types.GETPURCHASESUCCESS: {
 			return {
 				...state,
-				isDialogOpen: true,
 				purchases: action.payload
 			};
 		}

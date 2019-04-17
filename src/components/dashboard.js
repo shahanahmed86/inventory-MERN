@@ -8,7 +8,7 @@ import Vendor from './dashboard/vendor/vendor';
 import Client from './dashboard/client/client';
 import Purchase from './dashboard/purchase/purchase';
 import Sale from './dashboard/sale/sale';
-import actions from '../store/actions';
+// import actions from '../store/actions';
 
 const routes = [
 	{
@@ -42,7 +42,6 @@ class Dashboard extends Component {
 	componentDidMount() {
 		if (!this.props.store.profile.email) {
 			this.props.history.push('/');
-			this.props.onRealTimeData();
 		}
 	}
 	render() {
@@ -65,10 +64,10 @@ const mapStateToProps = (store) => {
 	return { store };
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		onRealTimeData: () => dispatch(actions.onRealTimeData())
-	};
-};
+// const mapDispatchToProps = (dispatch) => {
+// 	return {
+// 		getSale: () => dispatch(actions.getSale())
+// 	};
+// };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps, null)(Dashboard);

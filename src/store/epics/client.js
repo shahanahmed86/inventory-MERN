@@ -21,7 +21,8 @@ const client = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.clientSaveSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response));
 						return Observable.of(actions.clientSaveFailure('Something went wrong'));
 					})
 					.catch((err) => {
@@ -48,7 +49,6 @@ const client = {
 					} else {
 						return Observable.of(
 							actions.getClientSuccess([]),
-							actions.onDialog(false),
 							actions.onSnackHandler({ snack: true, message: 'Client Data is empty' })
 						);
 					}
@@ -74,7 +74,8 @@ const client = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.updateClientSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response));
 						return Observable.of(actions.updateClientFailure('Something went Wrong'));
 					})
 					.catch(() => {
@@ -96,7 +97,7 @@ const client = {
 			})
 				.switchMap((resp) => {
 					if (resp.response)
-						return Observable.of(actions.deleteClientSuccess(resp.response), actions.getClient());
+						return Observable.of(actions.deleteClientSuccess(resp.response));
 					return Observable.of(actions.deleteClientFailure('Something went Wrong'));
 				})
 				.catch(() => {

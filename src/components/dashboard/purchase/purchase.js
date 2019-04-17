@@ -16,6 +16,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
+import channel from '../../../config';
 import Search from './search';
 import PopupVendor from './popup-vendor';
 import PopupProduct from './../popup-product';
@@ -87,6 +88,20 @@ class Purchase extends Component {
 			options: false,
 			getPur: false
 		};
+	}
+	componentDidMount() {
+		this.props.getPurchase();
+		this.props.getVendor();
+		this.props.getProduct();
+		channel.bind('inventory', 'purchases', () => {
+			this.props.getPurchase();
+		});
+		channel.bind('inventory', 'vendors', () => {
+			this.props.getVendor();
+		});
+		channel.bind('inventory', 'products', () => {
+			this.props.getProduct();
+		});
 	}
 	onClearHandler = () => {
 		this.setState({
@@ -180,14 +195,13 @@ class Purchase extends Component {
 			options: !state.options
 		}));
 	};
-	validateSearch = () => {
-		this.props.getPurchase();
-		this.setState({ getPur: true });
+	validateSearch = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ getPur: true });
+		if (ev.keyCode === 27) return this.setState({ getPur: false });
 	};
 	getPurchaseFields = (id) => {
 		const purchases = this.props.store.purchases.find((val) => val._id === id);
 		const { _id, date, invoice, vendorId, products } = purchases;
-		this.props.onDialog(false);
 		this.setState({
 			_id,
 			date: date.slice(0, 10),
@@ -210,9 +224,9 @@ class Purchase extends Component {
 			options: false
 		});
 	};
-	validateVendor = () => {
-		this.props.getVendor();
-		this.setState({ vendorList: true });
+	validateVendor = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ vendorList: true });
+		if (ev.keyCode === 27) return this.setState({ vendorList: false });
 	};
 	getVendorFields = (vendorId, vendorName) => {
 		this.setState({
@@ -220,12 +234,11 @@ class Purchase extends Component {
 			vendorName,
 			vendorList: false
 		});
-		this.props.onDialog(false);
 	};
-	validateProduct = (ind) => {
-		this.props.getProduct();
+	validateProduct = (ev, ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].productList = true;
+		if (ev.keyCode === 13) inputProducts[ind].productList = true;
+		if (ev.keyCode === 27) inputProducts[ind].productList = false;
 		this.setState({ ind, inputProducts });
 	};
 	getProductFields = (id, name) => {
@@ -240,31 +253,77 @@ class Purchase extends Component {
 		inputProducts[ind].productName = name;
 		inputProducts[ind].productList = false;
 		this.setState({ inputProducts });
-		this.props.onDialog(false);
 	};
-	onCloseSearch = () => {
-		setTimeout(() => {
-			this.setState({
-				getPur: false
+	// starts working for this code
+	checkQty = (ind) => {
+		const inputProducts = [ ...this.state.inputProducts ];
+		if (inputProducts[ind].productId) {
+			const { purchases, sales } = this.props.store;
+			const errorFound = { match: false };
+			const stockIn = [];
+			purchases.forEach((val) => {
+				val.products.forEach((value) => {
+					if (value.productId._id === inputProducts[ind].productId) {
+						inputProducts[ind].sellingPrice = value.sellingPrice;
+						stockIn.push(value);
+					} else {
+						inputProducts[ind].sellingPrice = 0;
+					}
+				});
 			});
-		}, 1500);
-	};
-	onCloseVendorList = () => {
-		setTimeout(() => {
-			this.setState({
-				vendorList: false
+			const stockOut = [];
+			sales.forEach((val) => {
+				val.products.forEach((value) => {
+					if (value.productId._id === inputProducts[ind].productId) {
+						stockOut.push(value);
+					}
+				});
 			});
-		}, 1500);
-	};
-	onCloseProductList = (ind) => {
-		setTimeout(() => {
-			const inputProducts = [ ...this.state.inputProducts ];
-			if (inputProducts[ind]) {
-				inputProducts[ind].productList = false;
-				this.setState({ inputProducts });
+			if (errorFound.match) {
+				return (inputProducts[ind].err = 'Stock is not available');
+			} else {
+				inputProducts[ind].err = false;
 			}
-		}, 1500);
+			if (!this.state.editing) {
+				const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
+				if (qty < 0) {
+					return (inputProducts[ind].err = `will be negative by ${qty}`);
+				} else {
+					inputProducts[ind].err = false;
+				}
+			} else {
+				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
+					const qty =
+						this.isStockFound(stockIn, stockOut) +
+						+inputProducts[ind].oldQuantity -
+						+inputProducts[ind].quantity;
+					if (qty < 0) {
+						return (inputProducts[ind].err = `will be negative by ${qty}`);
+					} else {
+						inputProducts[ind].err = false;
+					}
+				} else {
+					const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
+					if (qty < 0) {
+						return (inputProducts[ind].err = `will be negative by ${qty}`);
+					} else {
+						inputProducts[ind].err = false;
+					}
+				}
+			}
+			this.setState({
+				inputProducts
+			});
+		} else {
+			return (inputProducts[ind].err = 'Please select the product first');
+		}
 	};
+	isStockFound = (stockIn, stockOut) => {
+		const sumStockIn = Object.values(stockIn).reduce((cum, cur) => cum + cur.quantity, 0);
+		const sumStockOut = Object.values(stockOut).reduce((cum, cur) => cum + cur.quantity, 0);
+		return sumStockIn - sumStockOut;
+	};
+	// end working for this code
 	render() {
 		const { date, invoice, vendorName, inputProducts, editing } = this.state;
 		const { classes } = this.props;
@@ -306,7 +365,6 @@ class Purchase extends Component {
 						validateVendor={this.validateVendor}
 						vendorList={this.state.vendorList}
 						getVendorFields={this.getVendorFields}
-						onCloseVendorList={this.onCloseVendorList}
 					/>
 					<div className="row">
 						<div className="col-xs-12">
@@ -339,7 +397,6 @@ class Purchase extends Component {
 													handleChangeTab={this.handleChangeTab}
 													validateProduct={this.validateProduct}
 													vendorList={this.state.vendorList}
-													onCloseProductList={this.onCloseProductList}
 												/>
 											</CustomTableCell>
 											<CustomTableCell>
@@ -442,7 +499,6 @@ class Purchase extends Component {
 							getPur={this.state.getPur}
 							validateSearch={this.validateSearch}
 							getPurchaseFields={this.getPurchaseFields}
-							onCloseSearch={this.onCloseSearch}
 						/>
 					)}
 				</Paper>
@@ -458,7 +514,6 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
-		onDialog: (data) => dispatch(actions.onDialog(data)),
 		getVendor: () => dispatch(actions.getVendor()),
 		getProduct: () => dispatch(actions.getProduct()),
 		purchaseSave: (data) => dispatch(actions.purchaseSave(data)),
