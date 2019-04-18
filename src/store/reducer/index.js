@@ -212,6 +212,14 @@ const reducer = (state = initialState, action) => {
 				snackMessage: action.payload
 			};
 		}
+		case types.DELETEPURCHASESUCCESS:
+		case types.DELETEPURCHASEFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
 		case types.SALESAVESUCCESS: {
 			return {
 				...state,

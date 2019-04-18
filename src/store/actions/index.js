@@ -332,6 +332,24 @@ const actions = {
 			payload
 		};
 	},
+	deletePurchase: (payload) => {
+		return {
+			type: types.DELETEPURCHASE,
+			payload
+		};
+	},
+	deletePurchaseSuccess: (payload) => {
+		return {
+			type: types.DELETEPURCHASESUCCESS,
+			payload
+		};
+	},
+	deletePurchaseFailure: (payload) => {
+		return {
+			type: types.DELETEPURCHASEFAILURE,
+			payload
+		};
+	},
 	saleSave: (payload) => {
 		return {
 			type: types.SALESAVE,

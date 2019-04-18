@@ -97,7 +97,7 @@ class Sale extends Component {
 		channel.bind('sales', () => {
 			this.props.getSale();
 		});
-		channel.bind('purhcases', () => {
+		channel.bind('purchases', () => {
 			this.props.getPurchase();
 		});
 		channel.bind('products', () => {
@@ -180,9 +180,10 @@ class Sale extends Component {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (name === 'quantity' || name === 'sellingPrice') {
 			inputProducts[ind][name] = value;
-			return this.calcValue(ind);
+			this.calcValue(ind);
+		} else {
+			inputProducts[ind][name] = value;
 		}
-		inputProducts[ind][name] = value;
 		this.setState({ inputProducts });
 	};
 	calcValue = (ind) => {
@@ -264,7 +265,6 @@ class Sale extends Component {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts[ind].productId) {
 			const { purchases, sales } = this.props.store;
-			const errorFound = { match: false };
 			const stockIn = [];
 			purchases.forEach((val) => {
 				val.products.forEach((value) => {
@@ -284,11 +284,6 @@ class Sale extends Component {
 					}
 				});
 			});
-			if (errorFound.match) {
-				return (inputProducts[ind].err = 'Stock is not available');
-			} else {
-				inputProducts[ind].err = false;
-			}
 			if (!this.state.editing) {
 				const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
 				if (qty < 0) {

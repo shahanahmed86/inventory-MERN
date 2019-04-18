@@ -91,18 +91,54 @@ class Purchase extends Component {
 	}
 	componentDidMount() {
 		this.props.getPurchase();
+		this.props.getSale();
 		this.props.getVendor();
 		this.props.getProduct();
-		channel.bind('inventory', 'purchases', () => {
+		channel.bind('sales', () => {
+			this.props.getSale();
+		});
+		channel.bind('purchases', () => {
 			this.props.getPurchase();
 		});
-		channel.bind('inventory', 'vendors', () => {
-			this.props.getVendor();
-		});
-		channel.bind('inventory', 'products', () => {
+		channel.bind('products', () => {
 			this.props.getProduct();
 		});
+		channel.bind('vendors', () => {
+			this.props.getVendor();
+		});
 	}
+	handleChange = (ev) => {
+		const { name, value } = ev.target;
+		this.setState({
+			[name]: value
+		});
+	};
+	handleChangeTab = (ev, ind) => {
+		const { name, value } = ev.target;
+		const inputProducts = [ ...this.state.inputProducts ];
+		if (name === 'quantity' || name === 'costPrice') {
+			inputProducts[ind][name] = value;
+			this.calcValue(ind);
+		} else {
+			inputProducts[ind][name] = value;
+		}
+		this.setState({ inputProducts });
+	};
+	calcValue = (ind) => {
+		const inputProducts = [ ...this.state.inputProducts ];
+		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
+		this.setState({ inputProducts });
+	};
+	onSaveHandler = () => {
+		const { date, invoice, vendorId, inputProducts, editing } = this.state;
+		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
+		// return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
+	};
+	onBrowseHandler = () => {
+		this.setState((state) => ({
+			options: !state.options
+		}));
+	};
 	onClearHandler = () => {
 		this.setState({
 			_id: '',
@@ -120,6 +156,7 @@ class Purchase extends Component {
 					sellingPrice: ''
 				}
 			],
+			options: false,
 			editing: false
 		});
 	};
@@ -143,57 +180,63 @@ class Purchase extends Component {
 		}
 		return this.props.onSnackHandler(true, 'Please fill previous row first');
 	};
+	checkStock = () => {
+		const { purchases, sales, products } = this.props.store;
+		const stockSum = {};
+		products.forEach((x) => (stockSum[x._id] = 0));
+		purchases.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] += y.quantity)));
+		sales.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] -= y.quantity)));
+		return stockSum;
+	};
 	onRemoveRow = (ind) => {
+		const inputProducts = [ ...this.state.inputProducts ];
+		const products = this.props.store.products;
+		if (this.state.editing) {
+			const stock = this.checkStock();
+			if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
+				const qty =
+					+stock[inputProducts[ind].productId] -
+					+inputProducts[ind].oldQuantity +
+					+inputProducts[ind].quantity;
+				if (qty < 0) {
+					inputProducts[ind].err = `will be negative by ${qty}`;
+				} else {
+					this.onDeleteRow(ind);
+				}
+			} else {
+				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
+				if (qty < 0) {
+					const name = products.find((x) => x._id === inputProducts[ind].oldProductId);
+					inputProducts[ind].err = `${name} will be negative by ${qty}`;
+				} else {
+					this.onDeleteRow(ind);
+				}
+			}
+		} else {
+			this.onDeleteRow(ind);
+		}
+		this.setState({ inputProducts });
+	};
+	onDeleteRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts.length > 1) {
 			inputProducts[ind].productList = false;
 			inputProducts.splice(ind, 1);
-			return this.setState({ inputProducts });
+		} else {
+			this.setState({
+				inputProducts: [
+					{
+						productId: '',
+						productName: '',
+						quantity: '0',
+						costPrice: '0',
+						value: '0',
+						sellingPrice: '0',
+						productList: false
+					}
+				]
+			});
 		}
-		return this.setState({
-			inputProducts: [
-				{
-					productId: '',
-					productName: '',
-					quantity: '0',
-					costPrice: '0',
-					value: '0',
-					sellingPrice: '0',
-					productList: false
-				}
-			]
-		});
-	};
-	handleChange = (ev) => {
-		const { name, value } = ev.target;
-		this.setState({
-			[name]: value
-		});
-	};
-	handleChangeTab = (ev, ind) => {
-		const { name, value } = ev.target;
-		const inputProducts = [ ...this.state.inputProducts ];
-		if (name === 'quantity' || name === 'costPrice') {
-			inputProducts[ind][name] = value;
-			return this.calcValue(ind);
-		}
-		inputProducts[ind][name] = value;
-		this.setState({ inputProducts });
-	};
-	calcValue = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
-		this.setState({ inputProducts });
-	};
-	onSaveHandler = () => {
-		const { date, invoice, vendorId, inputProducts, editing } = this.state;
-		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
-		// return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
-	};
-	onBrowseHandler = () => {
-		this.setState((state) => ({
-			options: !state.options
-		}));
 	};
 	validateSearch = (ev) => {
 		if (ev.keyCode === 13) return this.setState({ getPur: true });
@@ -212,8 +255,10 @@ class Purchase extends Component {
 				return {
 					_id: val._id,
 					productId: val.productId._id,
+					oldProductId: val.productId._id,
 					productName: val.productId.productName,
 					quantity: val.quantity,
+					oldQuantity: val.quantity,
 					costPrice: val.costPrice,
 					value: val.value,
 					sellingPrice: val.sellingPrice
@@ -254,76 +299,6 @@ class Purchase extends Component {
 		inputProducts[ind].productList = false;
 		this.setState({ inputProducts });
 	};
-	// starts working for this code
-	checkQty = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		if (inputProducts[ind].productId) {
-			const { purchases, sales } = this.props.store;
-			const errorFound = { match: false };
-			const stockIn = [];
-			purchases.forEach((val) => {
-				val.products.forEach((value) => {
-					if (value.productId._id === inputProducts[ind].productId) {
-						inputProducts[ind].sellingPrice = value.sellingPrice;
-						stockIn.push(value);
-					} else {
-						inputProducts[ind].sellingPrice = 0;
-					}
-				});
-			});
-			const stockOut = [];
-			sales.forEach((val) => {
-				val.products.forEach((value) => {
-					if (value.productId._id === inputProducts[ind].productId) {
-						stockOut.push(value);
-					}
-				});
-			});
-			if (errorFound.match) {
-				return (inputProducts[ind].err = 'Stock is not available');
-			} else {
-				inputProducts[ind].err = false;
-			}
-			if (!this.state.editing) {
-				const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
-				if (qty < 0) {
-					return (inputProducts[ind].err = `will be negative by ${qty}`);
-				} else {
-					inputProducts[ind].err = false;
-				}
-			} else {
-				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
-					const qty =
-						this.isStockFound(stockIn, stockOut) +
-						+inputProducts[ind].oldQuantity -
-						+inputProducts[ind].quantity;
-					if (qty < 0) {
-						return (inputProducts[ind].err = `will be negative by ${qty}`);
-					} else {
-						inputProducts[ind].err = false;
-					}
-				} else {
-					const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
-					if (qty < 0) {
-						return (inputProducts[ind].err = `will be negative by ${qty}`);
-					} else {
-						inputProducts[ind].err = false;
-					}
-				}
-			}
-			this.setState({
-				inputProducts
-			});
-		} else {
-			return (inputProducts[ind].err = 'Please select the product first');
-		}
-	};
-	isStockFound = (stockIn, stockOut) => {
-		const sumStockIn = Object.values(stockIn).reduce((cum, cur) => cum + cur.quantity, 0);
-		const sumStockOut = Object.values(stockOut).reduce((cum, cur) => cum + cur.quantity, 0);
-		return sumStockIn - sumStockOut;
-	};
-	// end working for this code
 	render() {
 		const { date, invoice, vendorName, inputProducts, editing } = this.state;
 		const { classes } = this.props;
@@ -405,6 +380,7 @@ class Purchase extends Component {
 													variant="standard"
 													name="quantity"
 													value={row.quantity}
+													// onBlur={() => this.checkQty(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -423,6 +399,8 @@ class Purchase extends Component {
 													type="text"
 													variant="standard"
 													name="value"
+													error={Boolean(row.err)}
+													helperText={row.err && row.err}
 													value={parseInt(row.value).toLocaleString()}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
@@ -499,6 +477,7 @@ class Purchase extends Component {
 							getPur={this.state.getPur}
 							validateSearch={this.validateSearch}
 							getPurchaseFields={this.getPurchaseFields}
+							onDelete={this.props.deletePurchase}
 						/>
 					)}
 				</Paper>
@@ -517,7 +496,9 @@ const mapDispatchToProps = (dispatch) => {
 		getVendor: () => dispatch(actions.getVendor()),
 		getProduct: () => dispatch(actions.getProduct()),
 		purchaseSave: (data) => dispatch(actions.purchaseSave(data)),
-		getPurchase: () => dispatch(actions.getPurchase())
+		getPurchase: () => dispatch(actions.getPurchase()),
+		deletePurchase: (id) => dispatch(actions.deletePurchase(id)),
+		getSale: () => dispatch(actions.getSale())
 	};
 };
 

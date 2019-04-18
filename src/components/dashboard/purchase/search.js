@@ -11,7 +11,7 @@ class Search extends Component {
 		};
 	}
 	renderSearchBlock = () => {
-		const { getPurchaseFields, store } = this.props;
+		const { getPurchaseFields, store, onDelete } = this.props;
 		const search = this.state.search.toLowerCase();
 		const purchases = store.purchases.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
 		return (
@@ -29,7 +29,12 @@ class Search extends Component {
 									>
 										<Icon>edit_icon</Icon>
 									</Fab>
-									<Fab size="small" color="secondary" aria-label="Delete">
+									<Fab
+										size="small"
+										color="secondary"
+										aria-label="Delete"
+										onClick={() => onDelete(val._id)}
+									>
 										<DeleteIcon />
 									</Fab>
 								</li>
