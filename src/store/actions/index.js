@@ -350,6 +350,24 @@ const actions = {
 			payload
 		};
 	},
+	updatePurchase: (payload) => {
+		return {
+			type: types.UPDATEPURCHASE,
+			payload
+		};
+	},
+	updatePurchaseSuccess: (payload) => {
+		return {
+			type: types.UPDATEPURCHASESUCCESS,
+			payload
+		};
+	},
+	updatePurchaseFailure: (payload) => {
+		return {
+			type: types.UPDATEPURCHASEFAILURE,
+			payload
+		};
+	},
 	saleSave: (payload) => {
 		return {
 			type: types.SALESAVE,

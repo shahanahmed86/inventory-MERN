@@ -30,7 +30,7 @@ export default combineEpics(
 
     purchase.purchaseSave,
     purchase.getPurchase,
-    // purchase.updatePurchase,
+    purchase.updatePurchase,
     purchase.deletePurchase,
 
     sale.saleSave,

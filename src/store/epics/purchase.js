@@ -68,13 +68,54 @@ const purchase = {
 					return Observable.of(actions.getPurchaseFailure('Network Error'));
 				});
 		}),
+	updatePurchase: (action$) =>
+		action$.ofType(types.UPDATEPURCHASE).switchMap(({ payload }) => {
+			const stock = checkStock();
+			const messages = [];
+			payload.products.forEach((value) => {
+				if (value.oldProductId) {
+					if (value.oldProductId === value.productId) {
+						const qty = +stock[value.oldProductId] - +value.oldQuantity + +value.quantity;
+						if (qty < 0) {
+							messages.push(
+								`if Block: ${value.productName} will be negative by ${qty}`
+							);
+						}
+					} else {
+						const qty = +stock[value.oldProductId] - +value.oldQuantity;
+						if (qty < 0) {
+							messages.push(
+								`else Block: ${value.productName} will be negative by ${qty}`
+							);
+						}
+					}
+				}
+			});
+			if (messages.length) return Observable.of(actions.updatePurchaseFailure('Please rectify errors'));
+			return Observable.ajax({
+				url: `http://localhost:8080/purchase/${payload._id}`,
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: payload,
+				async: true,
+				crossDomain: true,
+				withCredentials: true,
+				createXHR: () => new XMLHttpRequest(),
+				responseType: 'json'
+			}).switchMap((resp) => {
+				if (typeof resp.response === 'string')
+					return Observable.of(actions.onLoader(true), actions.updatePurchaseSuccess(resp.response));
+				return Observable.of(actions.updatePurchaseFailure('something wrong'));
+			});
+		}),
 	deletePurchase: (action$) =>
 		action$.ofType(types.DELETEPURCHASE).switchMap(({ payload }) => {
 			const stock = checkStock();
 			const { products } = store.getState().purchases.find((x) => x._id === payload);
 			const messages = [];
 			products.forEach((value) => {
-				if ((+stock[value.productId._id] - +value.quantity) < 0) {
+				const qty = +stock[value.productId._id] - +value.quantity;
+				if (qty < 0) {
 					messages.push(
 						`${value.productId.productName} will be negative by ${stock[value.productId._id] -
 							value.quantity}`

@@ -39,7 +39,6 @@ class PopupClient extends Component {
 		return (
 			<div>
 				<TextField
-					autoFocus
 					type="text"
 					margin="dense"
 					variant="standard"

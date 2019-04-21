@@ -33,7 +33,7 @@ const sale = {
 					);
 				}
 			});
-			if (messages.length) return Observable.of(actions.saleSaveFailure(messages.join(', ')));
+			if (messages.length) return Observable.of(actions.saleSaveFailure('Please resolve errors'));
 			if (isFilled.every((val) => Boolean(val)))
 				return Observable.ajax({
 					url: 'http://localhost:8080/sale',
@@ -110,7 +110,7 @@ const sale = {
 					}
 				}
 			});
-			if (messages.length) return Observable.of(actions.saleSaveFailure(messages.join(', ')));
+			if (messages.length) return Observable.of(actions.updateSaleFailure('Please resolve errors'));
 			if (isFilled.every((val) => Boolean(val)))
 				return Observable.ajax({
 					url: `http://localhost:8080/sale/${payload._id}`,
@@ -147,8 +147,7 @@ const sale = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			}).switchMap((resp) => {
-				if (typeof resp.response === 'string')
-					return Observable.of(actions.deleteSaleSuccess(resp.response));
+				if (typeof resp.response === 'string') return Observable.of(actions.deleteSaleSuccess(resp.response));
 				return Observable.of(actions.deleteSaleFailure('something wrong'));
 			});
 		})

@@ -261,67 +261,62 @@ class Sale extends Component {
 		inputProducts[ind].productList = false;
 		this.setState({ inputProducts });
 	};
+	checkStock = () => {
+		const { purchases, sales, products } = this.props.store;
+		const stockSum = {};
+		products.forEach((x) => (stockSum[x._id] = 0));
+		purchases.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] += y.quantity)));
+		sales.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] -= y.quantity)));
+		return stockSum;
+	};
 	checkQty = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
-		if (inputProducts[ind].productId) {
-			const { purchases, sales } = this.props.store;
-			const stockIn = [];
-			purchases.forEach((val) => {
-				val.products.forEach((value) => {
-					if (value.productId._id === inputProducts[ind].productId) {
-						inputProducts[ind].sellingPrice = value.sellingPrice;
-						stockIn.push(value);
-					} else {
-						inputProducts[ind].sellingPrice = 0;
-					}
-				});
-			});
-			const stockOut = [];
-			sales.forEach((val) => {
-				val.products.forEach((value) => {
-					if (value.productId._id === inputProducts[ind].productId) {
-						stockOut.push(value);
-					}
-				});
-			});
-			if (!this.state.editing) {
-				const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
-				if (qty < 0) {
-					return (inputProducts[ind].err = `will be negative by ${qty}`);
-				} else {
-					inputProducts[ind].err = false;
-				}
-			} else {
+		const products = this.props.store.products;
+		const stock = this.checkStock();
+		if (this.state.editing) {
+			if (inputProducts[ind].oldProductId) {
 				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
 					const qty =
-						this.isStockFound(stockIn, stockOut) +
+						+stock[inputProducts[ind].oldProductId] +
 						+inputProducts[ind].oldQuantity -
 						+inputProducts[ind].quantity;
 					if (qty < 0) {
-						return (inputProducts[ind].err = `will be negative by ${qty}`);
+						const { productName } = products.find((x) => x._id === inputProducts[ind].oldProductId);
+						inputProducts[ind].err = `${productName} will be negative by ${qty}`;
 					} else {
 						inputProducts[ind].err = false;
 					}
-				} else {
-					const qty = this.isStockFound(stockIn, stockOut) - +inputProducts[ind].quantity;
-					if (qty < 0) {
-						return (inputProducts[ind].err = `will be negative by ${qty}`);
-					} else {
-						inputProducts[ind].err = false;
-					}
+					this.setState({ inputProducts });
 				}
 			}
-			this.setState({
-				inputProducts
-			});
 		} else {
-			return (inputProducts[ind].err = 'Please select the product first');
+			const qty = stock[inputProducts[ind].productId] - +inputProducts[ind].quantity;
+			const { purchases } = this.props.store;
+			if (qty < 0) {
+				inputProducts[ind].err = `${inputProducts[ind].productName} will be negative by ${qty}`;
+				let isMatched = { match: false };
+				purchases.forEach((x) => {
+					x.products.forEach((y) => {
+						if (y.productId._id === inputProducts[ind].productId) {
+							isMatched.match = true;
+							isMatched.sellingPrice = y.sellingPrice;
+						}
+					});
+				});
+				if (isMatched.match) inputProducts[ind].sellingPrice = isMatched.sellingPrice;
+				else inputProducts[ind].sellingPrice = 0;
+			} else {
+				inputProducts[ind].err = false;
+				purchases.forEach((x) => {
+					x.products.forEach((y) => {
+						if (y.productId._id === inputProducts[ind].productId) {
+							inputProducts[ind].sellingPrice = y.sellingPrice;
+						}
+					});
+				});
+			}
+			this.setState({ inputProducts });
 		}
-	};
-	isStockFound = (stockIn, stockOut) => {
-		const sumStockIn = Object.values(stockIn).reduce((cum, cur) => cum + cur.quantity, 0);
-		const sumStockOut = Object.values(stockOut).reduce((cum, cur) => cum + cur.quantity, 0);
-		return sumStockIn - sumStockOut;
 	};
 	render() {
 		const { date, invoice, clientName, inputProducts, editing } = this.state;

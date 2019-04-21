@@ -130,9 +130,9 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 	};
 	onSaveHandler = () => {
-		const { date, invoice, vendorId, inputProducts, editing } = this.state;
+		const { _id, date, invoice, vendorId, inputProducts, editing } = this.state;
 		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
-		// return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
+		return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
@@ -188,40 +188,64 @@ class Purchase extends Component {
 		sales.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] -= y.quantity)));
 		return stockSum;
 	};
+	checkQty = (ind) => {
+		const inputProducts = [ ...this.state.inputProducts ];
+		const products = this.props.store.products;
+		if (this.state.editing) {
+			const stock = this.checkStock();
+			if (inputProducts[ind].oldProductId) {
+				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
+					const qty =
+						+stock[inputProducts[ind].oldProductId] -
+						+inputProducts[ind].oldQuantity +
+						+inputProducts[ind].quantity;
+					if (qty < 0) {
+						const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
+						inputProducts[ind].err = `${name} will be negative by ${qty}`;
+					} else {
+						inputProducts[ind].err = false;
+					}
+					this.setState({ inputProducts });
+				}
+			} else {
+				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
+				if (qty < 0) {
+					const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
+					inputProducts[ind].err = `${name} will be negative by ${qty}`;
+				} else {
+					inputProducts[ind].err = false;
+				}
+				this.setState({ inputProducts });
+			}
+		}
+	};
 	onRemoveRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		const products = this.props.store.products;
 		if (this.state.editing) {
 			const stock = this.checkStock();
-			if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
-				const qty =
-					+stock[inputProducts[ind].productId] -
-					+inputProducts[ind].oldQuantity +
-					+inputProducts[ind].quantity;
+			if (inputProducts[ind].oldProductId) {
+				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
 				if (qty < 0) {
-					inputProducts[ind].err = `will be negative by ${qty}`;
+					const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
+					inputProducts[ind].err = `${name} will be negative by ${qty}`;
+					this.setState({ inputProducts });
 				} else {
 					this.onDeleteRow(ind);
 				}
 			} else {
-				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
-				if (qty < 0) {
-					const name = products.find((x) => x._id === inputProducts[ind].oldProductId);
-					inputProducts[ind].err = `${name} will be negative by ${qty}`;
-				} else {
-					this.onDeleteRow(ind);
-				}
+				this.onDeleteRow(ind);
 			}
 		} else {
 			this.onDeleteRow(ind);
 		}
-		this.setState({ inputProducts });
 	};
 	onDeleteRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts.length > 1) {
 			inputProducts[ind].productList = false;
 			inputProducts.splice(ind, 1);
+			this.setState({ inputProducts });
 		} else {
 			this.setState({
 				inputProducts: [
@@ -380,7 +404,7 @@ class Purchase extends Component {
 													variant="standard"
 													name="quantity"
 													value={row.quantity}
-													// onBlur={() => this.checkQty(ind)}
+													onBlur={() => this.checkQty(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -497,6 +521,7 @@ const mapDispatchToProps = (dispatch) => {
 		getProduct: () => dispatch(actions.getProduct()),
 		purchaseSave: (data) => dispatch(actions.purchaseSave(data)),
 		getPurchase: () => dispatch(actions.getPurchase()),
+		updatePurchase: (data) => dispatch(actions.updatePurchase(data)),
 		deletePurchase: (id) => dispatch(actions.deletePurchase(id)),
 		getSale: () => dispatch(actions.getSale())
 	};
