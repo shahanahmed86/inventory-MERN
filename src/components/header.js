@@ -68,6 +68,11 @@ class Header extends Component {
                     children='Sale Book'
                     className='dropdown-item'
                   />
+                  <Link
+                    to='/dashboard/pbrecovery'
+                    children='Purchase Recovery Book'
+                    className='dropdown-item'
+                  />
                 </div>
               </li>
             </ul>

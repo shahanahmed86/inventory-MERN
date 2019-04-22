@@ -8,7 +8,7 @@ import Vendor from './dashboard/vendor/vendor';
 import Client from './dashboard/client/client';
 import Purchase from './dashboard/purchase/purchase';
 import Sale from './dashboard/sale/sale';
-// import actions from '../store/actions';
+import PBRecovery from './dashboard/pb-recovery/pb-recovery';
 
 const routes = [
 	{
@@ -35,6 +35,11 @@ const routes = [
 		path: '/dashboard/sale',
 		exact: true,
 		main: (props) => <Sale {...props} />
+	},
+	{
+		path: '/dashboard/pbrecovery',
+		exact: true,
+		main: (props) => <PBRecovery {...props} />
 	}
 ];
 
@@ -63,11 +68,5 @@ class Dashboard extends Component {
 const mapStateToProps = (store) => {
 	return { store };
 };
-
-// const mapDispatchToProps = (dispatch) => {
-// 	return {
-// 		getSale: () => dispatch(actions.getSale())
-// 	};
-// };
 
 export default connect(mapStateToProps, null)(Dashboard);

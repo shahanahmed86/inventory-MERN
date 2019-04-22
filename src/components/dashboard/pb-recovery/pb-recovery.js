@@ -19,7 +19,6 @@ import { connect } from 'react-redux';
 import channel from '../../../config';
 import Search from './search';
 import PopupVendor from '../popup-vendor';
-import PopupProduct from '../popup-product';
 import actions from '../../../store/actions';
 
 const CustomTableCell = withStyles((theme) => ({
@@ -62,7 +61,7 @@ const styles = (theme) => ({
 	}
 });
 
-class Purchase extends Component {
+class PBRecovery extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -91,17 +90,9 @@ class Purchase extends Component {
 	}
 	componentDidMount() {
 		this.props.getPurchase();
-		this.props.getSale();
 		this.props.getVendor();
-		this.props.getProduct();
-		channel.bind('sales', () => {
-			this.props.getSale();
-		});
 		channel.bind('purchases', () => {
 			this.props.getPurchase();
-		});
-		channel.bind('products', () => {
-			this.props.getProduct();
 		});
 		channel.bind('vendors', () => {
 			this.props.getVendor();
@@ -116,17 +107,7 @@ class Purchase extends Component {
 	handleChangeTab = (ev, ind) => {
 		const { name, value } = ev.target;
 		const inputProducts = [ ...this.state.inputProducts ];
-		if (name === 'quantity' || name === 'costPrice') {
-			inputProducts[ind][name] = value;
-			this.calcValue(ind);
-		} else {
-			inputProducts[ind][name] = value;
-		}
-		this.setState({ inputProducts });
-	};
-	calcValue = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
+		inputProducts[ind][name] = value;
 		this.setState({ inputProducts });
 	};
 	onSaveHandler = () => {
@@ -180,67 +161,7 @@ class Purchase extends Component {
 		}
 		return this.props.onSnackHandler(true, 'Please fill previous row first');
 	};
-	checkStock = () => {
-		const { purchases, sales, products } = this.props.store;
-		const stockSum = {};
-		products.forEach((x) => (stockSum[x._id] = 0));
-		purchases.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] += y.quantity)));
-		sales.forEach((x) => x.products.forEach((y) => (stockSum[y.productId._id] -= y.quantity)));
-		return stockSum;
-	};
-	checkQty = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		const products = this.props.store.products;
-		if (this.state.editing) {
-			const stock = this.checkStock();
-			if (inputProducts[ind].oldProductId) {
-				if (inputProducts[ind].oldProductId === inputProducts[ind].productId) {
-					const qty =
-						+stock[inputProducts[ind].oldProductId] -
-						+inputProducts[ind].oldQuantity +
-						+inputProducts[ind].quantity;
-					if (qty < 0) {
-						const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
-						inputProducts[ind].err = `${name} will be negative by ${qty}`;
-					} else {
-						inputProducts[ind].err = false;
-					}
-					this.setState({ inputProducts });
-				}
-			} else {
-				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
-				if (qty < 0) {
-					const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
-					inputProducts[ind].err = `${name} will be negative by ${qty}`;
-				} else {
-					inputProducts[ind].err = false;
-				}
-				this.setState({ inputProducts });
-			}
-		}
-	};
 	onRemoveRow = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		const products = this.props.store.products;
-		if (this.state.editing) {
-			const stock = this.checkStock();
-			if (inputProducts[ind].oldProductId) {
-				const qty = +stock[inputProducts[ind].oldProductId] - +inputProducts[ind].oldQuantity;
-				if (qty < 0) {
-					const name = products.find((x) => x._id === inputProducts[ind].oldProductId).productName;
-					inputProducts[ind].err = `${name} will be negative by ${qty}`;
-					this.setState({ inputProducts });
-				} else {
-					this.onDeleteRow(ind);
-				}
-			} else {
-				this.onDeleteRow(ind);
-			}
-		} else {
-			this.onDeleteRow(ind);
-		}
-	};
-	onDeleteRow = (ind) => {
 		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts.length > 1) {
 			inputProducts[ind].productList = false;
@@ -266,33 +187,33 @@ class Purchase extends Component {
 		if (ev.keyCode === 13) return this.setState({ getPur: true });
 		if (ev.keyCode === 27) return this.setState({ getPur: false });
 	};
-	getPurchaseFields = (id) => {
-		const purchases = this.props.store.purchases.find((val) => val._id === id);
-		const { _id, date, invoice, vendorId, products } = purchases;
-		this.setState({
-			_id,
-			date: date.slice(0, 10),
-			invoice,
-			vendorId: vendorId._id,
-			vendorName: vendorId.vendorName,
-			inputProducts: products.map((val) => {
-				return {
-					_id: val._id,
-					productId: val.productId._id,
-					oldProductId: val.productId._id,
-					productName: val.productId.productName,
-					quantity: val.quantity,
-					oldQuantity: val.quantity,
-					costPrice: val.costPrice,
-					value: val.value,
-					sellingPrice: val.sellingPrice
-				};
-			}),
-			editing: true,
-			getPur: false,
-			options: false
-		});
-	};
+	// getPurchaseFields = (id) => {
+	// 	const purchases = this.props.store.purchases.find((val) => val._id === id);
+	// 	const { _id, date, invoice, vendorId, products } = purchases;
+	// 	this.setState({
+	// 		_id,
+	// 		date: date.slice(0, 10),
+	// 		invoice,
+	// 		vendorId: vendorId._id,
+	// 		vendorName: vendorId.vendorName,
+	// 		inputProducts: products.map((val) => {
+	// 			return {
+	// 				_id: val._id,
+	// 				productId: val.productId._id,
+	// 				oldProductId: val.productId._id,
+	// 				productName: val.productId.productName,
+	// 				quantity: val.quantity,
+	// 				oldQuantity: val.quantity,
+	// 				costPrice: val.costPrice,
+	// 				value: val.value,
+	// 				sellingPrice: val.sellingPrice
+	// 			};
+	// 		}),
+	// 		editing: true,
+	// 		getPur: false,
+	// 		options: false
+	// 	});
+	// };
 	validateVendor = (ev) => {
 		if (ev.keyCode === 13) return this.setState({ vendorList: true });
 		if (ev.keyCode === 27) return this.setState({ vendorList: false });
@@ -303,25 +224,6 @@ class Purchase extends Component {
 			vendorName,
 			vendorList: false
 		});
-	};
-	validateProduct = (ev, ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		if (ev.keyCode === 13) inputProducts[ind].productList = true;
-		if (ev.keyCode === 27) inputProducts[ind].productList = false;
-		this.setState({ ind, inputProducts });
-	};
-	getProductFields = (id, name) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		const ind = this.state.ind;
-		inputProducts.forEach((val, i) => {
-			if (i !== ind) {
-				if (val.productName === name) return this.props.onSnackHandler(true, "can't enter same product");
-			}
-		});
-		inputProducts[ind].productId = id;
-		inputProducts[ind].productName = name;
-		inputProducts[ind].productList = false;
-		this.setState({ inputProducts });
 	};
 	render() {
 		const { date, invoice, vendorName, inputProducts, editing } = this.state;
@@ -387,24 +289,13 @@ class Purchase extends Component {
 								<TableBody>
 									{inputProducts.map((row, ind) => (
 										<TableRow className={classes.row} key={ind}>
-											<CustomTableCell>
-												<PopupProduct
-													getProductFields={this.getProductFields}
-													productName={row.productName}
-													ind={ind}
-													inputProducts={inputProducts}
-													handleChangeTab={this.handleChangeTab}
-													validateProduct={this.validateProduct}
-													vendorList={this.state.vendorList}
-												/>
-											</CustomTableCell>
+											<CustomTableCell>Shahan</CustomTableCell>
 											<CustomTableCell>
 												<TextField
 													type="text"
 													variant="standard"
 													name="quantity"
 													value={row.quantity}
-													onBlur={() => this.checkQty(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -419,13 +310,10 @@ class Purchase extends Component {
 											</CustomTableCell>
 											<CustomTableCell>
 												<TextField
-													disabled={true}
 													type="text"
 													variant="standard"
 													name="value"
-													error={Boolean(row.err)}
-													helperText={row.err && row.err}
-													value={parseInt(row.value).toLocaleString()}
+													value={row.value}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -518,13 +406,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
 		getVendor: () => dispatch(actions.getVendor()),
-		getProduct: () => dispatch(actions.getProduct()),
-		purchaseSave: (data) => dispatch(actions.purchaseSave(data)),
-		getPurchase: () => dispatch(actions.getPurchase()),
-		updatePurchase: (data) => dispatch(actions.updatePurchase(data)),
-		deletePurchase: (id) => dispatch(actions.deletePurchase(id)),
-		getSale: () => dispatch(actions.getSale())
+		getPurchase: () => dispatch(actions.getPurchase())
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Purchase));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(PBRecovery));
