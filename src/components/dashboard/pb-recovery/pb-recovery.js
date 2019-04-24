@@ -10,16 +10,19 @@ import {
 	TableBody,
 	TableRow,
 	TableFooter,
-	TableCell
+	TableCell,
+	FormControl,
+	Select
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
 import channel from '../../../config';
-import Search from './search';
+// import Search from './search';
 import PopupVendor from '../popup-vendor';
 import actions from '../../../store/actions';
+import PopupInvoices from './popup-invoices';
 
 const CustomTableCell = withStyles((theme) => ({
 	head: {
@@ -58,6 +61,9 @@ const styles = (theme) => ({
 	},
 	formControl: {
 		minWidth: 200
+	},
+	selectControl: {
+		minWidth: 100
 	}
 });
 
@@ -65,27 +71,26 @@ class PBRecovery extends Component {
 	constructor() {
 		super();
 		this.state = {
+			editing: false,
 			_id: '',
 			date: '',
-			invoice: '',
+			refNo: '',
 			vendorId: '',
 			vendorName: '',
-			inputProducts: [
+			vendorList: false,
+			details: [
 				{
-					productId: '',
-					productName: '',
-					quantity: '0',
-					costPrice: '0',
-					value: '0',
-					sellingPrice: '0',
-					productList: false
+					invoice: '',
+					balance: '0',
+					pay: '0',
+					head: 'Cash',
+					description: '',
+					detailList: false
 				}
 			],
-			editing: false,
-			vendorList: false,
 			search: '',
 			options: false,
-			getPur: false
+			getEntry: false
 		};
 	}
 	componentDidMount() {
@@ -106,14 +111,14 @@ class PBRecovery extends Component {
 	};
 	handleChangeTab = (ev, ind) => {
 		const { name, value } = ev.target;
-		const inputProducts = [ ...this.state.inputProducts ];
-		inputProducts[ind][name] = value;
-		this.setState({ inputProducts });
+		const details = [ ...this.state.details ];
+		details[ind][name] = value;
+		this.setState({ details });
 	};
 	onSaveHandler = () => {
-		const { _id, date, invoice, vendorId, inputProducts, editing } = this.state;
-		if (!editing) return this.props.purchaseSave({ date, invoice, vendorId, products: inputProducts });
-		return this.props.updatePurchase({ _id, date, invoice, vendorId, products: inputProducts });
+		const { _id, date, refNo, vendorId, details, editing } = this.state;
+		if (!editing) return this.props.purchaseSave({ date, refNo, vendorId, details });
+		return this.props.updatePurchase({ _id, date, refNo, vendorId, details });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
@@ -122,98 +127,72 @@ class PBRecovery extends Component {
 	};
 	onClearHandler = () => {
 		this.setState({
+			editing: false,
 			_id: '',
 			date: '',
-			invoice: '',
+			refNo: '',
 			vendorId: '',
 			vendorName: '',
-			inputProducts: [
+			vendorList: false,
+			details: [
 				{
-					productId: '',
-					productName: '',
-					quantity: '0',
-					costPrice: '0',
-					value: '0',
-					sellingPrice: ''
+					invoice: '',
+					balance: '0',
+					pay: '0',
+					head: 'Cash',
+					description: '',
+					detailList: false
 				}
 			],
+			search: '',
 			options: false,
-			editing: false
+			getEntry: false
 		});
 	};
 	onAddRow = () => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const details = [ ...this.state.details ];
 		const isFilled = [];
-		inputProducts.forEach((x) => {
+		details.forEach((x) => {
 			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
 		});
 		if (isFilled.every((val) => Boolean(val))) {
-			inputProducts.push({
-				productId: '',
-				productName: '',
-				quantity: '0',
-				costPrice: '0',
-				value: '0',
-				sellingPrice: '0',
-				productList: false
+			details.push({
+				invoice: '',
+				balance: '0',
+				pay: '0',
+				head: 'Cash',
+				description: '',
+				detailList: false
 			});
-			return this.setState({ inputProducts });
+			return this.setState({ details });
 		}
 		return this.props.onSnackHandler(true, 'Please fill previous row first');
 	};
 	onRemoveRow = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
-		if (inputProducts.length > 1) {
-			inputProducts[ind].productList = false;
-			inputProducts.splice(ind, 1);
-			this.setState({ inputProducts });
+		const details = [ ...this.state.details ];
+		if (details.length > 1) {
+			details[ind].detailList = false;
+			details.splice(ind, 1);
+			this.setState({ details });
 		} else {
 			this.setState({
-				inputProducts: [
+				details: [
 					{
-						productId: '',
-						productName: '',
-						quantity: '0',
-						costPrice: '0',
-						value: '0',
-						sellingPrice: '0',
-						productList: false
+						invoice: '',
+						balance: '0',
+						pay: '0',
+						head: 'Cash',
+						description: '',
+						detailList: false
 					}
 				]
 			});
 		}
 	};
 	validateSearch = (ev) => {
-		if (ev.keyCode === 13) return this.setState({ getPur: true });
-		if (ev.keyCode === 27) return this.setState({ getPur: false });
+		if (ev.keyCode === 13) return this.setState({ getEntry: true });
+		if (ev.keyCode === 27) return this.setState({ getEntry: false });
 	};
-	// getPurchaseFields = (id) => {
-	// 	const purchases = this.props.store.purchases.find((val) => val._id === id);
-	// 	const { _id, date, invoice, vendorId, products } = purchases;
-	// 	this.setState({
-	// 		_id,
-	// 		date: date.slice(0, 10),
-	// 		invoice,
-	// 		vendorId: vendorId._id,
-	// 		vendorName: vendorId.vendorName,
-	// 		inputProducts: products.map((val) => {
-	// 			return {
-	// 				_id: val._id,
-	// 				productId: val.productId._id,
-	// 				oldProductId: val.productId._id,
-	// 				productName: val.productId.productName,
-	// 				quantity: val.quantity,
-	// 				oldQuantity: val.quantity,
-	// 				costPrice: val.costPrice,
-	// 				value: val.value,
-	// 				sellingPrice: val.sellingPrice
-	// 			};
-	// 		}),
-	// 		editing: true,
-	// 		getPur: false,
-	// 		options: false
-	// 	});
-	// };
 	validateVendor = (ev) => {
 		if (ev.keyCode === 13) return this.setState({ vendorList: true });
 		if (ev.keyCode === 27) return this.setState({ vendorList: false });
@@ -225,14 +204,45 @@ class PBRecovery extends Component {
 			vendorList: false
 		});
 	};
+	validateInvoice = (ev, ind) => {
+		const details = [ ...this.state.details ];
+		if (ev.keyCode === 13) details[ind].detailList = true;
+		if (ev.keyCode === 27) details[ind].detailList = false;
+		this.setState({ ind, details });
+	};
+	getInvoiceField = (value) => {
+		const details = [ ...this.state.details ];
+		const ind = this.state.ind;
+		const count = { cash: 0, notCash: 0 };
+		details[ind].invoice = value.invoice;
+		details.forEach((val) => {
+			if (val.invoice === value.invoice) {
+				if (val.head === 'Cash') {
+					count.cash++;
+				} else if (val.head === 'Not Cash') {
+					count.notCash++;
+				} else {
+				}
+			}
+		});
+		if (count.cash > 1) {
+			return this.props.onSnackHandler(true, "can't enter same product");
+		} else if (count.notCash > 1) {
+			return this.props.onSnackHandler(true, "can't enter same product");
+		} else {
+			details[ind].balance = value.products.reduce((acc, cur) => acc + +cur.value, 0);
+			details[ind].detailList = false;
+		}
+		this.setState({ details });
+	};
 	render() {
-		const { date, invoice, vendorName, inputProducts, editing } = this.state;
+		const { date, refNo, vendorName, details, editing } = this.state;
 		const { classes } = this.props;
 		return (
 			<div>
 				<Paper elevation={24} className="pb-form">
 					<Typography
-						children="Purchase Form"
+						children="Payment Form"
 						align="center"
 						color="secondary"
 						gutterBottom={true}
@@ -251,12 +261,13 @@ class PBRecovery extends Component {
 					/>
 					<br />
 					<TextField
+						disabled={true}
 						type="text"
 						margin="dense"
-						label="Invoice"
+						label="Ref #"
 						variant="standard"
-						name="invoice"
-						value={invoice}
+						name="refNo"
+						value={refNo}
 						onChange={this.handleChange}
 					/>
 					<br />
@@ -272,11 +283,11 @@ class PBRecovery extends Component {
 							<Table className={classes.table}>
 								<TableHead>
 									<TableRow>
-										<CustomTableCell>Product</CustomTableCell>
-										<CustomTableCell>Quantity</CustomTableCell>
-										<CustomTableCell>Cost</CustomTableCell>
-										<CustomTableCell>Value</CustomTableCell>
-										<CustomTableCell>Selling</CustomTableCell>
+										<CustomTableCell>Invoice</CustomTableCell>
+										<CustomTableCell>Balance</CustomTableCell>
+										<CustomTableCell>Amount</CustomTableCell>
+										<CustomTableCell>Paid</CustomTableCell>
+										<CustomTableCell>Description</CustomTableCell>
 										<CustomTableCell
 											style={{
 												padding: 3
@@ -287,15 +298,27 @@ class PBRecovery extends Component {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{inputProducts.map((row, ind) => (
+									{details.map((row, ind) => (
 										<TableRow className={classes.row} key={ind}>
-											<CustomTableCell>Shahan</CustomTableCell>
+											<CustomTableCell>
+												<PopupInvoices
+													invoice={row.invoice}
+													vendorId={this.state.vendorId}
+													ind={ind}
+													detail={row}
+													vendorList={this.state.vendorList}
+													handleChangeTab={(ev) => this.handleChangeTab(ev, ind)}
+													validateInvoice={(ev) => this.validateInvoice(ev, ind)}
+													getInvoiceField={this.getInvoiceField}
+												/>
+											</CustomTableCell>
 											<CustomTableCell>
 												<TextField
+													disabled={true}
 													type="text"
 													variant="standard"
-													name="quantity"
-													value={row.quantity}
+													name="balance"
+													value={row.balance}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -303,26 +326,34 @@ class PBRecovery extends Component {
 												<TextField
 													type="text"
 													variant="standard"
-													name="costPrice"
-													value={row.costPrice}
+													name="pay"
+													value={row.pay}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
+											</CustomTableCell>
+											<CustomTableCell>
+												<FormControl>
+													<Select
+														native
+														autoWidth
+														displayEmpty
+														variant="standard"
+														name="head"
+														value={row.head}
+														onChange={(ev) => this.handleChangeTab(ev, ind)}
+														className={classes.selectControl}
+													>
+														<option value="Cash">Cash</option>
+														<option value="Not Cash">Not Cash</option>
+													</Select>
+												</FormControl>
 											</CustomTableCell>
 											<CustomTableCell>
 												<TextField
 													type="text"
 													variant="standard"
-													name="value"
-													value={row.value}
-													onChange={(ev) => this.handleChangeTab(ev, ind)}
-												/>
-											</CustomTableCell>
-											<CustomTableCell>
-												<TextField
-													type="text"
-													variant="standard"
-													name="sellingPrice"
-													value={row.sellingPrice}
+													name="description"
+													value={row.description}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -348,16 +379,16 @@ class PBRecovery extends Component {
 									<TableRow className={classes.row}>
 										<CustomTableCell>Total</CustomTableCell>
 										<CustomTableCell>
-											{inputProducts
-												.reduce((sum, val) => parseInt(sum) + parseInt(val.quantity), 0)
+											{details
+												.reduce((sum, val) => parseInt(sum) + parseInt(val.balance), 0)
+												.toLocaleString()}
+										</CustomTableCell>
+										<CustomTableCell>
+											{details
+												.reduce((sum, val) => parseInt(sum) + parseInt(val.pay), 0)
 												.toLocaleString()}
 										</CustomTableCell>
 										<CustomTableCell />
-										<CustomTableCell>
-											{inputProducts
-												.reduce((sum, val) => parseInt(sum) + parseInt(val.value), 0)
-												.toLocaleString()}
-										</CustomTableCell>
 										<CustomTableCell />
 									</TableRow>
 								</TableFooter>
@@ -383,7 +414,7 @@ class PBRecovery extends Component {
 							</button>
 						</div>
 					</div>
-					{this.state.options && (
+					{/* {this.state.options && (
 						<Search
 							options={this.state.options}
 							getPur={this.state.getPur}
@@ -391,7 +422,7 @@ class PBRecovery extends Component {
 							getPurchaseFields={this.getPurchaseFields}
 							onDelete={this.props.deletePurchase}
 						/>
-					)}
+					)} */}
 				</Paper>
 			</div>
 		);
