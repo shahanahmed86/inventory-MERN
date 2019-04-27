@@ -90,10 +90,6 @@ class Purchase extends Component {
 		};
 	}
 	componentDidMount() {
-		this.props.getPurchase();
-		this.props.getSale();
-		this.props.getVendor();
-		this.props.getProduct();
 		channel.bind('sales', () => {
 			this.props.getSale();
 		});

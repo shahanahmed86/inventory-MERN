@@ -8,7 +8,8 @@ import Vendor from './dashboard/vendor/vendor';
 import Client from './dashboard/client/client';
 import Purchase from './dashboard/purchase/purchase';
 import Sale from './dashboard/sale/sale';
-import PBRecovery from './dashboard/pb-recovery/pb-recovery';
+import Payment from './dashboard/payment/payment';
+import actions from '../store/actions';
 
 const routes = [
 	{
@@ -37,17 +38,21 @@ const routes = [
 		main: (props) => <Sale {...props} />
 	},
 	{
-		path: '/dashboard/pbrecovery',
+		path: '/dashboard/payment',
 		exact: true,
-		main: (props) => <PBRecovery {...props} />
+		main: (props) => <Payment {...props} />
 	}
 ];
 
 class Dashboard extends Component {
 	componentDidMount() {
-		if (!this.props.store.profile.email) {
-			this.props.history.push('/');
-		}
+		if (!this.props.store.profile.email) return this.props.history.push('/');
+		this.props.getClient();
+		this.props.getPayment();
+		this.props.getProduct();
+		this.props.getPurchase();
+		this.props.getSale();
+		this.props.getVendor();
 	}
 	render() {
 		return (
@@ -69,4 +74,15 @@ const mapStateToProps = (store) => {
 	return { store };
 };
 
-export default connect(mapStateToProps, null)(Dashboard);
+const mapDispatchToProps = (dispatch) => {
+	return {
+		getClient: () => dispatch(actions.getClient()),
+		getPayment: () => dispatch(actions.getPayment()),
+		getProduct: () => dispatch(actions.getProduct()),
+		getPurchase: () => dispatch(actions.getPurchase()),
+		getSale: () => dispatch(actions.getSale()),
+		getVendor: () => dispatch(actions.getVendor())
+	};
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

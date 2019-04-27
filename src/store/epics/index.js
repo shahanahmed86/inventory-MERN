@@ -6,6 +6,7 @@ import vendor from './vendor';
 import client from './client';
 import purchase from './purchase';
 import sale from './sale';
+import payment from './payment';
 
 export default combineEpics(
     login.signUp,
@@ -37,4 +38,9 @@ export default combineEpics(
     sale.getSale,
     sale.updateSale,
     sale.deleteSale,
+
+    payment.paymentSave,
+    payment.getPayment,
+    payment.updatePayment,
+    payment.deletePayment,
 );

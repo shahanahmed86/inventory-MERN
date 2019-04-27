@@ -69,8 +69,8 @@ class Header extends Component {
                     className='dropdown-item'
                   />
                   <Link
-                    to='/dashboard/pbrecovery'
-                    children='Purchase Recovery Book'
+                    to='/dashboard/payment'
+                    children='Payment Book'
                     className='dropdown-item'
                   />
                 </div>

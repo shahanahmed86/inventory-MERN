@@ -20,7 +20,6 @@ class Product extends Component {
 		};
 	}
 	componentDidMount() {
-		this.props.getProduct();
 		channel.bind('inventory', 'products', () => {
 			this.props.getProduct();
 		});

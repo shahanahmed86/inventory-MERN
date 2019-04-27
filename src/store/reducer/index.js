@@ -7,6 +7,7 @@ const initialState = {
 	clients: [],
 	purchases: [],
 	sales: [],
+	payments: [],
 
 	isLoading: false,
 
@@ -280,6 +281,57 @@ const reducer = (state = initialState, action) => {
 		}
 		case types.DELETESALESUCCESS:
 		case types.DELETESALEFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.PAYMENTSAVESUCCESS: {
+			return {
+				...state,
+				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.PAYMENTSAVEFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.GETPAYMENTSUCCESS: {
+			return {
+				...state,
+				payments: action.payload
+			};
+		}
+		case types.GETPAYMENTFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.UPDATEPAYMENTSUCCESS: {
+			return {
+				...state,
+				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.UPDATEPAYMENTFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.DELETEPAYMENTSUCCESS:
+		case types.DELETEPAYMENTFAILURE: {
 			return {
 				...state,
 				isSnackOpen: true,

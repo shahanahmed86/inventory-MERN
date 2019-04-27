@@ -77,16 +77,12 @@ const purchase = {
 					if (value.oldProductId === value.productId) {
 						const qty = +stock[value.oldProductId] - +value.oldQuantity + +value.quantity;
 						if (qty < 0) {
-							messages.push(
-								`if Block: ${value.productName} will be negative by ${qty}`
-							);
+							messages.push(`if Block: ${value.productName} will be negative by ${qty}`);
 						}
 					} else {
 						const qty = +stock[value.oldProductId] - +value.oldQuantity;
 						if (qty < 0) {
-							messages.push(
-								`else Block: ${value.productName} will be negative by ${qty}`
-							);
+							messages.push(`else Block: ${value.productName} will be negative by ${qty}`);
 						}
 					}
 				}
@@ -133,8 +129,9 @@ const purchase = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			}).switchMap((resp) => {
-				if (typeof resp.response === 'string') return Observable.of(actions.deleteSaleSuccess(resp.response));
-				return Observable.of(actions.deleteSaleFailure('something wrong'));
+				if (typeof resp.response === 'string')
+					return Observable.of(actions.deletePurchaseSuccess(resp.response));
+				return Observable.of(actions.deletePurchaseFailure('something wrong'));
 			});
 		})
 };

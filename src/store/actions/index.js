@@ -438,6 +438,77 @@ const actions = {
 			type: types.DELETESALEFAILURE,
 			payload
 		};
+	},
+	paymentSave: (payload) => {
+		return {
+			type: types.PAYMENTSAVE,
+			payload
+		};
+	},
+	paymentSaveSuccess: (payload) => {
+		return {
+			type: types.PAYMENTSAVESUCCESS,
+			payload
+		};
+	},
+	paymentSaveFailure: (payload) => {
+		return {
+			type: types.PAYMENTSAVEFAILURE,
+			payload
+		};
+	},
+	getPayment: () => {
+		return {
+			type: types.GETPAYMENT
+		};
+	},
+	getPaymentSuccess: (payload) => {
+		return {
+			type: types.GETPAYMENTSUCCESS,
+			payload
+		};
+	},
+	getPaymentFailure: (payload) => {
+		return {
+			type: types.GETPAYMENTFAILURE,
+			payload
+		};
+	},
+	updatePayment: (payload) => {
+		return {
+			type: types.UPDATEPAYMENT,
+			payload
+		};
+	},
+	updatePaymentSuccess: (payload) => {
+		return {
+			type: types.UPDATEPAYMENTSUCCESS,
+			payload
+		};
+	},
+	updatePaymentFailure: (payload) => {
+		return {
+			type: types.UPDATEPAYMENTFAILURE,
+			payload
+		};
+	},
+	deletePayment: (payload) => {
+		return {
+			type: types.DELETEPAYMENT,
+			payload
+		};
+	},
+	deletePaymentSuccess: (payload) => {
+		return {
+			type: types.DELETEPAYMENTSUCCESS,
+			payload
+		};
+	},
+	deletePaymentFailure: (payload) => {
+		return {
+			type: types.DELETEPAYMENTFAILURE,
+			payload
+		};
 	}
 };
 

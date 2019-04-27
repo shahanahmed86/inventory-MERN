@@ -22,7 +22,6 @@ class Client extends Component {
 		};
 	}
 	componentDidMount() {
-		this.props.getClient();
 		channel.bind('inventory', 'clients', () => {
 			this.props.getClient();
 		});

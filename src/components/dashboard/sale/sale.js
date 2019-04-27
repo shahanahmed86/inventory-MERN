@@ -90,10 +90,6 @@ class Sale extends Component {
 		};
 	}
 	componentDidMount() {
-		this.props.getClient();
-		this.props.getProduct();
-		this.props.getSale();
-		this.props.getPurchase();
 		channel.bind('sales', () => {
 			this.props.getSale();
 		});
@@ -509,7 +505,6 @@ const mapDispatchToProps = (dispatch) => {
 		saleSave: (data) => dispatch(actions.saleSave(data)),
 		updateSale: (data) => dispatch(actions.updateSale(data)),
 		getSale: () => dispatch(actions.getSale()),
-		getSaleSuccess: () => dispatch(actions.getSaleSuccess()),
 		deleteSale: (id) => dispatch(actions.deleteSale(id)),
 		getPurchase: () => dispatch(actions.getPurchase())
 	};

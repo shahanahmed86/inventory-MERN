@@ -22,7 +22,6 @@ class Vendor extends Component {
 		};
 	}
 	componentDidMount() {
-		this.props.getVendor();
 		channel.bind('inventory', 'vendors', () => {
 			this.props.getVendor();
 		});
