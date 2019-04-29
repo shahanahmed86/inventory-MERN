@@ -10,9 +10,7 @@ import {
 	TableBody,
 	TableRow,
 	TableFooter,
-	TableCell,
-	FormControl,
-	Select
+	TableCell
 } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -83,7 +81,6 @@ class Payment extends Component {
 					invoice: '',
 					balance: '0',
 					pay: '0',
-					head: 'Cash',
 					description: '',
 					detailList: false
 				}
@@ -104,11 +101,21 @@ class Payment extends Component {
 			this.props.getVendor();
 		});
 		this.getRefNo();
+		this.interval = setInterval(() => this.getRefNo(), 1500);
 	}
-	getRefNo() {
-		if (!this.props.store.payments.length) return this.setState({ refNo: 1 });
-		return this.setState({ refNo: this.props.store.payments.length + 1 });
+	componentWillUnmount() {
+		clearInterval(this.interval);
 	}
+	getRefNo = () => {
+		const x = new Date();
+		let date = '2019-';
+		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+		if (!this.props.store.payments.length) {
+			return this.setState({ refNo: 1, date });
+		}
+		return this.setState({ refNo: this.props.store.payments.length + 1, date });
+	};
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
 		this.setState({
@@ -145,7 +152,6 @@ class Payment extends Component {
 					invoice: '',
 					balance: '0',
 					pay: '0',
-					head: 'Cash',
 					description: '',
 					detailList: false
 				}
@@ -166,7 +172,6 @@ class Payment extends Component {
 				invoice: '',
 				balance: '0',
 				pay: '0',
-				head: 'Cash',
 				description: '',
 				detailList: false
 			});
@@ -177,7 +182,9 @@ class Payment extends Component {
 	onRemoveRow = (ind) => {
 		const details = [ ...this.state.details ];
 		if (details.length > 1) {
-			details[ind].detailList = false;
+			for (let i = 0; i < details.length; i++) {
+				details[i].detailList = false;
+			}
 			details.splice(ind, 1);
 			this.setState({ details });
 		} else {
@@ -187,7 +194,6 @@ class Payment extends Component {
 						invoice: '',
 						balance: '0',
 						pay: '0',
-						head: 'Cash',
 						description: '',
 						detailList: false
 					}
@@ -213,7 +219,6 @@ class Payment extends Component {
 					invoice: '',
 					balance: '0',
 					pay: '0',
-					head: 'Cash',
 					description: '',
 					detailList: false
 				}
@@ -229,20 +234,14 @@ class Payment extends Component {
 	getInvoiceField = (value) => {
 		const details = [ ...this.state.details ];
 		const ind = this.state.ind;
-		const count = { cash: 0, notCash: 0 };
+		const count = { record: 0 };
 		details[ind].invoice = value.invoice;
 		details.forEach((val) => {
 			if (val.invoice === value.invoice) {
-				if (val.head === 'Cash') {
-					count.cash++;
-				} else if (val.head === 'Not Cash') {
-					count.notCash++;
-				} else {
-				}
+				count.record++;
 			}
 		});
-		if (count.cash > 1) return this.props.onSnackHandler(true, "can't enter same product");
-		if (count.notCash > 1) return this.props.onSnackHandler(true, "can't enter same product");
+		if (count.record > 1) return this.props.onSnackHandler(true, "can't enter same product");
 		details[ind].purchaseId = value._id;
 		const amounts = this.getBalance(value);
 		details[ind].balance = +amounts.invoiceValue - +amounts.realized;
@@ -274,7 +273,7 @@ class Payment extends Component {
 			vendorId: vendorId._id,
 			vendorName: vendorId.vendorName,
 			details: details.map((val) => {
-				const { purchaseId, invoice, pay, head, description } = val;
+				const { purchaseId, invoice, pay, description } = val;
 				const value = this.props.store.purchases.find((x) => x.invoice === invoice);
 				const amounts = this.getBalance(value);
 				return {
@@ -282,7 +281,6 @@ class Payment extends Component {
 					invoice,
 					balance: +amounts.invoiceValue - +amounts.realized + +pay,
 					pay,
-					head,
 					description,
 					oldPurchaseId: purchaseId._id,
 					oldPay: pay,
@@ -345,7 +343,6 @@ class Payment extends Component {
 										<CustomTableCell>Invoice</CustomTableCell>
 										<CustomTableCell>Balance</CustomTableCell>
 										<CustomTableCell>Amount</CustomTableCell>
-										<CustomTableCell>Paid</CustomTableCell>
 										<CustomTableCell>Description</CustomTableCell>
 										<CustomTableCell
 											style={{
@@ -389,23 +386,6 @@ class Payment extends Component {
 													value={row.pay}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
-											</CustomTableCell>
-											<CustomTableCell>
-												<FormControl>
-													<Select
-														native
-														autoWidth
-														displayEmpty
-														variant="standard"
-														name="head"
-														value={row.head}
-														onChange={(ev) => this.handleChangeTab(ev, ind)}
-														className={classes.selectControl}
-													>
-														<option value="Cash">Cash</option>
-														<option value="Not Cash">Not Cash</option>
-													</Select>
-												</FormControl>
 											</CustomTableCell>
 											<CustomTableCell>
 												<TextField

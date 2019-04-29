@@ -48,8 +48,7 @@ const vendor = {
 						return Observable.of(actions.getVendorSuccess(resp.response.vendors));
 					} else {
 						return Observable.of(
-							actions.getVendorSuccess([]),
-							actions.onSnackHandler({ snack: true, message: 'Vendor Data is empty' })
+							actions.getVendorSuccess([])
 						);
 					}
 				})

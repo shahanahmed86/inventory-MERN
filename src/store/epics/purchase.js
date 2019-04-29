@@ -58,8 +58,7 @@ const purchase = {
 						return Observable.of(actions.getPurchaseSuccess(resp.response));
 					} else {
 						return Observable.of(
-							actions.getPurchaseSuccess([]),
-							actions.onSnackHandler({ snack: true, message: 'Purchase Data is empty' })
+							actions.getPurchaseSuccess([])
 						);
 					}
 				})

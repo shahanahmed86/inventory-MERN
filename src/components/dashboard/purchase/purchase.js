@@ -102,6 +102,15 @@ class Purchase extends Component {
 		channel.bind('vendors', () => {
 			this.props.getVendor();
 		});
+		this.getRefNo();
+	}
+	getRefNo = () => {
+		const x = new Date();
+		let date = '2019-';
+		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+		if (!this.props.store.purchases.length) return this.setState({ invoice: 1, date });
+		return this.setState({ invoice: this.props.store.purchases.length + 1, date });
 	}
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
@@ -345,6 +354,7 @@ class Purchase extends Component {
 					/>
 					<br />
 					<TextField
+						disabled
 						type="text"
 						margin="dense"
 						label="Invoice"

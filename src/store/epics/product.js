@@ -48,8 +48,7 @@ const product = {
 						return Observable.of(actions.getProductSuccess(resp.response.products));
 					} else {
 						return Observable.of(
-							actions.getProductSuccess([]),
-							actions.onSnackHandler({ snack: true, message: 'Product Data is empty' })
+							actions.getProductSuccess([])
 						);
 					}
 				})

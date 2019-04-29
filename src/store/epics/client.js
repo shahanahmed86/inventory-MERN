@@ -48,8 +48,7 @@ const client = {
 						return Observable.of(actions.getClientSuccess(resp.response.clients));
 					} else {
 						return Observable.of(
-							actions.getClientSuccess([]),
-							actions.onSnackHandler({ snack: true, message: 'Client Data is empty' })
+							actions.getClientSuccess([])
 						);
 					}
 				})

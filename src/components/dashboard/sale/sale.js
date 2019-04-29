@@ -102,6 +102,15 @@ class Sale extends Component {
 		channel.bind('clients', () => {
 			this.props.getClient();
 		});
+		this.getRefNo();
+	}
+	getRefNo = () => {
+		const x = new Date();
+		let date = '2019-';
+		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+		if (!this.props.store.sales.length) return this.setState({ invoice: 1, date });
+		return this.setState({ invoice: this.props.store.sales.length + 1, date });
 	}
 	onClearHandler = () => {
 		this.setState({
@@ -340,7 +349,7 @@ class Sale extends Component {
 					/>
 					<br />
 					<TextField
-						disabled={editing ? true : false}
+						disabled
 						type="text"
 						margin="dense"
 						label="Invoice"
