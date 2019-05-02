@@ -6,9 +6,27 @@ class PopupInvoices extends Component {
 	renderSearchBlockProduct = () => {
 		const { invoice, vendorId, getInvoiceField, store } = this.props;
 		const search = invoice.toLowerCase();
-		const bills = store.purchases
+		const allBills = store.purchases
 			.filter((val) => val.vendorId._id === vendorId)
 			.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
+		const payments = store.payments.filter((x) => x.vendorId._id === vendorId);
+		const bills = [];
+		const realized = {bill: 0, pay: 0};
+		payments.forEach((x) => {
+			x.details.forEach((y) => {
+				if (y.invoice.toLowerCase().indexOf(search) !== -1) {
+					realized.pay += +y.pay;
+				}
+			});
+		});
+		allBills.forEach((z) => {
+			if (z.invoice.toLowerCase().indexOf(search) !== -1) {
+				realized.bill = z.products.reduce((acc, cur) => acc + cur.value, 0);
+				if (realized.bill > realized.pay) {
+					bills.push(z);
+				}
+			}
+		});
 		return (
 			<Paper elevation={24} className="popout-block">
 				{bills.length ? (

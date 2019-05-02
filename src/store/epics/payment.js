@@ -87,7 +87,7 @@ const payment = {
 				responseType: 'json'
 			}).switchMap((resp) => {
 				if (typeof resp.response === 'string')
-					return Observable.of(actions.deletePaymentSuccess(resp.response));
+					return Observable.of(actions.onLoader(true), actions.deletePaymentSuccess(resp.response));
 				return Observable.of(actions.deletePaymentFailure('something wrong'));
 			});
 		})

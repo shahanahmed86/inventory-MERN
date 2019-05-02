@@ -334,6 +334,7 @@ const reducer = (state = initialState, action) => {
 		case types.DELETEPAYMENTFAILURE: {
 			return {
 				...state,
+				isLoading: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};

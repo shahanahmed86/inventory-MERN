@@ -103,6 +103,10 @@ class Purchase extends Component {
 			this.props.getVendor();
 		});
 		this.getRefNo();
+		this.interval = setInterval(() => this.getRefNo(), 3000);
+	}
+	componentWillUnmount() {
+		clearInterval(this.interval);
 	}
 	getRefNo = () => {
 		const x = new Date();

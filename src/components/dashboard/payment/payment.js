@@ -101,7 +101,7 @@ class Payment extends Component {
 			this.props.getVendor();
 		});
 		this.getRefNo();
-		this.interval = setInterval(() => this.getRefNo(), 1500);
+		this.interval = setInterval(() => this.getRefNo(), 3000);
 	}
 	componentWillUnmount() {
 		clearInterval(this.interval);
@@ -243,8 +243,6 @@ class Payment extends Component {
 		});
 		if (count.record > 1) return this.props.onSnackHandler(true, "can't enter same product");
 		details[ind].purchaseId = value._id;
-		const amounts = this.getBalance(value);
-		details[ind].balance = +amounts.invoiceValue - +amounts.realized;
 		details[ind].detailList = false;
 		this.setState({ details });
 	};
@@ -277,13 +275,11 @@ class Payment extends Component {
 				const value = this.props.store.purchases.find((x) => x.invoice === invoice);
 				const amounts = this.getBalance(value);
 				return {
-					purchaseId: purchaseId._id,
+					purchaseId,
 					invoice,
 					balance: +amounts.invoiceValue - +amounts.realized + +pay,
 					pay,
 					description,
-					oldPurchaseId: purchaseId._id,
-					oldPay: pay,
 					detailList: false
 				};
 			}),
@@ -291,6 +287,32 @@ class Payment extends Component {
 			getEntry: false,
 			options: false
 		});
+		clearInterval(this.interval);
+	};
+	validatePayment = (ind) => {
+		const details = [ ...this.state.details ];
+		if (!this.state.editing) {
+			if (details[ind].purchaseId) {
+				const search = details[ind].invoice;
+				const value = this.props.store.purchases.find((x) => x.invoice === search);
+				const amounts = this.getBalance(value);
+				details[ind].balance = +amounts.invoiceValue - +amounts.realized;
+			}
+		} else {
+			const search = details[ind].invoice;
+			const value = this.props.store.purchases.find((x) => x.invoice === search);
+			const amounts = this.getBalance(value);
+			const oldDetails = this.props.store.payments
+				.find((x) => x.refNo === this.state.refNo)
+				.details.find((x) => x.invoice === value.invoice);
+			if (oldDetails.purchaseId === details[ind].purchaseId) {
+				details[ind].pay = oldDetails.pay;
+				details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
+			} else {
+				details[ind].balance = +amounts.invoiceValue - +amounts.realized;
+			}
+		}
+		this.setState({ details });
 	};
 	render() {
 		const { date, refNo, vendorName, details, editing } = this.state;
@@ -384,6 +406,7 @@ class Payment extends Component {
 													variant="standard"
 													name="pay"
 													value={row.pay}
+													onFocus={() => this.validatePayment(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
