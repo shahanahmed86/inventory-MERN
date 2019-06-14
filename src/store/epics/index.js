@@ -7,6 +7,7 @@ import client from './client';
 import purchase from './purchase';
 import sale from './sale';
 import payment from './payment';
+import recovery from './recovery';
 
 export default combineEpics(
     login.signUp,
@@ -43,4 +44,9 @@ export default combineEpics(
     payment.getPayment,
     payment.updatePayment,
     payment.deletePayment,
+
+    recovery.recoverySave,
+    recovery.getRecovery,
+    recovery.updateRecovery,
+    recovery.deleteRecovery
 );

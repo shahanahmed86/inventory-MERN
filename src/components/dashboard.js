@@ -9,6 +9,7 @@ import Client from './dashboard/client/client';
 import Purchase from './dashboard/purchase/purchase';
 import Sale from './dashboard/sale/sale';
 import Payment from './dashboard/payment/payment';
+import Recovery from './dashboard/recovery/recovery';
 import actions from '../store/actions';
 
 const routes = [
@@ -41,6 +42,11 @@ const routes = [
 		path: '/dashboard/payment',
 		exact: true,
 		main: (props) => <Payment {...props} />
+	},
+	{
+		path: '/dashboard/recovery',
+		exact: true,
+		main: (props) => <Recovery {...props} />
 	}
 ];
 
@@ -49,6 +55,7 @@ class Dashboard extends Component {
 		if (!this.props.store.profile.email) return this.props.history.push('/');
 		this.props.getClient();
 		this.props.getPayment();
+		this.props.getRecovery();
 		this.props.getProduct();
 		this.props.getPurchase();
 		this.props.getSale();
@@ -78,6 +85,7 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		getClient: () => dispatch(actions.getClient()),
 		getPayment: () => dispatch(actions.getPayment()),
+		getRecovery: () => dispatch(actions.getRecovery()),
 		getProduct: () => dispatch(actions.getProduct()),
 		getPurchase: () => dispatch(actions.getPurchase()),
 		getSale: () => dispatch(actions.getSale()),

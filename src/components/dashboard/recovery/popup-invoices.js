@@ -4,15 +4,15 @@ import { connect } from 'react-redux';
 
 class PopupInvoices extends Component {
 	renderSearchBlockProduct = () => {
-		const { invoice, vendorId, getInvoiceField, editing, store } = this.props;
+		const { invoice, clientId, getInvoiceField, editing, store } = this.props;
 		const search = invoice.toLowerCase();
-		const allBills = store.purchases
-			.filter((val) => val.vendorId._id === vendorId)
+		const allBills = store.sales
+			.filter((val) => val.clientId._id === clientId)
 			.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
-		const payments = store.payments.filter((x) => x.vendorId._id === vendorId);
+		const recoveries = store.recoveries.filter((x) => x.clientId._id === clientId);
 		let bills = [];
 		const realized = { bill: 0, pay: 0, refId: '' };
-		payments.forEach((x) => {
+		recoveries.forEach((x) => {
 			x.details.forEach((y) => {
 				if (y.invoice.toLowerCase().indexOf(search) !== -1) {
 					realized.pay += +y.pay;
@@ -56,7 +56,7 @@ class PopupInvoices extends Component {
 		);
 	};
 	render() {
-		const { invoice, ind, detail, handleChangeTab, validateInvoice, vendorList } = this.props;
+		const { invoice, ind, detail, handleChangeTab, validateInvoice, clientList } = this.props;
 		return (
 			<div>
 				<TextField
@@ -67,7 +67,7 @@ class PopupInvoices extends Component {
 					onChange={(ev) => handleChangeTab(ev, ind)}
 					onKeyDown={(ev) => validateInvoice(ev, ind)}
 				/>
-				{!vendorList && detail.detailList && this.renderSearchBlockProduct()}
+				{!clientList && detail.detailList && this.renderSearchBlockProduct()}
 			</div>
 		);
 	}

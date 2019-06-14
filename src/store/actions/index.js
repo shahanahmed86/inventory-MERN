@@ -509,6 +509,77 @@ const actions = {
 			type: types.DELETEPAYMENTFAILURE,
 			payload
 		};
+	},
+	recoverySave: (payload) => {
+		return {
+			type: types.RECOVERYSAVE,
+			payload
+		};
+	},
+	recoverySaveSuccess: (payload) => {
+		return {
+			type: types.RECOVERYSAVESUCCESS,
+			payload
+		};
+	},
+	recoverySaveFailure: (payload) => {
+		return {
+			type: types.RECOVERYSAVEFAILURE,
+			payload
+		};
+	},
+	getRecovery: () => {
+		return {
+			type: types.GETRECOVERY
+		};
+	},
+	getRecoverySuccess: (payload) => {
+		return {
+			type: types.GETRECOVERYSUCCESS,
+			payload
+		};
+	},
+	getRecoveryFailure: (payload) => {
+		return {
+			type: types.GETRECOVERYFAILURE,
+			payload
+		};
+	},
+	updateRecovery: (payload) => {
+		return {
+			type: types.UPDATERECOVERY,
+			payload
+		};
+	},
+	updateRecoverySuccess: (payload) => {
+		return {
+			type: types.UPDATERECOVERYSUCCESS,
+			payload
+		};
+	},
+	updateRecoveryFailure: (payload) => {
+		return {
+			type: types.UPDATERECOVERYFAILURE,
+			payload
+		};
+	},
+	deleteRecovery: (payload) => {
+		return {
+			type: types.DELETERECOVERY,
+			payload
+		};
+	},
+	deleteRecoverySuccess: (payload) => {
+		return {
+			type: types.DELETERECOVERYSUCCESS,
+			payload
+		};
+	},
+	deleteRecoveryFailure: (payload) => {
+		return {
+			type: types.DELETERECOVERYFAILURE,
+			payload
+		};
 	}
 };
 

@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 import channel from '../../../config';
 import Search from './search';
-import PopupClient from './popup-client';
+import PopupClient from '../popup-client';
 import PopupProduct from './../popup-product';
 import actions from '../../../store/actions';
 

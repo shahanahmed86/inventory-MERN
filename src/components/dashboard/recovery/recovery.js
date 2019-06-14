@@ -18,7 +18,7 @@ import { connect } from 'react-redux';
 
 import channel from '../../../config';
 import Search from './search';
-import PopupVendor from '../popup-vendor';
+import PopupClient from '../popup-client';
 import actions from '../../../store/actions';
 import PopupInvoices from './popup-invoices';
 
@@ -65,7 +65,7 @@ const styles = (theme) => ({
 	}
 });
 
-class Payment extends Component {
+class Recovery extends Component {
 	constructor() {
 		super();
 		this.state = {
@@ -73,9 +73,9 @@ class Payment extends Component {
 			_id: '',
 			date: '',
 			refNo: '',
-			vendorId: '',
-			vendorName: '',
-			vendorList: false,
+			clientId: '',
+			clientName: '',
+			clientList: false,
 			details: [
 				{
 					invoice: '',
@@ -92,25 +92,28 @@ class Payment extends Component {
 	}
 	componentDidMount = () => {
 		this.getRefNo();
-		channel.bind('payments', () => {
-			this.props.getPayment();
+		channel.bind('recoveries', () => {
+			this.props.getRecovery();
 		});
-		channel.bind('purchases', () => {
-			this.props.getPurchase();
+		channel.bind('sales', () => {
+			this.props.getSale();
 		});
-		channel.bind('vendors', () => {
-			this.props.getVendor();
+		channel.bind('clients', () => {
+			this.props.getClient();
 		});
 	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
-		const { payments } = nextProps.store;
-		if (payments.length && !prevState.editing) {
-			const arr = [];
-			for (let key in payments) {
-				arr.push(payments[key].refNo);
+		const { recoveries } = nextProps.store;
+		if (recoveries) {
+			if (recoveries.length && !prevState.editing) {
+				const arr = [];
+				for (let key in recoveries) {
+					arr.push(recoveries[key].refNo);
+				}
+				const refNo = Math.max(...arr) + 1;
+				if (refNo !== prevState.refNo) return { refNo };
+				return null;
 			}
-			const refNo = Math.max(...arr) + 1;
-			if (refNo !== prevState.refNo) return { refNo };
 			return null;
 		}
 		return null;
@@ -120,14 +123,17 @@ class Payment extends Component {
 		let date = '2019-';
 		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
 		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
-		const { payments } = this.props.store;
-		if (payments.length) {
-			const arr = [];
-			for (let key in payments) {
-				arr.push(payments[key].refNo);
+		const { recoveries } = this.props.store;
+		if (recoveries) {
+			if (recoveries.length) {
+				const arr = [];
+				for (let key in recoveries) {
+					arr.push(recoveries[key].refNo);
+				}
+				const refNo = Math.max(...arr) + 1;
+				return this.setState({ refNo, date });
 			}
-			const refNo = Math.max(...arr) + 1;
-			return this.setState({ refNo, date });
+			return this.setState({ refNo: 1, date });
 		}
 		return this.setState({ refNo: 1, date });
 	};
@@ -144,11 +150,11 @@ class Payment extends Component {
 		this.setState({ details });
 	};
 	onSaveHandler = () => {
-		const { _id, date, refNo, vendorId, details, editing } = this.state;
+		const { _id, date, refNo, clientId, details, editing } = this.state;
 		if (!editing) {
-			this.props.paymentSave({ date, refNo, vendorId, details });
+			this.props.recoverySave({ date, refNo, clientId, details });
 		} else {
-			this.props.updatePayment({ _id, date, refNo, vendorId, details });
+			this.props.updateRecovery({ _id, date, refNo, clientId, details });
 		}
 		this.getRefNo();
 	};
@@ -163,9 +169,9 @@ class Payment extends Component {
 			_id: '',
 			date: '',
 			refNo: '',
-			vendorId: '',
-			vendorName: '',
-			vendorList: false,
+			clientId: '',
+			clientName: '',
+			clientList: false,
 			details: [
 				{
 					invoice: '',
@@ -225,15 +231,15 @@ class Payment extends Component {
 		if (ev.keyCode === 13) return this.setState({ getEntry: true });
 		if (ev.keyCode === 27) return this.setState({ getEntry: false });
 	};
-	validateVendor = (ev) => {
-		if (ev.keyCode === 13) return this.setState({ vendorList: true });
-		if (ev.keyCode === 27) return this.setState({ vendorList: false });
+	validateClient = (ev) => {
+		if (ev.keyCode === 13) return this.setState({ clientList: true });
+		if (ev.keyCode === 27) return this.setState({ clientList: false });
 	};
-	getVendorFields = (vendorId, vendorName) => {
+	getClientFields = (clientId, clientName) => {
 		this.setState({
-			vendorId,
-			vendorName,
-			vendorList: false,
+			clientId,
+			clientName,
+			clientList: false,
 			details: [
 				{
 					invoice: '',
@@ -262,15 +268,15 @@ class Payment extends Component {
 			}
 		});
 		if (count.record > 1) return this.props.onSnackHandler(true, "can't enter same product");
-		details[ind].purchaseId = value._id;
+		details[ind].saleId = value._id;
 		details[ind].detailList = false;
 		this.setState({ details });
 	};
 	getBalance = (value) => {
-		const payments = this.props.store.payments;
+		const { recoveries } = this.props.store;
 		const amounts = { invoiceValue: 0, realized: [] };
 		amounts.invoiceValue = value.products.reduce((acc, cur) => acc + +cur.value, 0);
-		payments.forEach((x) => {
+		recoveries.forEach((x) => {
 			x.details.forEach((y) => {
 				if (y.invoice === value.invoice) {
 					amounts.realized.push(y);
@@ -280,23 +286,23 @@ class Payment extends Component {
 		amounts.realized = amounts.realized.reduce((acc, cur) => acc + +cur.pay, 0);
 		return amounts;
 	};
-	getPaymentFields = (id) => {
+	getRecoveryFields = (id) => {
 		if (id) {
-			const payment = this.props.store.payments.find((val) => val._id === id);
-			const { _id, date, refNo, vendorId, details } = payment;
+			const recovery = this.props.store.recoveries.find((val) => val._id === id);
+			const { _id, date, refNo, clientId, details } = recovery;
 			this.setState({
 				_id,
 				date: date.slice(0, 10),
 				refNo,
-				oldVendorId: vendorId._id,
-				vendorId: vendorId._id,
-				vendorName: vendorId.vendorName,
+				oldClient: clientId._id,
+				clientId: clientId._id,
+				clientName: clientId.clientName,
 				details: details.map((val) => {
-					const { purchaseId, invoice, pay, description } = val;
-					const value = this.props.store.purchases.find((x) => x.invoice === invoice);
+					const { saleId, invoice, pay, description } = val;
+					const value = this.props.store.sales.find((x) => x.invoice === invoice);
 					const amounts = this.getBalance(value);
 					return {
-						purchaseId,
+						saleId,
 						invoice,
 						balance: +amounts.invoiceValue - +amounts.realized + +pay,
 						pay,
@@ -310,23 +316,23 @@ class Payment extends Component {
 			});
 		}
 	};
-	validatePayment = (ind) => {
+	validateSale = (ind) => {
 		const details = [ ...this.state.details ];
 		if (!this.state.editing) {
-			if (details[ind].purchaseId) {
+			if (details[ind].saleId) {
 				const search = details[ind].invoice;
-				const value = this.props.store.purchases.find((x) => x.invoice === search);
+				const value = this.props.store.sales.find((x) => x.invoice === search);
 				const amounts = this.getBalance(value);
 				details[ind].balance = +amounts.invoiceValue - +amounts.realized;
 			}
 		} else {
 			const search = details[ind].invoice;
-			const value = this.props.store.purchases.find((x) => x.invoice === search);
+			const value = this.props.store.sales.find((x) => x.invoice === search);
 			const amounts = this.getBalance(value);
-			const oldDetails = this.props.store.payments
+			const oldDetails = this.props.store.recoveries
 				.find((x) => x.refNo === this.state.refNo)
 				.details.find((x) => x.invoice === value.invoice);
-			if (oldDetails.purchaseId === details[ind].purchaseId) {
+			if (oldDetails.saleId === details[ind].saleId) {
 				details[ind].pay = oldDetails.pay;
 				details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
 			} else {
@@ -345,13 +351,13 @@ class Payment extends Component {
 		this.setState({ details });
 	};
 	render() {
-		const { date, refNo, vendorName, details, editing } = this.state;
+		const { date, refNo, clientName, details, editing } = this.state;
 		const { classes } = this.props;
 		return (
 			<div>
 				<Paper elevation={24} className="pb-form">
 					<Typography
-						children="Payment Form"
+						children="Recovery Form"
 						align="center"
 						color="secondary"
 						gutterBottom={true}
@@ -380,12 +386,12 @@ class Payment extends Component {
 						onChange={this.handleChange}
 					/>
 					<br />
-					<PopupVendor
-						vendorName={vendorName}
+					<PopupClient
+						clientName={clientName}
 						handleChange={this.handleChange}
-						validateVendor={this.validateVendor}
-						vendorList={this.state.vendorList}
-						getVendorFields={this.getVendorFields}
+						validateClient={this.validateClient}
+						clientList={this.state.clientList}
+						getClientFields={this.getClientFields}
 					/>
 					<div className="row">
 						<div className="col-xs-12">
@@ -411,10 +417,10 @@ class Payment extends Component {
 											<CustomTableCell>
 												<PopupInvoices
 													invoice={row.invoice}
-													vendorId={this.state.vendorId}
+													clientId={this.state.clientId}
 													ind={ind}
 													detail={row}
-													vendorList={this.state.vendorList}
+													clientList={this.state.clientList}
 													handleChangeTab={(ev) => this.handleChangeTab(ev, ind)}
 													validateInvoice={(ev) => this.validateInvoice(ev, ind)}
 													getInvoiceField={this.getInvoiceField}
@@ -440,7 +446,7 @@ class Payment extends Component {
 													name="pay"
 													value={row.pay}
 													onBlur={() => this.balanceCheck(ind)}
-													onFocus={() => this.validatePayment(ind)}
+													onFocus={() => this.validateSale(ind)}
 													onChange={(ev) => this.handleChangeTab(ev, ind)}
 												/>
 											</CustomTableCell>
@@ -511,8 +517,8 @@ class Payment extends Component {
 							options={this.state.options}
 							getEntry={this.state.getEntry}
 							validateSearch={this.validateSearch}
-							getPaymentFields={this.getPaymentFields}
-							onDelete={this.props.deletePayment}
+							getRecoveryFields={this.getRecoveryFields}
+							onDelete={this.props.deleteRecovery}
 						/>
 					)}
 				</Paper>
@@ -528,13 +534,13 @@ const mapStateToProps = (store) => {
 const mapDispatchToProps = (dispatch) => {
 	return {
 		onSnackHandler: (snack, message) => dispatch(actions.onSnackHandler({ snack, message })),
-		getVendor: () => dispatch(actions.getVendor()),
-		getPurchase: () => dispatch(actions.getPurchase()),
-		paymentSave: (data) => dispatch(actions.paymentSave(data)),
-		getPayment: () => dispatch(actions.getPayment()),
-		updatePayment: (data) => dispatch(actions.updatePayment(data)),
-		deletePayment: (id) => dispatch(actions.deletePayment(id))
+		getClient: () => dispatch(actions.getClient()),
+		getSale: () => dispatch(actions.getSale()),
+		recoverySave: (data) => dispatch(actions.recoverySave(data)),
+		getRecovery: () => dispatch(actions.getRecovery()),
+		updateRecovery: (data) => dispatch(actions.updateRecovery(data)),
+		deleteRecovery: (id) => dispatch(actions.deleteRecovery(id))
 	};
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Payment));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Recovery));

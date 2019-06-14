@@ -8,6 +8,7 @@ const initialState = {
 	purchases: [],
 	sales: [],
 	payments: [],
+	recoveries: [],
 
 	isLoading: false,
 
@@ -332,6 +333,58 @@ const reducer = (state = initialState, action) => {
 		}
 		case types.DELETEPAYMENTSUCCESS:
 		case types.DELETEPAYMENTFAILURE: {
+			return {
+				...state,
+				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.RECOVERYSAVESUCCESS: {
+			return {
+				...state,
+				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.RECOVERYSAVEFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.GETRECOVERYSUCCESS: {
+			return {
+				...state,
+				recoveries: action.payload
+			};
+		}
+		case types.GETRECOVERYFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.UPDATERECOVERYSUCCESS: {
+			return {
+				...state,
+				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.UPDATERECOVERYFAILURE: {
+			return {
+				...state,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.DELETERECOVERYSUCCESS:
+		case types.DELETERECOVERYFAILURE: {
 			return {
 				...state,
 				isLoading: false,

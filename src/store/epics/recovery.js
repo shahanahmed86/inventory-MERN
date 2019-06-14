@@ -4,9 +4,9 @@ import { Observable } from 'rxjs';
 import types from '../constants';
 import actions from '../actions';
 
-const payment = {
-	paymentSave: (action$) =>
-		action$.ofType(types.PAYMENTSAVE).switchMap(({ payload }) => {
+const recovery = {
+	recoverySave: (action$) =>
+		action$.ofType(types.RECOVERYSAVE).switchMap(({ payload }) => {
 			const isFilled = [];
 			payload.details.forEach((x) => {
 				isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
@@ -14,7 +14,7 @@ const payment = {
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
 				return Observable.ajax({
-					url: 'http://localhost:8080/payment',
+					url: 'http://localhost:8080/recovery',
 					method: 'POST',
 					body: payload,
 					headers: { 'Content-Type': 'application/json' },
@@ -26,20 +26,20 @@ const payment = {
 				})
 					.switchMap((resp) => {
 						if (typeof resp.response === 'string')
-							return Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response));
-						return Observable.of(actions.paymentSaveFailure('Something went wrong'));
+							return Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response));
+						return Observable.of(actions.recoverySaveFailure('Something went wrong'));
 					})
 					.catch((err) => {
 						if (typeof err.response === 'string')
-							return Observable.of(actions.paymentSaveFailure(err.response));
-						return Observable.of(actions.paymentSaveFailure('Network Error'));
+							return Observable.of(actions.recoverySaveFailure(err.response));
+						return Observable.of(actions.recoverySaveFailure('Network Error'));
 					});
-			return Observable.of(actions.paymentSaveFailure('All fields are required'));
+			return Observable.of(actions.recoverySaveFailure('All fields are required'));
 		}),
-	getPayment: (action$) =>
-		action$.ofType(types.GETPAYMENT).switchMap(() => {
+	getRecovery: (action$) =>
+		action$.ofType(types.GETRECOVERY).switchMap(() => {
 			return Observable.ajax({
-				url: 'http://localhost:8080/payment',
+				url: 'http://localhost:8080/recovery',
 				method: 'GET',
 				headers: { 'Content-Type': 'application/json' },
 				async: true,
@@ -49,16 +49,16 @@ const payment = {
 				responseType: 'json'
 			})
 				.switchMap((resp) => {
-					if (resp.response.length) return Observable.of(actions.getPaymentSuccess(resp.response));
-					return Observable.of(actions.getPaymentSuccess([]));
+					if (resp.response.length) return Observable.of(actions.getRecoverySuccess(resp.response));
+					return Observable.of(actions.getRecoverySuccess([]));
 				})
 				.catch((err) => {
-					if (err.response) return Observable.of(actions.getPaymentFailure(err.response));
-					return Observable.of(actions.getPaymentFailure('Network Error'));
+					if (err.response) return Observable.of(actions.getRecoveryFailure(err.response));
+					return Observable.of(actions.getRecoveryFailure('Network Error'));
 				});
 		}),
-	updatePayment: (action$) =>
-		action$.ofType(types.UPDATEPAYMENT).switchMap(({ payload }) => {
+	updateRecovery: (action$) =>
+		action$.ofType(types.UPDATERECOVERY).switchMap(({ payload }) => {
 			const isFilled = [];
 			payload.details.forEach((x) => {
 				isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
@@ -66,7 +66,7 @@ const payment = {
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
 				return Observable.ajax({
-					url: `http://localhost:8080/payment/${payload._id}`,
+					url: `http://localhost:8080/recovery/${payload._id}`,
 					method: 'PUT',
 					headers: { 'Content-Type': 'application/json' },
 					body: payload,
@@ -77,15 +77,15 @@ const payment = {
 					responseType: 'json'
 				}).switchMap((resp) => {
 					if (typeof resp.response === 'string')
-						return Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response));
-					return Observable.of(actions.updatePaymentFailure('something wrong'));
+						return Observable.of(actions.onLoader(true), actions.updateRecoverySuccess(resp.response));
+					return Observable.of(actions.updateRecoveryFailure('something wrong'));
 				});
-			return Observable.of(actions.updatePaymentFailure('All Fields are Required'));
+			return Observable.of(actions.updateRecoveryFailure('All Fields are Required'));
 		}),
-	deletePayment: (action$) =>
-		action$.ofType(types.DELETEPAYMENT).switchMap(({ payload }) => {
+	deleteRecovery: (action$) =>
+		action$.ofType(types.DELETERECOVERY).switchMap(({ payload }) => {
 			return Observable.ajax({
-				url: `http://localhost:8080/payment/${payload}`,
+				url: `http://localhost:8080/recovery/${payload}`,
 				method: 'DELETE',
 				headers: { 'Content-Type': 'application/json' },
 				async: true,
@@ -95,10 +95,10 @@ const payment = {
 				responseType: 'json'
 			}).switchMap((resp) => {
 				if (typeof resp.response === 'string')
-					return Observable.of(actions.onLoader(true), actions.deletePaymentSuccess(resp.response));
-				return Observable.of(actions.deletePaymentFailure('something wrong'));
+					return Observable.of(actions.onLoader(true), actions.deleteRecoverySuccess(resp.response));
+				return Observable.of(actions.deleteRecoveryFailure('something wrong'));
 			});
 		})
 };
 
-export default payment;
+export default recovery;
