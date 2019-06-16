@@ -4,20 +4,20 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
 
 class Search extends Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
-			search: ''
+			search: '',
 		};
 	}
 	renderSearchBlock = () => {
-		const { getSaleFields, onDelete, store } = this.props;
-		const search = this.state.search.toLowerCase();
-		const sales = store.sales.filter((val) => val.refNo.toLowerCase().indexOf(search) !== -1);
+		const search = this.state.search;
+		const { getRecoveryFields, onDelete, store } = this.props;
+		const recoveries = store.recoveries.filter((val) => val.refNo.toLowerCase().indexOf(search) !== -1);
 		return (
 			<Paper elevation={24} className="popout-block">
-				{sales.length ? (
-					sales.map((val, ind) => {
+				{recoveries.length ? (
+					recoveries.map((val, ind) => {
 						return (
 							<ul className="list-group" key={ind}>
 								<li className="list-group-item">
@@ -25,7 +25,7 @@ class Search extends Component {
 										size="small"
 										color="primary"
 										aria-label="Edit"
-										onClick={() => getSaleFields(val._id)}
+										onClick={() => getRecoveryFields(val._id)}
 									>
 										<Icon>edit_icon</Icon>
 									</Fab>
