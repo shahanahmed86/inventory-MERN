@@ -22,7 +22,7 @@ class Client extends Component {
 		};
 	}
 	componentDidMount() {
-		channel.bind('inventory', 'clients', () => {
+		channel.bind('clients', () => {
 			this.props.getClient();
 		});
 	}
@@ -157,6 +157,7 @@ class Client extends Component {
 							getRow={this.getRow}
 							isPopup={this.state.isPopup}
 							validateSearch={this.validateSearch}
+							deleteClient={this.props.deleteClient}
 						/>
 					)}
 				</Paper>
@@ -173,7 +174,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		clientSave: (data) => dispatch(actions.clientSave(data)),
 		updateClient: (data) => dispatch(actions.updateClient(data)),
-		getClient: () => dispatch(actions.getClient())
+		getClient: () => dispatch(actions.getClient()),
+		deleteClient: (id) => dispatch(actions.deleteClient(id))
 	};
 };
 

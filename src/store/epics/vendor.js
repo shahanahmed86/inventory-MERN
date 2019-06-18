@@ -47,9 +47,7 @@ const vendor = {
 					if (resp.response.vendors.length) {
 						return Observable.of(actions.getVendorSuccess(resp.response.vendors));
 					} else {
-						return Observable.of(
-							actions.getVendorSuccess([])
-						);
+						return Observable.of(actions.getVendorSuccess([]));
 					}
 				})
 				.catch((err) => {
@@ -73,7 +71,8 @@ const vendor = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.updateVendorSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.updateVendorSuccess(resp.response));
 						return Observable.of(actions.updateVendorFailure('Something went Wrong'));
 					})
 					.catch(() => {
@@ -94,8 +93,7 @@ const vendor = {
 				responseType: 'json'
 			})
 				.switchMap((resp) => {
-					if (resp.response)
-						return Observable.of(actions.deleteVendorSuccess(resp.response));
+					if (resp.response) return Observable.of(actions.deleteVendorSuccess(resp.response));
 					return Observable.of(actions.deleteVendorFailure('Something went Wrong'));
 				})
 				.catch(() => {

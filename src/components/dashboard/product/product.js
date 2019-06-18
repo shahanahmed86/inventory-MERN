@@ -20,7 +20,7 @@ class Product extends Component {
 		};
 	}
 	componentDidMount() {
-		channel.bind('inventory', 'products', () => {
+		channel.bind('products', () => {
 			this.props.getProduct();
 		});
 	}
@@ -131,6 +131,7 @@ class Product extends Component {
 							getRow={this.getRow}
 							isPopup={this.state.isPopup}
 							validateSearch={this.validateSearch}
+							deleteProduct={this.props.deleteProduct}
 						/>
 					)}
 				</Paper>
@@ -147,7 +148,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		productSave: (data) => dispatch(actions.productSave(data)),
 		updateProduct: (data) => dispatch(actions.updateProduct(data)),
-		getProduct: () => dispatch(actions.getProduct())
+		getProduct: () => dispatch(actions.getProduct()),
+		deleteProduct: (id) => dispatch(actions.deleteProduct(id))
 	};
 };
 

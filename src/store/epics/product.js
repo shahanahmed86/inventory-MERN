@@ -47,9 +47,7 @@ const product = {
 					if (resp.response.products.length) {
 						return Observable.of(actions.getProductSuccess(resp.response.products));
 					} else {
-						return Observable.of(
-							actions.getProductSuccess([])
-						);
+						return Observable.of(actions.getProductSuccess([]));
 					}
 				})
 				.catch((err) => {
@@ -73,7 +71,8 @@ const product = {
 					responseType: 'json'
 				})
 					.switchMap((resp) => {
-						if (resp.response) return Observable.of(actions.updateProductSuccess(resp.response));
+						if (resp.response)
+							return Observable.of(actions.onLoader(true), actions.updateProductSuccess(resp.response));
 						return Observable.of(actions.updateProductFailure('Something went Wrong'));
 					})
 					.catch(() => {
@@ -94,8 +93,7 @@ const product = {
 				responseType: 'json'
 			})
 				.switchMap((resp) => {
-					if (resp.response)
-						return Observable.of(actions.deleteProductSuccess(resp.response));
+					if (resp.response) return Observable.of(actions.deleteProductSuccess(resp.response));
 					return Observable.of(actions.deleteProductFailure('Something went Wrong'));
 				})
 				.catch(() => {

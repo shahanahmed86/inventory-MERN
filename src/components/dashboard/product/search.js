@@ -2,13 +2,12 @@ import React, { Component } from 'react';
 import { TextField, Paper, Fab, Icon } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
-import actions from '../../../store/actions';
 
 class Search extends Component {
 	constructor() {
 		super();
 		this.state = {
-			search: '',
+			search: ''
 		};
 	}
 	handleChange = (ev) => {
@@ -18,7 +17,7 @@ class Search extends Component {
 		});
 	};
 	renderSearchBlock = () => {
-		const { getRow, store } = this.props;
+		const { getRow, deleteProduct, store } = this.props;
 		const search = this.state.search.toLowerCase();
 		const products = store.products.filter((val) => val.productName.toLowerCase().indexOf(search) !== -1);
 		return (
@@ -35,13 +34,13 @@ class Search extends Component {
 										size="small"
 										color="secondary"
 										aria-label="Delete"
-										onClick={() => this.props.deleteClient(row._id)}
+										onClick={() => deleteProduct(row._id)}
 									>
 										<DeleteIcon />
 									</Fab>
 								</li>
 								<li className="list-group-item">Product: {row.productName}</li>
-								<li className="list-group-item">Manufacturer: {row.manufacterer}</li>
+								<li className="list-group-item">Manufacturer: {row.manufacturer}</li>
 								<li className="list-group-item">Description: {row.description}</li>
 							</ul>
 						);
@@ -64,7 +63,7 @@ class Search extends Component {
 							type="text"
 							margin="dense"
 							variant="standard"
-							label="Type Client Name..."
+							label="Type Product Name..."
 							name="search"
 							value={search}
 							onChange={this.handleChange}
@@ -82,10 +81,4 @@ const mapStateToProps = (store) => {
 	return { store };
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		deleteProduct: (id) => dispatch(actions.deleteProduct(id))
-	};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Search);
+export default connect(mapStateToProps, null)(Search);

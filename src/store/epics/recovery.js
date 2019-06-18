@@ -95,7 +95,7 @@ const recovery = {
 				responseType: 'json'
 			}).switchMap((resp) => {
 				if (typeof resp.response === 'string')
-					return Observable.of(actions.onLoader(true), actions.deleteRecoverySuccess(resp.response));
+					return Observable.of(actions.deleteRecoverySuccess(resp.response));
 				return Observable.of(actions.deleteRecoveryFailure('something wrong'));
 			});
 		})

@@ -76,11 +76,57 @@ const reducer = (state = initialState, action) => {
 				isLoading: false
 			};
 		}
+		case types.UPDATEVENDORSUCCESS:
+		case types.DELETEVENDORSUCCESS:
+		case types.VENDORSAVESUCCESS:
+		case types.UPDATEPRODUCTSUCCESS:
+		case types.DELETEPRODUCTSUCCESS:
 		case types.PRODUCTSAVESUCCESS:
-		case types.PRODUCTSAVEFAILURE: {
+		case types.CLIENTSAVESUCCESS:
+		case types.UPDATECLIENTSUCCESS:
+		case types.DELETECLIENTSUCCESS:
+		case types.PURCHASESAVESUCCESS:
+		case types.UPDATEPURCHASESUCCESS:
+		case types.DELETEPURCHASESUCCESS:
+		case types.SALESAVESUCCESS:
+		case types.UPDATESALESUCCESS:
+		case types.DELETESALESUCCESS:
+		case types.PAYMENTSAVESUCCESS:
+		case types.UPDATEPAYMENTSUCCESS:
+		case types.DELETEPAYMENTSUCCESS:
+		case types.RECOVERYSAVESUCCESS:
+		case types.UPDATERECOVERYSUCCESS: 
+		case types.DELETERECOVERYSUCCESS: {
 			return {
 				...state,
 				isLoading: false,
+				isSnackOpen: true,
+				snackMessage: action.payload
+			};
+		}
+		case types.UPDATEVENDORFAILURE:
+		case types.DELETEVENDORFAILURE:
+		case types.VENDORSAVEFAILURE:
+		case types.UPDATEPRODUCTFAILURE:
+		case types.DELETEPRODUCTFAILURE:
+		case types.PRODUCTSAVEFAILURE:
+		case types.CLIENTSAVEFAILURE:
+		case types.UPDATECLIENTFAILURE:
+		case types.DELETECLIENTFAILURE:
+		case types.PURCHASESAVEFAILURE:
+		case types.UPDATEPURCHASEFAILURE:
+		case types.DELETEPURCHASEFAILURE:
+		case types.SALESAVEFAILURE:
+		case types.UPDATESALEFAILURE:
+		case types.DELETESALEFAILURE:
+		case types.PAYMENTSAVEFAILURE: 
+		case types.UPDATEPAYMENTFAILURE:
+		case types.DELETEPAYMENTFAILURE:
+		case types.RECOVERYSAVEFAILURE: 
+		case types.UPDATERECOVERYFAILURE: 
+		case types.DELETERECOVERYFAILURE: {
+			return {
+				...state,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};
@@ -91,35 +137,15 @@ const reducer = (state = initialState, action) => {
 				products: action.payload
 			};
 		}
-		case types.GETPRODUCTFAILURE: {
+		case types.GETPRODUCTFAILURE: 
+		case types.GETVENDORFAILURE: 
+		case types.GETCLIENTFAILURE: 
+		case types.GETPURCHASEFAILURE: 
+		case types.GETSALEFAILURE: 
+		case types.GETPAYMENTFAILURE: 
+		case types.GETRECOVERYFAILURE: {
 			return {
 				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPRODUCTSUCCESS:
-		case types.UPDATEPRODUCTFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETEPRODUCTSUCCESS:
-		case types.DELETEPRODUCTFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.VENDORSAVESUCCESS:
-		case types.VENDORSAVEFAILURE: {
-			return {
-				...state,
-				isLoading: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};
@@ -130,75 +156,10 @@ const reducer = (state = initialState, action) => {
 				vendors: action.payload
 			};
 		}
-		case types.GETVENDORFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEVENDORSUCCESS:
-		case types.UPDATEVENDORFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETEVENDORSUCCESS:
-		case types.DELETEVENDORFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.CLIENTSAVESUCCESS:
-		case types.CLIENTSAVEFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
 		case types.GETCLIENTSUCCESS: {
 			return {
 				...state,
 				clients: action.payload
-			};
-		}
-		case types.GETCLIENTFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATECLIENTSUCCESS:
-		case types.UPDATECLIENTFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETECLIENTSUCCESS:
-		case types.DELETECLIENTFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.PURCHASESAVESUCCESS:
-		case types.PURCHASESAVEFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
 			};
 		}
 		case types.GETPURCHASESUCCESS: {
@@ -207,100 +168,10 @@ const reducer = (state = initialState, action) => {
 				purchases: action.payload
 			};
 		}
-		case types.GETPURCHASEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPURCHASESUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPURCHASEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETEPURCHASESUCCESS:
-		case types.DELETEPURCHASEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.SALESAVESUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.SALESAVEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
 		case types.GETSALESUCCESS: {
 			return {
 				...state,
 				sales: action.payload
-			};
-		}
-		case types.GETSALEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATESALESUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATESALEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETESALESUCCESS:
-		case types.DELETESALEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.PAYMENTSAVESUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.PAYMENTSAVEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
 			};
 		}
 		case types.GETPAYMENTSUCCESS: {
@@ -309,87 +180,10 @@ const reducer = (state = initialState, action) => {
 				payments: action.payload
 			};
 		}
-		case types.GETPAYMENTFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPAYMENTSUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATEPAYMENTFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETEPAYMENTSUCCESS:
-		case types.DELETEPAYMENTFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.RECOVERYSAVESUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.RECOVERYSAVEFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
 		case types.GETRECOVERYSUCCESS: {
 			return {
 				...state,
 				recoveries: action.payload
-			};
-		}
-		case types.GETRECOVERYFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATERECOVERYSUCCESS: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.UPDATERECOVERYFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
-		case types.DELETERECOVERYSUCCESS:
-		case types.DELETERECOVERYFAILURE: {
-			return {
-				...state,
-				isLoading: false,
-				isSnackOpen: true,
-				snackMessage: action.payload
 			};
 		}
 		default: {

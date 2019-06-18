@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { TextField, Paper, Fab, Icon } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
-import actions from '../../../store/actions';
 
 class Search extends Component {
 	constructor() {
@@ -18,7 +17,7 @@ class Search extends Component {
 		});
 	};
 	renderSearchBlock = () => {
-		const { getRow, store } = this.props;
+		const { getRow, store, deleteClient } = this.props;
 		const search = this.state.search.toLowerCase();
 		const clients = store.clients.filter((val) => val.clientName.toLowerCase().indexOf(search) !== -1);
 		return (
@@ -35,7 +34,7 @@ class Search extends Component {
 										size="small"
 										color="secondary"
 										aria-label="Delete"
-										onClick={() => this.props.deleteClient(row._id)}
+										onClick={() => deleteClient(row._id)}
 									>
 										<DeleteIcon />
 									</Fab>
@@ -84,10 +83,4 @@ const mapStateToProps = (store) => {
 	return { store };
 };
 
-const mapDispatchToProps = (dispatch) => {
-	return {
-		deleteClient: (id) => dispatch(actions.deleteClient(id))
-	};
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Search);
+export default connect(mapStateToProps, null)(Search);

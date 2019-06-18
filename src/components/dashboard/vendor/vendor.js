@@ -22,7 +22,7 @@ class Vendor extends Component {
 		};
 	}
 	componentDidMount() {
-		channel.bind('inventory', 'vendors', () => {
+		channel.bind('vendors', () => {
 			this.props.getVendor();
 		});
 	}
@@ -157,6 +157,7 @@ class Vendor extends Component {
 							getRow={this.getRow}
 							isPopup={this.state.isPopup}
 							validateSearch={this.validateSearch}
+							deleteVendor={this.props.deleteVendor}
 						/>
 					)}
 				</Paper>
@@ -173,7 +174,8 @@ const mapDispatchToProps = (dispatch) => {
 	return {
 		vendorSave: (data) => dispatch(actions.vendorSave(data)),
 		updateVendor: (data) => dispatch(actions.updateVendor(data)),
-		getVendor: () => dispatch(actions.getVendor())
+		getVendor: () => dispatch(actions.getVendor()),
+		deleteVendor: (id) => dispatch(actions.deleteVendor(id))
 	};
 };
 
