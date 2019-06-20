@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import types from '../constants';
 import actions from '../actions';
+import store from '../index';
 
 const product = {
 	productSave: (action$) =>
@@ -25,10 +26,7 @@ const product = {
 							return Observable.of(actions.onLoader(true), actions.productSaveSuccess(resp.response));
 						return Observable.of(actions.productSaveFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (err.response) return Observable.of(actions.productSaveFailure(err.response));
-						return Observable.of(actions.productSaveFailure('Network Error'));
-					});
+					.catch(() => Observable.of(actions.productSaveFailure('Network Error')));
 			return Observable.of(actions.productSaveFailure('All fields are required'));
 		}),
 	getProduct: (action$) =>
@@ -50,13 +48,16 @@ const product = {
 						return Observable.of(actions.getProductSuccess([]));
 					}
 				})
-				.catch((err) => {
-					if (err.response) return Observable.of(actions.getProductFailure(err.response));
-					return Observable.of(actions.getProductFailure('Network Error'));
-				});
+				.catch(() => Observable.of(actions.getProductFailure('Network Error')));
 		}),
 	updateProduct: (action$) =>
 		action$.ofType(types.UPDATEPRODUCT).switchMap(({ payload }) => {
+			const { purchases } = store.getState();
+			const productRecordFound = purchases.some((x) => x.products.find((y) => y.productId._id === payload._id));
+			if (productRecordFound)
+				return Observable.of(
+					actions.updateProductFailure("Transaction found for this product you can't edit it")
+				);
 			const isMatch = Object.values(payload).entries((val) => Boolean(val));
 			if (isMatch)
 				return Observable.ajax({
@@ -75,13 +76,17 @@ const product = {
 							return Observable.of(actions.onLoader(true), actions.updateProductSuccess(resp.response));
 						return Observable.of(actions.updateProductFailure('Something went Wrong'));
 					})
-					.catch(() => {
-						return Observable.of(actions.updateProductFailure('Network Failure'));
-					});
+					.catch(() => Observable.of(actions.updateProductFailure('Network Failure')));
 			return Observable.of(actions.updateProductFailure('All fields are required'));
 		}),
 	deleteProduct: (action$) =>
 		action$.ofType(types.DELETEPRODUCT).switchMap(({ payload }) => {
+			const { purchases } = store.getState();
+			const productRecordFound = purchases.some((x) => x.products.find((y) => y.productId._id === payload));
+			if (productRecordFound)
+				return Observable.of(
+					actions.updateProductFailure("Transaction found for this product you can't delete it")
+				);
 			return Observable.ajax({
 				url: `http://localhost:8080/product/${payload}`,
 				method: 'DELETE',
@@ -96,9 +101,7 @@ const product = {
 					if (resp.response) return Observable.of(actions.deleteProductSuccess(resp.response));
 					return Observable.of(actions.deleteProductFailure('Something went Wrong'));
 				})
-				.catch(() => {
-					return Observable.of(actions.deleteProductFailure('Network Failure'));
-				});
+				.catch(() => Observable.of(actions.deleteProductFailure('Network Failure')));
 		})
 };
 

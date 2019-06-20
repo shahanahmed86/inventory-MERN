@@ -65,7 +65,7 @@ class Search extends Component {
 							type="text"
 							margin="dense"
 							variant="standard"
-							label="Type Client Name..."
+							label="Type Vendor Name..."
 							name="search"
 							value={search}
 							onChange={this.handleChange}

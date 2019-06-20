@@ -12,8 +12,10 @@ class Search extends Component {
 	}
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
-		this.setState({
-			[name]: value
+		this.setState(() => {
+			return {
+				[name]: value
+			};
 		});
 	};
 	renderSearchBlock = () => {

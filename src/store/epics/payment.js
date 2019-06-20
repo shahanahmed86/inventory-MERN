@@ -29,11 +29,7 @@ const payment = {
 							return Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response));
 						return Observable.of(actions.paymentSaveFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (typeof err.response === 'string')
-							return Observable.of(actions.paymentSaveFailure(err.response));
-						return Observable.of(actions.paymentSaveFailure('Network Error'));
-					});
+					.catch(() => Observable.of(actions.paymentSaveFailure('Network Error')));
 			return Observable.of(actions.paymentSaveFailure('All fields are required'));
 		}),
 	getPayment: (action$) =>
@@ -52,10 +48,7 @@ const payment = {
 					if (resp.response.length) return Observable.of(actions.getPaymentSuccess(resp.response));
 					return Observable.of(actions.getPaymentSuccess([]));
 				})
-				.catch((err) => {
-					if (err.response) return Observable.of(actions.getPaymentFailure(err.response));
-					return Observable.of(actions.getPaymentFailure('Network Error'));
-				});
+				.catch(() => Observable.of(actions.getPaymentFailure('Network Error')));
 		}),
 	updatePayment: (action$) =>
 		action$.ofType(types.UPDATEPAYMENT).switchMap(({ payload }) => {

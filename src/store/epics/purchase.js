@@ -35,10 +35,7 @@ const purchase = {
 							return Observable.of(actions.onLoader(true), actions.purchaseSaveSuccess(resp.response));
 						return Observable.of(actions.purchaseSaveFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (err.response) return Observable.of(actions.purchaseSaveFailure(err.response));
-						return Observable.of(actions.purchaseSaveFailure('Network Error'));
-					});
+					.catch(() => Observable.of(actions.purchaseSaveFailure('Network Error')));
 			return Observable.of(actions.purchaseSaveFailure('All fields are required'));
 		}),
 	getPurchase: (action$) =>
@@ -62,13 +59,16 @@ const purchase = {
 						);
 					}
 				})
-				.catch((err) => {
-					if (err.response) return Observable.of(actions.getPurchaseFailure(err.response));
-					return Observable.of(actions.getPurchaseFailure('Network Error'));
-				});
+				.catch(() => Observable.of(actions.getPurchaseFailure('Network Error')));
 		}),
 	updatePurchase: (action$) =>
 		action$.ofType(types.UPDATEPURCHASE).switchMap(({ payload }) => {
+			const { payments } = store.getState();
+			const purchaseRecordFound = payments.some((x) => x.details.find((y) => y.purchaseId === payload._id));
+			if (purchaseRecordFound)
+				return Observable.of(
+					actions.updatePurchaseFailure("Transaction found for this purchase you can't edit it")
+				);
 			const stock = checkStock();
 			const messages = [];
 			payload.products.forEach((value) => {
@@ -105,6 +105,12 @@ const purchase = {
 		}),
 	deletePurchase: (action$) =>
 		action$.ofType(types.DELETEPURCHASE).switchMap(({ payload }) => {
+			const { payments } = store.getState();
+			const purchaseRecordFound = payments.some((x) => x.details.find((y) => y.purchaseId === payload));
+			if (purchaseRecordFound)
+				return Observable.of(
+					actions.deletePurchaseFailure("Transaction found for this purchase you can't delete it")
+				);
 			const stock = checkStock();
 			const { products } = store.getState().purchases.find((x) => x._id === payload);
 			const messages = [];

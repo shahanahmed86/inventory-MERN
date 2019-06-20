@@ -51,11 +51,7 @@ const sale = {
 							return Observable.of(actions.onLoader(true), actions.saleSaveSuccess(resp.response));
 						return Observable.of(actions.saleSaveFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (typeof err.response === 'string')
-							return Observable.of(actions.saleSaveFailure(err.response));
-						return Observable.of(actions.saleSaveFailure('Network Error'));
-					});
+					.catch(() => Observable.of(actions.saleSaveFailure('Network Error')));
 			return Observable.of(actions.saleSaveFailure('All fields are required'));
 		}),
 	getSale: (action$) =>
@@ -77,13 +73,16 @@ const sale = {
 						return Observable.of(actions.getSaleSuccess([]));
 					}
 				})
-				.catch((err) => {
-					if (typeof err.response === 'string') return Observable.of(actions.getSaleFailure(err.response));
-					return Observable.of(actions.getSaleFailure('Something went wrong'));
-				});
+				.catch(() => Observable.of(actions.getSaleFailure('Something went wrong')));
 		}),
 	updateSale: (action$) =>
 		action$.ofType(types.UPDATESALE).switchMap(({ payload }) => {
+			const { recoveries } = store.getState();
+			const saleRecordFound = recoveries.some((x) => x.details.find((y) => y.saleId === payload._id));
+			if (saleRecordFound)
+				return Observable.of(
+					actions.updateSaleFailure("Transaction found for this sale you can't edit it")
+				);
 			const isFilled = [];
 			payload.products.forEach((x) => {
 				isFilled.push(Object.values(x).every((y) => Boolean(y) || y === false));
@@ -128,15 +127,17 @@ const sale = {
 							return Observable.of(actions.onLoader(true), actions.updateSaleSuccess(resp.response));
 						return Observable.of(actions.updateSaleFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (typeof err.response === 'string')
-							return Observable.of(actions.updateSaleFailure(err.response));
-						return Observable.of(actions.updateSaleFailure('Something went wrong'));
-					});
+					.catch(() => Observable.of(actions.updateSaleFailure('Network Error')));
 			return Observable.of(actions.updateSaleFailure('All fields are required'));
 		}),
 	deleteSale: (action$) =>
 		action$.ofType(types.DELETESALE).switchMap(({ payload }) => {
+			const { recoveries } = store.getState();
+			const saleRecordFound = recoveries.some((x) => x.details.find((y) => y.saleId === payload));
+			if (saleRecordFound)
+				return Observable.of(
+					actions.deleteSaleFailure("Transaction found for this sale you can't delete it")
+				);
 			return Observable.ajax({
 				url: `http://localhost:8080/sale/${payload}`,
 				method: 'DELETE',
@@ -149,7 +150,7 @@ const sale = {
 			}).switchMap((resp) => {
 				if (typeof resp.response === 'string') return Observable.of(actions.deleteSaleSuccess(resp.response));
 				return Observable.of(actions.deleteSaleFailure('something wrong'));
-			});
+			}).catch(() => Observable.of(actions.deleteSaleFailure('Network Error')));
 		})
 };
 

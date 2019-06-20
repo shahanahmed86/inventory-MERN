@@ -29,11 +29,7 @@ const recovery = {
 							return Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response));
 						return Observable.of(actions.recoverySaveFailure('Something went wrong'));
 					})
-					.catch((err) => {
-						if (typeof err.response === 'string')
-							return Observable.of(actions.recoverySaveFailure(err.response));
-						return Observable.of(actions.recoverySaveFailure('Network Error'));
-					});
+					.catch(() => Observable.of(actions.recoverySaveFailure('Network Error')));
 			return Observable.of(actions.recoverySaveFailure('All fields are required'));
 		}),
 	getRecovery: (action$) =>
@@ -52,10 +48,7 @@ const recovery = {
 					if (resp.response.length) return Observable.of(actions.getRecoverySuccess(resp.response));
 					return Observable.of(actions.getRecoverySuccess([]));
 				})
-				.catch((err) => {
-					if (err.response) return Observable.of(actions.getRecoveryFailure(err.response));
-					return Observable.of(actions.getRecoveryFailure('Network Error'));
-				});
+				.catch(() => Observable.of(actions.getRecoveryFailure('Network Error')));
 		}),
 	updateRecovery: (action$) =>
 		action$.ofType(types.UPDATERECOVERY).switchMap(({ payload }) => {
