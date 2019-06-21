@@ -24,12 +24,20 @@ const payment = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (typeof resp.response === 'string')
-							return Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response));
-						return Observable.of(actions.paymentSaveFailure('Something went wrong'));
-					})
-					.catch(() => Observable.of(actions.paymentSaveFailure('Network Error')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response))
+						) : (
+								Observable.of(actions.paymentSaveFailure('Something went wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.paymentSaveFailure(err.response))
+						) : (
+								Observable.of(actions.paymentSaveFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.paymentSaveFailure('All fields are required'));
 		}),
 	getPayment: (action$) =>
@@ -44,11 +52,20 @@ const payment = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response.length) return Observable.of(actions.getPaymentSuccess(resp.response));
-					return Observable.of(actions.getPaymentSuccess([]));
-				})
-				.catch(() => Observable.of(actions.getPaymentFailure('Network Error')));
+				.switchMap(
+					(resp) => resp.response.length ? (
+						Observable.of(actions.getPaymentSuccess(resp.response))
+					) : (
+							Observable.of(actions.getPaymentFailure('Something went wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.getPaymentFailure(err.response))
+					) : (
+							Observable.of(actions.getPaymentFailure('Network Error'))
+						)
+				);
 		}),
 	updatePayment: (action$) =>
 		action$.ofType(types.UPDATEPAYMENT).switchMap(({ payload }) => {
@@ -68,11 +85,21 @@ const payment = {
 					withCredentials: true,
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
-				}).switchMap((resp) => {
-					if (typeof resp.response === 'string')
-						return Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response));
-					return Observable.of(actions.updatePaymentFailure('something wrong'));
-				});
+				})
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response))
+						) : (
+								Observable.of(actions.updatePaymentFailure('something wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.updatePaymentFailure(err.response))
+						) : (
+								Observable.of(actions.updatePaymentFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.updatePaymentFailure('All Fields are Required'));
 		}),
 	deletePayment: (action$) =>
@@ -86,11 +113,21 @@ const payment = {
 				withCredentials: true,
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
-			}).switchMap((resp) => {
-				if (typeof resp.response === 'string')
-					return Observable.of(actions.deletePaymentSuccess(resp.response));
-				return Observable.of(actions.deletePaymentFailure('something wrong'));
-			});
+			})
+				.switchMap(
+					(resp) => typeof resp.response === 'string' ? (
+						Observable.of(actions.deletePaymentSuccess(resp.response))
+					) : (
+							Observable.of(actions.deletePaymentFailure('something wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.updatePaymentFailure(err.response))
+					) : (
+							Observable.of(actions.updatePaymentFailure('Network Error'))
+						)
+				);
 		})
 };
 

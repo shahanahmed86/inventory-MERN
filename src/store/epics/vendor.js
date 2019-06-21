@@ -5,6 +5,14 @@ import types from '../constants';
 import actions from '../actions';
 import store from '../index';
 
+const checkEntries = (id, book, text) => {
+	const { purchases } = store.getState();
+	return {
+		condition: purchases.some((x) => x.vendorId._id === id),
+		message: `Transaction found for this ${book} you can't ${text} it`
+	}
+}
+
 const vendor = {
 	vendorSave: (action$) =>
 		action$.ofType(types.VENDORSAVE).switchMap(({ payload }) => {
@@ -21,12 +29,20 @@ const vendor = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (resp.response)
-							return Observable.of(actions.onLoader(true), actions.vendorSaveSuccess(resp.response));
-						return Observable.of(actions.vendorSaveFailure('Something went wrong'));
-					})
-					.catch(() => Observable.of(actions.vendorSaveFailure('Network Error')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.vendorSaveSuccess(resp.response))
+						) : (
+								Observable.of(actions.vendorSaveFailure('Something went wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.vendorSaveFailure(err.response))
+						) : (
+								Observable.of(actions.vendorSaveFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.vendorSaveFailure('All fields are required'));
 		}),
 	getVendor: (action$) =>
@@ -41,23 +57,30 @@ const vendor = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response.vendors.length) {
-						return Observable.of(actions.getVendorSuccess(resp.response.vendors));
-					} else {
-						return Observable.of(actions.getVendorSuccess([]));
-					}
-				})
-				.catch(() => Observable.of(actions.getVendorFailure('Network Error')));
+				.switchMap(
+					(resp) => resp.response.vendors.length ? (
+						Observable.of(actions.getVendorSuccess(resp.response.vendors))
+					) : (
+							Observable.of(actions.getVendorFailure('Something went wrong'))
+
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.getVendorFailure(err.response))
+					) : (
+							Observable.of(actions.getVendorFailure('Network Error'))
+						)
+				);
 		}),
 	updateVendor: (action$) =>
 		action$.ofType(types.UPDATEVENDOR).switchMap(({ payload }) => {
-			const { purchases } = store.getState();
-			const vendorRecordFound = purchases.some((x) => x.vendorId._id === payload._id);
-			if (vendorRecordFound)
+			const checkTransaction = checkEntries(payload._id, 'Vendor', 'Edit');
+			if (checkTransaction.condition) {
 				return Observable.of(
-					actions.updateVendorFailure("Transaction found for this vendor you can't edit it")
+					actions.updateVendorFailure(checkTransaction.message)
 				);
+			}
 			const isMatch = Object.values(payload).entries((val) => Boolean(val));
 			if (isMatch)
 				return Observable.ajax({
@@ -71,22 +94,30 @@ const vendor = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (resp.response)
-							return Observable.of(actions.onLoader(true), actions.updateVendorSuccess(resp.response));
-						return Observable.of(actions.updateVendorFailure('Something went Wrong'));
-					})
-					.catch(() => Observable.of(actions.updateVendorFailure('Network Error')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.updateVendorSuccess(resp.response))
+						) : (
+								Observable.of(actions.updateVendorFailure('Something went Wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.updateVendorFailure(err.response))
+						) : (
+								Observable.of(actions.updateVendorFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.updateVendorFailure('All fields are required'));
 		}),
 	deleteVendor: (action$) =>
 		action$.ofType(types.DELETEVENDOR).switchMap(({ payload }) => {
-			const { purchases } = store.getState();
-			const vendorRecordFound = purchases.some((x) => x.vendorId._id === payload);
-			if (vendorRecordFound)
+			const checkTransaction = checkEntries(payload, 'Vendor', 'Delete');
+			if (checkTransaction.condition) {
 				return Observable.of(
-					actions.updateVendorFailure("Transaction found for this vendor you can't delete it")
+					actions.deleteVendorFailure(checkTransaction.message)
 				);
+			}
 			return Observable.ajax({
 				url: `http://localhost:8080/vendor/${payload}`,
 				method: 'DELETE',
@@ -97,11 +128,20 @@ const vendor = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response) return Observable.of(actions.deleteVendorSuccess(resp.response));
-					return Observable.of(actions.deleteVendorFailure('Something went Wrong'));
-				})
-				.catch(() => Observable.of(actions.deleteVendorFailure('Network Error')));
+				.switchMap(
+					(resp) => typeof resp.response === 'string' ? (
+						Observable.of(actions.deleteVendorSuccess(resp.response))
+					) : (
+							Observable.of(actions.deleteVendorFailure('Something went Wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.deleteVendorFailure(err.response))
+					) : (
+							Observable.of(actions.deleteVendorFailure('Network Error'))
+						)
+				);
 		})
 };
 

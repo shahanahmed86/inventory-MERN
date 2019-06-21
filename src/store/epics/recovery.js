@@ -24,12 +24,19 @@ const recovery = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (typeof resp.response === 'string')
-							return Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response));
-						return Observable.of(actions.recoverySaveFailure('Something went wrong'));
-					})
-					.catch(() => Observable.of(actions.recoverySaveFailure('Network Error')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response))
+						) : (
+								Observable.of(actions.recoverySaveFailure('Something went wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.recoverySaveFailure(err.response))
+						) : (
+								Observable.of(actions.recoverySaveFailure('Network Error'))
+							));
 			return Observable.of(actions.recoverySaveFailure('All fields are required'));
 		}),
 	getRecovery: (action$) =>
@@ -44,11 +51,20 @@ const recovery = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response.length) return Observable.of(actions.getRecoverySuccess(resp.response));
-					return Observable.of(actions.getRecoverySuccess([]));
-				})
-				.catch(() => Observable.of(actions.getRecoveryFailure('Network Error')));
+				.switchMap(
+					(resp) => resp.response.length ? (
+						Observable.of(actions.getRecoverySuccess(resp.response))
+					) : (
+							Observable.of(actions.getRecoveryFailure('Something went wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.getRecoveryFailure(err.response))
+					) : (
+							Observable.of(actions.getRecoveryFailure('Network Error'))
+						)
+				);
 		}),
 	updateRecovery: (action$) =>
 		action$.ofType(types.UPDATERECOVERY).switchMap(({ payload }) => {
@@ -68,11 +84,21 @@ const recovery = {
 					withCredentials: true,
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
-				}).switchMap((resp) => {
-					if (typeof resp.response === 'string')
-						return Observable.of(actions.onLoader(true), actions.updateRecoverySuccess(resp.response));
-					return Observable.of(actions.updateRecoveryFailure('something wrong'));
-				});
+				})
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.updateRecoverySuccess(resp.response))
+						) : (
+								Observable.of(actions.updateRecoveryFailure('something wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.updateRecoveryFailure(err.response))
+						) : (
+								Observable.of(actions.updateRecoveryFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.updateRecoveryFailure('All Fields are Required'));
 		}),
 	deleteRecovery: (action$) =>
@@ -86,11 +112,21 @@ const recovery = {
 				withCredentials: true,
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
-			}).switchMap((resp) => {
-				if (typeof resp.response === 'string')
-					return Observable.of(actions.deleteRecoverySuccess(resp.response));
-				return Observable.of(actions.deleteRecoveryFailure('something wrong'));
-			});
+			})
+				.switchMap(
+					(resp) => typeof resp.response === 'string' ? (
+						Observable.of(actions.deleteRecoverySuccess(resp.response))
+					) : (
+							Observable.of(actions.deleteRecoveryFailure('something wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.deleteRecoveryFailure(err.response))
+					) : (
+							Observable.of(actions.deleteRecoveryFailure('Network Error'))
+						)
+				);
 		})
 };
 

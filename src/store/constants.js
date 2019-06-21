@@ -1,8 +1,6 @@
 const types = {
     ONSNACK: 'ONSNACK',
     
-    ONDIALOG: 'ONDIALOG',
-    
     ONLOADER: 'ONLOADER',
 
     SIGNUP: 'SIGNUP',

@@ -5,6 +5,14 @@ import types from '../constants';
 import actions from '../actions';
 import store from '../index';
 
+const checkEntries = (id, book, text) => {
+	const { sales } = store.getState();
+	return {
+		condition: sales.some((x) => x.clientId._id === id),
+		message: `Transaction found for this ${book} you can't ${text} it`
+	};
+}
+
 const client = {
 	clientSave: (action$) =>
 		action$.ofType(types.CLIENTSAVE).switchMap(({ payload }) => {
@@ -21,12 +29,20 @@ const client = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (resp.response)
-							return Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response));
-						return Observable.of(actions.clientSaveFailure('Something went wrong'));
-					})
-					.catch(() => Observable.of(actions.clientSaveFailure('Network Error')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response))
+						) : (
+								Observable.of(actions.clientSaveFailure('Something went wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.clientSaveFailure(err.response))
+						) : (
+								Observable.of(actions.clientSaveFailure('Network Error'))
+							)
+					);
 			return Observable.of(actions.clientSaveFailure('All fields are required'));
 		}),
 	getClient: (action$) =>
@@ -41,25 +57,30 @@ const client = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response.clients.length) {
-						return Observable.of(actions.getClientSuccess(resp.response.clients));
-					} else {
-						return Observable.of(
-							actions.getClientSuccess([])
-						);
-					}
-				})
-				.catch(() => Observable.of(actions.getClientFailure('Network Error')));
+				.switchMap(
+					(resp) => resp.response.clients.length ? (
+						Observable.of(actions.getClientSuccess(resp.response.clients))
+					) : (
+							Observable.of(actions.getClientFailure('Something went wrong'))
+						)
+
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.getClientFailure(err.response))
+					) : (
+							Observable.of(actions.getClientFailure('Network Error'))
+						)
+				);
 		}),
 	updateClient: (action$) =>
 		action$.ofType(types.UPDATECLIENT).switchMap(({ payload }) => {
-			const { sales } = store.getState();
-			const clientRecordFound = sales.some((x) => x.clientId._id === payload._id);
-			if (clientRecordFound)
+			const checkTransaction = checkEntries(payload._id, 'Client', 'Edit');
+			if (checkTransaction.condition) {
 				return Observable.of(
-					actions.updateClientFailure("Transaction found for this client you can't edit it")
+					actions.updateClientFailure(checkTransaction.message)
 				);
+			}
 			const isMatch = Object.values(payload).entries((val) => Boolean(val));
 			if (isMatch)
 				return Observable.ajax({
@@ -73,22 +94,30 @@ const client = {
 					createXHR: () => new XMLHttpRequest(),
 					responseType: 'json'
 				})
-					.switchMap((resp) => {
-						if (resp.response)
-							return Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response));
-						return Observable.of(actions.updateClientFailure('Something went Wrong'));
-					})
-					.catch(() => Observable.of(actions.updateClientFailure('Network Failure')));
+					.switchMap(
+						(resp) => typeof resp.response === 'string' ? (
+							Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response))
+						) : (
+								Observable.of(actions.updateClientFailure('Something went Wrong'))
+							)
+					)
+					.catch(
+						(err) => typeof err.response === 'string' ? (
+							Observable.of(actions.updateClientFailure(err.response))
+						) : (
+								Observable.of(actions.updateClientFailure('Network Failure'))
+							)
+					);
 			return Observable.of(actions.updateClientFailure('All fields are required'));
 		}),
 	deleteClient: (action$) =>
 		action$.ofType(types.DELETECLIENT).switchMap(({ payload }) => {
-			const { sales } = store.getState();
-			const clientRecordFound = sales.some((x) => x.clientId._id === payload);
-			if (clientRecordFound)
+			const checkTransaction = checkEntries(payload, 'Client', 'Delete');
+			if (checkTransaction.condition) {
 				return Observable.of(
-					actions.deleteClientFailure("Transaction found for this client you can't delete it")
+					actions.deleteClientFailure(checkTransaction.message)
 				);
+			}
 			return Observable.ajax({
 				url: `http://localhost:8080/client/${payload}`,
 				method: 'DELETE',
@@ -99,12 +128,20 @@ const client = {
 				createXHR: () => new XMLHttpRequest(),
 				responseType: 'json'
 			})
-				.switchMap((resp) => {
-					if (resp.response)
-						return Observable.of(actions.deleteClientSuccess(resp.response));
-					return Observable.of(actions.deleteClientFailure('Something went Wrong'));
-				})
-				.catch(() => Observable.of(actions.deleteClientFailure('Network Failure')));
+				.switchMap(
+					(resp) => typeof resp.response === 'string' ? (
+						Observable.of(actions.deleteClientSuccess(resp.response))
+					) : (
+							Observable.of(actions.deleteClientFailure('Something went Wrong'))
+						)
+				)
+				.catch(
+					(err) => typeof err.response === 'string' ? (
+						Observable.of(actions.deleteClientFailure(err.response))
+					) : (
+							Observable.of(actions.deleteClientFailure('Network Failure'))
+						)
+				);
 		})
 };
 

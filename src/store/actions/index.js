@@ -7,12 +7,6 @@ const actions = {
 			payload
 		};
 	},
-	onDialog: (payload) => {
-		return {
-			type: types.ONDIALOG,
-			payload
-		};
-	},
 	onLoader: (payload) => {
 		return {
 			type: types.ONLOADER,

@@ -14,8 +14,6 @@ const initialState = {
 
 	isSnackOpen: false,
 	snackMessage: '',
-
-	isDialogOpen: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -25,12 +23,6 @@ const reducer = (state = initialState, action) => {
 				...state,
 				isSnackOpen: action.payload.snack,
 				snackMessage: action.payload.message
-			};
-		}
-		case types.ONDIALOG: {
-			return {
-				...state,
-				isDialogOpen: action.payload
 			};
 		}
 		case types.ONLOADER: {
@@ -49,12 +41,15 @@ const reducer = (state = initialState, action) => {
 		case types.SIGNOUTFAILURE: {
 			return {
 				...state,
-				isLoading: false,
-				isDialogOpen: false,
 				profile: {},
 				products: [],
 				vendors: [],
-				clients: []
+				clients: [],
+				purchases: [],
+				sales: [],
+				payments: [],
+				recoveries: [],
+				isLoading: false
 			};
 		}
 		case types.ISLOGGEDIN: {
@@ -95,7 +90,7 @@ const reducer = (state = initialState, action) => {
 		case types.UPDATEPAYMENTSUCCESS:
 		case types.DELETEPAYMENTSUCCESS:
 		case types.RECOVERYSAVESUCCESS:
-		case types.UPDATERECOVERYSUCCESS: 
+		case types.UPDATERECOVERYSUCCESS:
 		case types.DELETERECOVERYSUCCESS: {
 			return {
 				...state,
@@ -119,11 +114,11 @@ const reducer = (state = initialState, action) => {
 		case types.SALESAVEFAILURE:
 		case types.UPDATESALEFAILURE:
 		case types.DELETESALEFAILURE:
-		case types.PAYMENTSAVEFAILURE: 
+		case types.PAYMENTSAVEFAILURE:
 		case types.UPDATEPAYMENTFAILURE:
 		case types.DELETEPAYMENTFAILURE:
-		case types.RECOVERYSAVEFAILURE: 
-		case types.UPDATERECOVERYFAILURE: 
+		case types.RECOVERYSAVEFAILURE:
+		case types.UPDATERECOVERYFAILURE:
 		case types.DELETERECOVERYFAILURE: {
 			return {
 				...state,
@@ -137,12 +132,12 @@ const reducer = (state = initialState, action) => {
 				products: action.payload
 			};
 		}
-		case types.GETPRODUCTFAILURE: 
-		case types.GETVENDORFAILURE: 
-		case types.GETCLIENTFAILURE: 
-		case types.GETPURCHASEFAILURE: 
-		case types.GETSALEFAILURE: 
-		case types.GETPAYMENTFAILURE: 
+		case types.GETPRODUCTFAILURE:
+		case types.GETVENDORFAILURE:
+		case types.GETCLIENTFAILURE:
+		case types.GETPURCHASEFAILURE:
+		case types.GETSALEFAILURE:
+		case types.GETPAYMENTFAILURE:
 		case types.GETRECOVERYFAILURE: {
 			return {
 				...state,
