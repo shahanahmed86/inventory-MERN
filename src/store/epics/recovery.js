@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import types from '../constants';
 import actions from '../actions';
+import HttpService from '../../service';
 
 const recovery = {
 	recoverySave: (action$) =>
@@ -13,57 +14,35 @@ const recovery = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return Observable.ajax({
-					url: 'http://localhost:8080/recovery',
-					method: 'POST',
-					body: payload,
-					headers: { 'Content-Type': 'application/json' },
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.post(`http://localhost:8080/recovery`, `POST`, payload)
 					.switchMap(
-						(resp) => typeof resp.response === 'string' ? (
-							Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response))
-						) : (
-								Observable.of(actions.recoverySaveFailure('Something went wrong'))
-							)
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response))
+								: Observable.of(actions.recoverySaveFailure('Something went wrong'))
 					)
 					.catch(
-						(err) => typeof err.response === 'string' ? (
-							Observable.of(actions.recoverySaveFailure(err.response))
-						) : (
-								Observable.of(actions.recoverySaveFailure('Network Error'))
-							));
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.recoverySaveFailure(err.response))
+								: Observable.of(actions.recoverySaveFailure('Network Error'))
+					);
 			return Observable.of(actions.recoverySaveFailure('All fields are required'));
 		}),
 	getRecovery: (action$) =>
 		action$.ofType(types.GETRECOVERY).switchMap(() => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/recovery',
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.get(`http://localhost:8080/recovery`, `GET`)
 				.switchMap(
-					(resp) => resp.response.length ? (
-						Observable.of(actions.getRecoverySuccess(resp.response))
-					) : (
-							Observable.of(actions.getRecoveryFailure('Something went wrong'))
-						)
+					(resp) =>
+						resp.response.length
+							? Observable.of(actions.getRecoverySuccess(resp.response))
+							: Observable.of(actions.getRecoverySuccess([]))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.getRecoveryFailure(err.response))
-					) : (
-							Observable.of(actions.getRecoveryFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.getRecoveryFailure(err.response))
+							: Observable.of(actions.getRecoveryFailure('Network Error'))
 				);
 		}),
 	updateRecovery: (action$) =>
@@ -74,58 +53,35 @@ const recovery = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return Observable.ajax({
-					url: `http://localhost:8080/recovery/${payload._id}`,
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: payload,
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.put(`http://localhost:8080/recovery/${payload._id}`, `PUT`, payload)
 					.switchMap(
-						(resp) => typeof resp.response === 'string' ? (
-							Observable.of(actions.onLoader(true), actions.updateRecoverySuccess(resp.response))
-						) : (
-								Observable.of(actions.updateRecoveryFailure('something wrong'))
-							)
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.onLoader(true), actions.updateRecoverySuccess(resp.response))
+								: Observable.of(actions.updateRecoveryFailure('something wrong'))
 					)
 					.catch(
-						(err) => typeof err.response === 'string' ? (
-							Observable.of(actions.updateRecoveryFailure(err.response))
-						) : (
-								Observable.of(actions.updateRecoveryFailure('Network Error'))
-							)
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.updateRecoveryFailure(err.response))
+								: Observable.of(actions.updateRecoveryFailure('Network Error'))
 					);
 			return Observable.of(actions.updateRecoveryFailure('All Fields are Required'));
 		}),
 	deleteRecovery: (action$) =>
 		action$.ofType(types.DELETERECOVERY).switchMap(({ payload }) => {
-			return Observable.ajax({
-				url: `http://localhost:8080/recovery/${payload}`,
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.delete(`http://localhost:8080/recovery/${payload}`, `DELETE`)
 				.switchMap(
-					(resp) => typeof resp.response === 'string' ? (
-						Observable.of(actions.deleteRecoverySuccess(resp.response))
-					) : (
-							Observable.of(actions.deleteRecoveryFailure('something wrong'))
-						)
+					(resp) =>
+						typeof resp.response === 'string'
+							? Observable.of(actions.deleteRecoverySuccess(resp.response))
+							: Observable.of(actions.deleteRecoveryFailure('something wrong'))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.deleteRecoveryFailure(err.response))
-					) : (
-							Observable.of(actions.deleteRecoveryFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.deleteRecoveryFailure(err.response))
+							: Observable.of(actions.deleteRecoveryFailure('Network Error'))
 				);
 		})
 };

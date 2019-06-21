@@ -132,19 +132,19 @@ const reducer = (state = initialState, action) => {
 				products: action.payload
 			};
 		}
-		case types.GETPRODUCTFAILURE:
-		case types.GETVENDORFAILURE:
-		case types.GETCLIENTFAILURE:
-		case types.GETPURCHASEFAILURE:
-		case types.GETSALEFAILURE:
-		case types.GETPAYMENTFAILURE:
-		case types.GETRECOVERYFAILURE: {
-			return {
-				...state,
-				isSnackOpen: true,
-				snackMessage: action.payload
-			};
-		}
+		// case types.GETPRODUCTFAILURE:
+		// case types.GETVENDORFAILURE:
+		// case types.GETCLIENTFAILURE:
+		// case types.GETPURCHASEFAILURE:
+		// case types.GETSALEFAILURE:
+		// case types.GETPAYMENTFAILURE:
+		// case types.GETRECOVERYFAILURE: {
+		// 	return {
+		// 		...state,
+		// 		isSnackOpen: true,
+		// 		snackMessage: action.payload
+		// 	};
+		// }
 		case types.GETVENDORSUCCESS: {
 			return {
 				...state,

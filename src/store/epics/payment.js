@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 
 import types from '../constants';
 import actions from '../actions';
+import HttpService from '../../service';
 
 const payment = {
 	paymentSave: (action$) =>
@@ -13,58 +14,35 @@ const payment = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return Observable.ajax({
-					url: 'http://localhost:8080/payment',
-					method: 'POST',
-					body: payload,
-					headers: { 'Content-Type': 'application/json' },
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.post(`http://localhost:8080/payment`, `POST`, payload)
 					.switchMap(
-						(resp) => typeof resp.response === 'string' ? (
-							Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response))
-						) : (
-								Observable.of(actions.paymentSaveFailure('Something went wrong'))
-							)
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response))
+								: Observable.of(actions.paymentSaveFailure('Something went wrong'))
 					)
 					.catch(
-						(err) => typeof err.response === 'string' ? (
-							Observable.of(actions.paymentSaveFailure(err.response))
-						) : (
-								Observable.of(actions.paymentSaveFailure('Network Error'))
-							)
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.paymentSaveFailure(err.response))
+								: Observable.of(actions.paymentSaveFailure('Network Error'))
 					);
 			return Observable.of(actions.paymentSaveFailure('All fields are required'));
 		}),
 	getPayment: (action$) =>
 		action$.ofType(types.GETPAYMENT).switchMap(() => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/payment',
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.get(`http://localhost:8080/payment`, `GET`)
 				.switchMap(
-					(resp) => resp.response.length ? (
-						Observable.of(actions.getPaymentSuccess(resp.response))
-					) : (
-							Observable.of(actions.getPaymentFailure('Something went wrong'))
-						)
+					(resp) =>
+						resp.response.length
+							? Observable.of(actions.getPaymentSuccess(resp.response))
+							: Observable.of(actions.getPaymentSuccess([]))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.getPaymentFailure(err.response))
-					) : (
-							Observable.of(actions.getPaymentFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.getPaymentFailure(err.response))
+							: Observable.of(actions.getPaymentFailure('Network Error'))
 				);
 		}),
 	updatePayment: (action$) =>
@@ -75,58 +53,35 @@ const payment = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return Observable.ajax({
-					url: `http://localhost:8080/payment/${payload._id}`,
-					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
-					body: payload,
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.put(`http://localhost:8080/payment/${payload._id}`, `PUT`, payload)
 					.switchMap(
-						(resp) => typeof resp.response === 'string' ? (
-							Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response))
-						) : (
-								Observable.of(actions.updatePaymentFailure('something wrong'))
-							)
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response))
+								: Observable.of(actions.updatePaymentFailure('something wrong'))
 					)
 					.catch(
-						(err) => typeof err.response === 'string' ? (
-							Observable.of(actions.updatePaymentFailure(err.response))
-						) : (
-								Observable.of(actions.updatePaymentFailure('Network Error'))
-							)
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.updatePaymentFailure(err.response))
+								: Observable.of(actions.updatePaymentFailure('Network Error'))
 					);
 			return Observable.of(actions.updatePaymentFailure('All Fields are Required'));
 		}),
 	deletePayment: (action$) =>
 		action$.ofType(types.DELETEPAYMENT).switchMap(({ payload }) => {
-			return Observable.ajax({
-				url: `http://localhost:8080/payment/${payload}`,
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.delete(`http://localhost:8080/payment/${payload}`, `DELETE`)
 				.switchMap(
-					(resp) => typeof resp.response === 'string' ? (
-						Observable.of(actions.deletePaymentSuccess(resp.response))
-					) : (
-							Observable.of(actions.deletePaymentFailure('something wrong'))
-						)
+					(resp) =>
+						typeof resp.response === 'string'
+							? Observable.of(actions.deletePaymentSuccess(resp.response))
+							: Observable.of(actions.deletePaymentFailure('something wrong'))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.updatePaymentFailure(err.response))
-					) : (
-							Observable.of(actions.updatePaymentFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.updatePaymentFailure(err.response))
+							: Observable.of(actions.updatePaymentFailure('Network Error'))
 				);
 		})
 };

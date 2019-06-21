@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import types from '../constants';
 import actions from '../actions';
 import store from '../index';
+import HttpService from '../../service';
 
 const checkStock = () => {
 	const { purchases, sales, products } = store.getState();
@@ -20,74 +21,49 @@ const checkEntries = (id, book, text) => {
 		condition: payments.some((x) => x.details.find((y) => y.purchaseId === id)),
 		message: `Transaction found for this ${book} you can't ${text} it`
 	};
-}
+};
 
 const purchase = {
 	purchaseSave: (action$) =>
 		action$.ofType(types.PURCHASESAVE).switchMap(({ payload }) => {
 			const isMatch = Object.values(payload).every((val) => Boolean(val));
 			if (isMatch)
-				return Observable.ajax({
-					url: 'http://localhost:8080/purchase',
-					method: 'POST',
-					body: payload,
-					headers: { 'Content-Type': 'application/json' },
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.post(`http://localhost:8080/purchase`, `POST`, payload)
 					.switchMap(
-						(resp) => typeof resp.response === 'string' ? (
-							Observable.of(actions.onLoader(true), actions.purchaseSaveSuccess(resp.response))
-						) : (
-								Observable.of(actions.purchaseSaveFailure('Something went wrong'))
-							)
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.onLoader(true), actions.purchaseSaveSuccess(resp.response))
+								: Observable.of(actions.purchaseSaveFailure('Something went wrong'))
 					)
 					.catch(
-						(err) => typeof err.response === 'string' ? (
-							Observable.of(actions.purchaseSaveFailure(err.response))
-						) : (
-								Observable.of(actions.purchaseSaveFailure('Network Error'))
-							)
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.purchaseSaveFailure(err.response))
+								: Observable.of(actions.purchaseSaveFailure('Network Error'))
 					);
 			return Observable.of(actions.purchaseSaveFailure('All fields are required'));
 		}),
 	getPurchase: (action$) =>
 		action$.ofType(types.GETPURCHASE).switchMap(() => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/purchase',
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.get(`http://localhost:8080/purchase`, `GET`)
 				.switchMap(
-					(resp) => resp.response.length ? (
-						Observable.of(actions.getPurchaseSuccess(resp.response))
-					) : (
-							Observable.of(actions.getPurchaseFailure('something went wrong'))
-						)
+					(resp) =>
+						resp.response.length
+							? Observable.of(actions.getPurchaseSuccess(resp.response))
+							: Observable.of(actions.getPurchaseSuccess([]))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.getPurchaseFailure(err.response))
-					) : (
-							Observable.of(actions.getPurchaseFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.getPurchaseFailure(err.response))
+							: Observable.of(actions.getPurchaseFailure('Network Error'))
 				);
 		}),
 	updatePurchase: (action$) =>
 		action$.ofType(types.UPDATEPURCHASE).switchMap(({ payload }) => {
 			const checkTransaction = checkEntries(payload._id, 'Purchase', 'Edit');
 			if (checkTransaction.condition) {
-				return Observable.of(
-					actions.updatePurchaseFailure(checkTransaction.message)
-				);
+				return Observable.of(actions.updatePurchaseFailure(checkTransaction.message));
 			}
 			const stock = checkStock();
 			const messages = [];
@@ -107,39 +83,25 @@ const purchase = {
 				}
 			});
 			if (messages.length) return Observable.of(actions.updatePurchaseFailure('Please rectify errors'));
-			return Observable.ajax({
-				url: `http://localhost:8080/purchase/${payload._id}`,
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: payload,
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.put(`http://localhost:8080/purchase/${payload._id}`, `PUT`, payload)
 				.switchMap(
-					(resp) => typeof resp.response === 'string' ? (
-						Observable.of(actions.onLoader(true), actions.updatePurchaseSuccess(resp.response))
-					) : (
-							Observable.of(actions.updatePurchaseFailure('something wrong'))
-						)
+					(resp) =>
+						typeof resp.response === 'string'
+							? Observable.of(actions.onLoader(true), actions.updatePurchaseSuccess(resp.response))
+							: Observable.of(actions.updatePurchaseFailure('something wrong'))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.updatePurchaseFailure(err.response))
-					) : (
-							Observable.of(actions.updatePurchaseFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.updatePurchaseFailure(err.response))
+							: Observable.of(actions.updatePurchaseFailure('Network Error'))
 				);
 		}),
 	deletePurchase: (action$) =>
 		action$.ofType(types.DELETEPURCHASE).switchMap(({ payload }) => {
 			const checkTransaction = checkEntries(payload, 'Purchase', 'delete');
 			if (checkTransaction.condition) {
-				return Observable.of(
-					actions.deletePurchaseFailure(checkTransaction.condition)
-				);
+				return Observable.of(actions.deletePurchaseFailure(checkTransaction.message));
 			}
 			const stock = checkStock();
 			const { products } = store.getState().purchases.find((x) => x._id === payload);
@@ -149,34 +111,23 @@ const purchase = {
 				if (qty < 0) {
 					messages.push(
 						`${value.productId.productName} will be negative by ${stock[value.productId._id] -
-						value.quantity}`
+							value.quantity}`
 					);
 				}
 			});
 			if (messages.length) return Observable.of(actions.deletePurchaseFailure(messages.join(', ')));
-			return Observable.ajax({
-				url: `http://localhost:8080/purchase/${payload}`,
-				method: 'DELETE',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.delete(`http://localhost:8080/purchase/${payload}`, `DELETE`)
 				.switchMap(
-					(resp) => typeof resp.response === 'string' ? (
-						Observable.of(actions.deletePurchaseSuccess(resp.response))
-					) : (
-							Observable.of(actions.deletePurchaseFailure('something wrong'))
-						)
+					(resp) =>
+						typeof resp.response === 'string'
+							? Observable.of(actions.deletePurchaseSuccess(resp.response))
+							: Observable.of(actions.deletePurchaseFailure('something wrong'))
 				)
 				.catch(
-					(err) => typeof err.response === 'string' ? (
-						Observable.of(actions.deletePurchaseFailure(err.response))
-					) : (
-							Observable.of(actions.deletePurchaseFailure('Network Error'))
-						)
+					(err) =>
+						typeof err.response === 'string'
+							? Observable.of(actions.deletePurchaseFailure(err.response))
+							: Observable.of(actions.deletePurchaseFailure('Network Error'))
 				);
 		})
 };
