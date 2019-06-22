@@ -41,7 +41,7 @@ const client = {
 					(resp) =>
 						resp.response.clients.length
 							? Observable.of(actions.getClientSuccess(resp.response.clients))
-							: Observable.of(actions.getClientFailure('Something went wrong'))
+							: Observable.of(actions.getClientSuccess([]))
 				)
 				.catch(
 					(err) =>

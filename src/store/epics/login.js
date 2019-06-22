@@ -3,20 +3,12 @@ import { Observable } from 'rxjs';
 
 import types from '../constants';
 import actions from '../actions';
+import HttpService from '../../service';
 
 const login = {
 	signUp: (action$) =>
 		action$.ofType(types.SIGNUP).switchMap(({ payload }) => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/user/signup',
-				body: payload,
-				async: true,
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				crossDomain: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.signUp(`http://localhost:8080/user/signup`, `POST`, payload)
 				.switchMap(
 					(res) => typeof res.response === 'string' && (
 						Observable.of(
@@ -45,17 +37,7 @@ const login = {
 		action$.ofType(types.SIGNIN).switchMap(({ payload }) => {
 			const isMatch = Object.values(payload).every((x) => Boolean(x));
 			if (isMatch)
-				return Observable.ajax({
-					url: 'http://localhost:8080/user/signin',
-					method: 'POST',
-					body: payload,
-					headers: { 'Content-Type': 'application/json' },
-					async: true,
-					crossDomain: true,
-					withCredentials: true,
-					createXHR: () => new XMLHttpRequest(),
-					responseType: 'json'
-				})
+				return HttpService.post(`http://localhost:8080/user/signin`, `POST`, payload)
 					.switchMap(
 						(res) => typeof res.response === 'string' && (
 							Observable.of(
@@ -85,16 +67,7 @@ const login = {
 		}),
 	signOut: (action$) =>
 		action$.ofType(types.SIGNOUT).switchMap(() => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/user/logout',
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.signOut(`http://localhost:8080/user/logout`, `POST`)
 				.switchMap(
 					(res) => typeof res.response === 'string' && (
 						Observable.of(
@@ -119,16 +92,7 @@ const login = {
 		}),
 	isLoggedIn: (action$) =>
 		action$.ofType(types.ISLOGGEDIN).switchMap(() => {
-			return Observable.ajax({
-				url: 'http://localhost:8080/user',
-				method: 'GET',
-				headers: { 'Content-Type': 'application/json' },
-				async: true,
-				crossDomain: true,
-				withCredentials: true,
-				createXHR: () => new XMLHttpRequest(),
-				responseType: 'json'
-			})
+			return HttpService.get(`http://localhost:8080/user`, `GET`)
 				.switchMap(
 					(res) => res.response.doc ? (
 						Observable.of(actions.isLoggedInSuccess(res.response.doc))
