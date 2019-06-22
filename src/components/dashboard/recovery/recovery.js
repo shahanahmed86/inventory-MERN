@@ -332,9 +332,13 @@ class Recovery extends Component {
 			const oldDetails = this.props.store.recoveries
 				.find((x) => x.refNo === this.state.refNo)
 				.details.find((x) => x.invoice === value.invoice);
-			if (oldDetails.saleId === details[ind].saleId) {
-				details[ind].pay = oldDetails.pay;
-				details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
+			if (oldDetails) {
+				if (oldDetails.saleId === details[ind].saleId) {
+					details[ind].pay = oldDetails.pay;
+					details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
+				} else {
+					details[ind].balance = +amounts.invoiceValue - +amounts.realized;
+				}
 			} else {
 				details[ind].balance = +amounts.invoiceValue - +amounts.realized;
 			}

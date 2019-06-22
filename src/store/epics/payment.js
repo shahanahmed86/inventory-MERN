@@ -75,7 +75,7 @@ const payment = {
 					(resp) =>
 						typeof resp.response === 'string'
 							? Observable.of(actions.deletePaymentSuccess(resp.response))
-							: Observable.of(actions.deletePaymentFailure('something wrong'))
+							: Observable.of(actions.deletePaymentFailure('Something went wrong'))
 				)
 				.catch(
 					(err) =>

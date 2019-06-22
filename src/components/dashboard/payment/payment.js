@@ -326,9 +326,13 @@ class Payment extends Component {
 			const oldDetails = this.props.store.payments
 				.find((x) => x.refNo === this.state.refNo)
 				.details.find((x) => x.invoice === value.invoice);
-			if (oldDetails.purchaseId === details[ind].purchaseId) {
-				details[ind].pay = oldDetails.pay;
-				details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
+			if (oldDetails) {
+				if (oldDetails.purchaseId === details[ind].purchaseId) {
+					details[ind].pay = oldDetails.pay;
+					details[ind].balance = +amounts.invoiceValue - +amounts.realized + +oldDetails.pay;
+				} else {
+					details[ind].balance = +amounts.invoiceValue - +amounts.realized;
+				}
 			} else {
 				details[ind].balance = +amounts.invoiceValue - +amounts.realized;
 			}

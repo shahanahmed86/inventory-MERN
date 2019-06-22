@@ -62,6 +62,14 @@ const styles = (theme) => ({
 	}
 });
 
+const getNowDate = () => {
+	const x = new Date();
+	let date = '2019-';
+	date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+	date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+	return date;
+};
+
 class Purchase extends Component {
 	constructor() {
 		super();
@@ -90,6 +98,7 @@ class Purchase extends Component {
 		};
 	}
 	componentDidMount() {
+		this.getRefNo();
 		channel.bind('sales', () => {
 			this.props.getSale();
 		});
@@ -102,20 +111,34 @@ class Purchase extends Component {
 		channel.bind('vendors', () => {
 			this.props.getVendor();
 		});
-		this.getRefNo();
-		this.interval = setInterval(() => this.getRefNo(), 3000);
 	}
-	componentWillUnmount() {
-		clearInterval(this.interval);
-	}
+	static getDerivedStateFromProps = (nextProps, prevState) => {
+		const { purchases } = nextProps.store;
+		const date = getNowDate();
+		if (purchases.length && !prevState.editing) {
+			const arr = [];
+			for (let key in purchases) {
+				arr.push(purchases[key].invoice);
+			}
+			const invoice = Math.max(...arr) + 1;
+			if (invoice !== prevState.invoice) return { invoice, date };
+			return null;
+		}
+		return null;
+	};
 	getRefNo = () => {
-		const x = new Date();
-		let date = '2019-';
-		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
-		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
-		if (!this.props.store.purchases.length) return this.setState({ invoice: 1, date });
-		return this.setState({ invoice: this.props.store.purchases.length + 1, date });
-	}
+		const { purchases } = this.props.store;
+		const date = getNowDate();
+		if (purchases.length) {
+			const arr = [];
+			for (let key in purchases) {
+				arr.push(purchases[key].invoice);
+			}
+			const invoice = Math.max(...arr) + 1;
+			return this.setState({ invoice, date });
+		}
+		return this.setState({ invoice: 1, date });
+	};
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
 		this.setState({
@@ -124,7 +147,7 @@ class Purchase extends Component {
 	};
 	handleChangeTab = (ev, ind) => {
 		const { name, value } = ev.target;
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		if (name === 'quantity' || name === 'costPrice') {
 			inputProducts[ind][name] = value;
 			this.calcValue(ind);
@@ -134,7 +157,7 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 	};
 	calcValue = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
 		this.setState({ inputProducts });
 	};
@@ -170,7 +193,7 @@ class Purchase extends Component {
 		});
 	};
 	onAddRow = () => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		const isFilled = [];
 		inputProducts.forEach((x) => {
 			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
@@ -198,7 +221,7 @@ class Purchase extends Component {
 		return stockSum;
 	};
 	checkQty = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		const products = this.props.store.products;
 		if (this.state.editing) {
 			const stock = this.checkStock();
@@ -229,7 +252,7 @@ class Purchase extends Component {
 		}
 	};
 	onRemoveRow = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		const products = this.props.store.products;
 		if (this.state.editing) {
 			const stock = this.checkStock();
@@ -250,7 +273,7 @@ class Purchase extends Component {
 		}
 	};
 	onDeleteRow = (ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		if (inputProducts.length > 1) {
 			inputProducts[ind].productList = false;
 			inputProducts.splice(ind, 1);
@@ -314,13 +337,13 @@ class Purchase extends Component {
 		});
 	};
 	validateProduct = (ev, ind) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		if (ev.keyCode === 13) inputProducts[ind].productList = true;
 		if (ev.keyCode === 27) inputProducts[ind].productList = false;
 		this.setState({ ind, inputProducts });
 	};
 	getProductFields = (id, name) => {
-		const inputProducts = [ ...this.state.inputProducts ];
+		const inputProducts = [...this.state.inputProducts];
 		const ind = this.state.ind;
 		inputProducts.forEach((val, i) => {
 			if (i !== ind) {

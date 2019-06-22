@@ -62,6 +62,14 @@ const styles = (theme) => ({
 	}
 });
 
+const getNowDate = () => {
+	const x = new Date();
+	let date = '2019-';
+	date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+	date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+	return date;
+};
+
 class Sale extends Component {
 	constructor() {
 		super();
@@ -90,6 +98,7 @@ class Sale extends Component {
 		};
 	}
 	componentDidMount() {
+		this.getRefNo();
 		channel.bind('sales', () => {
 			this.props.getSale();
 		});
@@ -102,16 +111,34 @@ class Sale extends Component {
 		channel.bind('clients', () => {
 			this.props.getClient();
 		});
-		this.getRefNo();
 	}
+	static getDerivedStateFromProps = (nextProps, prevState) => {
+		const { sales } = nextProps.store;
+		const date = getNowDate();
+		if (sales.length && !prevState.editing) {
+			const arr = [];
+			for (let key in sales) {
+				arr.push(sales[key].invoice);
+			}
+			const invoice = Math.max(...arr) + 1;
+			if (invoice !== prevState.invoice) return { invoice, date };
+			return null;
+		}
+		return null;
+	};
 	getRefNo = () => {
-		const x = new Date();
-		let date = '2019-';
-		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
-		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
-		if (!this.props.store.sales.length) return this.setState({ invoice: 1, date });
-		return this.setState({ invoice: this.props.store.sales.length + 1, date });
-	}
+		const { sales } = this.props.store;
+		const date = getNowDate();
+		if (sales.length) {
+			const arr = [];
+			for (let key in sales) {
+				arr.push(sales[key].invoice);
+			}
+			const invoice = Math.max(...arr) + 1;
+			return this.setState({ invoice, date });
+		}
+		return this.setState({ invoice: 1, date });
+	};
 	onClearHandler = () => {
 		this.setState({
 			_id: '',
