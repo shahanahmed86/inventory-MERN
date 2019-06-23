@@ -28,7 +28,7 @@ const purchase = {
 		action$.ofType(types.PURCHASESAVE).switchMap(({ payload }) => {
 			const isMatch = Object.values(payload).every((val) => Boolean(val));
 			if (isMatch)
-				return HttpService.post(`http://localhost:8080/purchase`, `POST`, payload)
+				return HttpService.post(`https://inventory-app-mern.herokuapp.com/purchase`, `POST`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -45,7 +45,7 @@ const purchase = {
 		}),
 	getPurchase: (action$) =>
 		action$.ofType(types.GETPURCHASE).switchMap(() => {
-			return HttpService.get(`http://localhost:8080/purchase`, `GET`)
+			return HttpService.get(`https://inventory-app-mern.herokuapp.com/purchase`, `GET`)
 				.switchMap(
 					(resp) =>
 						resp.response.length
@@ -83,7 +83,7 @@ const purchase = {
 				}
 			});
 			if (messages.length) return Observable.of(actions.updatePurchaseFailure('Please rectify errors'));
-			return HttpService.put(`http://localhost:8080/purchase/${payload._id}`, `PUT`, payload)
+			return HttpService.put(`https://inventory-app-mern.herokuapp.com/purchase/${payload._id}`, `PUT`, payload)
 				.switchMap(
 					(resp) =>
 						typeof resp.response === 'string'
@@ -116,7 +116,7 @@ const purchase = {
 				}
 			});
 			if (messages.length) return Observable.of(actions.deletePurchaseFailure(messages.join(', ')));
-			return HttpService.delete(`http://localhost:8080/purchase/${payload}`, `DELETE`)
+			return HttpService.delete(`https://inventory-app-mern.herokuapp.com/purchase/${payload}`, `DELETE`)
 				.switchMap(
 					(resp) =>
 						typeof resp.response === 'string'

@@ -8,7 +8,7 @@ import HttpService from '../../service';
 const login = {
 	signUp: (action$) =>
 		action$.ofType(types.SIGNUP).switchMap(({ payload }) => {
-			return HttpService.signUp(`http://localhost:8080/user/signup`, `POST`, payload)
+			return HttpService.signUp(`https://inventory-app-mern.herokuapp.com/user/signup`, `POST`, payload)
 				.switchMap(
 					(res) => typeof res.response === 'string' && (
 						Observable.of(
@@ -37,7 +37,7 @@ const login = {
 		action$.ofType(types.SIGNIN).switchMap(({ payload }) => {
 			const isMatch = Object.values(payload).every((x) => Boolean(x));
 			if (isMatch)
-				return HttpService.post(`http://localhost:8080/user/signin`, `POST`, payload)
+				return HttpService.post(`https://inventory-app-mern.herokuapp.com/user/signin`, `POST`, payload)
 					.switchMap(
 						(res) => typeof res.response === 'string' && (
 							Observable.of(
@@ -67,7 +67,7 @@ const login = {
 		}),
 	signOut: (action$) =>
 		action$.ofType(types.SIGNOUT).switchMap(() => {
-			return HttpService.signOut(`http://localhost:8080/user/logout`, `POST`)
+			return HttpService.signOut(`https://inventory-app-mern.herokuapp.com/user/logout`, `POST`)
 				.switchMap(
 					(res) => typeof res.response === 'string' && (
 						Observable.of(
@@ -92,7 +92,7 @@ const login = {
 		}),
 	isLoggedIn: (action$) =>
 		action$.ofType(types.ISLOGGEDIN).switchMap(() => {
-			return HttpService.get(`http://localhost:8080/user`, `GET`)
+			return HttpService.get(`https://inventory-app-mern.herokuapp.com/user`, `GET`)
 				.switchMap(
 					(res) => res.response.doc ? (
 						Observable.of(actions.isLoggedInSuccess(res.response.doc))

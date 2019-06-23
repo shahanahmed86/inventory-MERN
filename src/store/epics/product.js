@@ -19,7 +19,7 @@ const product = {
 		action$.ofType(types.PRODUCTSAVE).switchMap(({ payload }) => {
 			const isMatch = Object.values(payload).every((val) => Boolean(val));
 			if (isMatch)
-				return HttpService.post(`http://localhost:8080/product`, `POST`, payload)
+				return HttpService.post(`https://inventory-app-mern.herokuapp.com/product`, `POST`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -36,7 +36,7 @@ const product = {
 		}),
 	getProduct: (action$) =>
 		action$.ofType(types.GETPRODUCT).switchMap(() => {
-			return HttpService.get(`http://localhost:8080/product`, `GET`)
+			return HttpService.get(`https://inventory-app-mern.herokuapp.com/product`, `GET`)
 				.switchMap(
 					(resp) =>
 						resp.response.products.length
@@ -58,7 +58,7 @@ const product = {
 			}
 			const isMatch = Object.values(payload).entries((val) => Boolean(val));
 			if (isMatch)
-				return HttpService.put(`http://localhost:8080/product/${payload._id}`, `PUT`, payload)
+				return HttpService.put(`https://inventory-app-mern.herokuapp.com/product/${payload._id}`, `PUT`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -79,7 +79,7 @@ const product = {
 			if (checkTransaction.condition) {
 				return Observable.of(actions.updateProductFailure(checkTransaction.message));
 			}
-			return HttpService.delete(`http://localhost:8080/product/${payload}`, `DELETE`)
+			return HttpService.delete(`https://inventory-app-mern.herokuapp.com/product/${payload}`, `DELETE`)
 				.switchMap(
 					(resp) =>
 						typeof resp.response === 'string'

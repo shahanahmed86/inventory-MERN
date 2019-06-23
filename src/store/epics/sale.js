@@ -44,7 +44,7 @@ const sale = {
 			});
 			if (messages.length) return Observable.of(actions.saleSaveFailure('Please resolve errors'));
 			if (isFilled.every((val) => Boolean(val)))
-				return HttpService.post(`http://localhost:8080/sale`, `POST`, payload)
+				return HttpService.post(`https://inventory-app-mern.herokuapp.com/sale`, `POST`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -61,7 +61,7 @@ const sale = {
 		}),
 	getSale: (action$) =>
 		action$.ofType(types.GETSALE).switchMap(() => {
-			return HttpService.get(`http://localhost:8080/sale`, `GET`)
+			return HttpService.get(`https://inventory-app-mern.herokuapp.com/sale`, `GET`)
 				.switchMap(
 					(resp) =>
 						resp.response.length
@@ -109,7 +109,7 @@ const sale = {
 			});
 			if (messages.length) return Observable.of(actions.updateSaleFailure('Please resolve errors'));
 			if (isFilled.every((val) => Boolean(val)))
-				return HttpService.put(`http://localhost:8080/sale/${payload._id}`, `PUT`, payload)
+				return HttpService.put(`https://inventory-app-mern.herokuapp.com/sale/${payload._id}`, `PUT`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -130,7 +130,7 @@ const sale = {
 			if (checkTransaction.condition) {
 				return Observable.of(actions.deleteSaleFailure(checkTransaction.message));
 			}
-			return HttpService.delete(`http://localhost:8080/sale/${payload}`, `DELETE`)
+			return HttpService.delete(`https://inventory-app-mern.herokuapp.com/sale/${payload}`, `DELETE`)
 				.switchMap(
 					(resp) =>
 						typeof resp.response === 'string'

@@ -14,7 +14,7 @@ const recovery = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return HttpService.post(`http://localhost:8080/recovery`, `POST`, payload)
+				return HttpService.post(`https://inventory-app-mern.herokuapp.com/recovery`, `POST`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -31,7 +31,7 @@ const recovery = {
 		}),
 	getRecovery: (action$) =>
 		action$.ofType(types.GETRECOVERY).switchMap(() => {
-			return HttpService.get(`http://localhost:8080/recovery`, `GET`)
+			return HttpService.get(`https://inventory-app-mern.herokuapp.com/recovery`, `GET`)
 				.switchMap(
 					(resp) =>
 						resp.response.length
@@ -53,7 +53,7 @@ const recovery = {
 			});
 			isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 			if (isFilled.every((val) => Boolean(val)))
-				return HttpService.put(`http://localhost:8080/recovery/${payload._id}`, `PUT`, payload)
+				return HttpService.put(`https://inventory-app-mern.herokuapp.com/recovery/${payload._id}`, `PUT`, payload)
 					.switchMap(
 						(resp) =>
 							typeof resp.response === 'string'
@@ -70,7 +70,7 @@ const recovery = {
 		}),
 	deleteRecovery: (action$) =>
 		action$.ofType(types.DELETERECOVERY).switchMap(({ payload }) => {
-			return HttpService.delete(`http://localhost:8080/recovery/${payload}`, `DELETE`)
+			return HttpService.delete(`https://inventory-app-mern.herokuapp.com/recovery/${payload}`, `DELETE`)
 				.switchMap(
 					(resp) =>
 						typeof resp.response === 'string'
