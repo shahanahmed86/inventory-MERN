@@ -81,7 +81,7 @@ const HttpService = {
 			createXHR: () => new XMLHttpRequest(),
 			responseType: 'json'
 		});
-	},
+	}
 };
 
 export default HttpService;

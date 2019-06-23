@@ -87,6 +87,7 @@ class Client extends Component {
 						variant="h5"
 					/>
 					<TextField
+						autoFocus
 						type="text"
 						margin="dense"
 						label="Client Name"

@@ -19,8 +19,8 @@ import { connect } from 'react-redux';
 import channel from '../../../config';
 import Search from './search';
 import PopupVendor from '../popup-vendor';
-import PopupProduct from '../popup-product';
 import actions from '../../../store/actions';
+import PopupProduct from '../popup-product';
 
 const CustomTableCell = withStyles((theme) => ({
 	head: {
@@ -97,7 +97,7 @@ class Purchase extends Component {
 			getPur: false
 		};
 	}
-	componentDidMount() {
+	componentDidMount = () => {
 		this.getRefNo();
 		channel.bind('sales', () => {
 			this.props.getSale();
@@ -128,8 +128,9 @@ class Purchase extends Component {
 	};
 	getRefNo = () => {
 		const { purchases } = this.props.store;
+		const { editing } = this.state;
 		const date = getNowDate();
-		if (purchases.length) {
+		if (purchases.length && !editing) {
 			const arr = [];
 			for (let key in purchases) {
 				arr.push(purchases[key].invoice);
@@ -147,7 +148,7 @@ class Purchase extends Component {
 	};
 	handleChangeTab = (ev, ind) => {
 		const { name, value } = ev.target;
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		if (name === 'quantity' || name === 'costPrice') {
 			inputProducts[ind][name] = value;
 			this.calcValue(ind);
@@ -157,7 +158,7 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 	};
 	calcValue = (ind) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		inputProducts[ind].value = inputProducts[ind].quantity * inputProducts[ind].costPrice;
 		this.setState({ inputProducts });
 	};
@@ -191,9 +192,10 @@ class Purchase extends Component {
 			options: false,
 			editing: false
 		});
+		this.getRefNo();
 	};
 	onAddRow = () => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		const isFilled = [];
 		inputProducts.forEach((x) => {
 			isFilled.push(Object.values(x).every((y) => y === false || Boolean(y)));
@@ -221,7 +223,7 @@ class Purchase extends Component {
 		return stockSum;
 	};
 	checkQty = (ind) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		const products = this.props.store.products;
 		if (this.state.editing) {
 			const stock = this.checkStock();
@@ -252,7 +254,7 @@ class Purchase extends Component {
 		}
 	};
 	onRemoveRow = (ind) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		const products = this.props.store.products;
 		if (this.state.editing) {
 			const stock = this.checkStock();
@@ -273,7 +275,7 @@ class Purchase extends Component {
 		}
 	};
 	onDeleteRow = (ind) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		if (inputProducts.length > 1) {
 			inputProducts[ind].productList = false;
 			inputProducts.splice(ind, 1);
@@ -337,13 +339,13 @@ class Purchase extends Component {
 		});
 	};
 	validateProduct = (ev, ind) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		if (ev.keyCode === 13) inputProducts[ind].productList = true;
 		if (ev.keyCode === 27) inputProducts[ind].productList = false;
 		this.setState({ ind, inputProducts });
 	};
 	getProductFields = (id, name) => {
-		const inputProducts = [...this.state.inputProducts];
+		const inputProducts = [ ...this.state.inputProducts ];
 		const ind = this.state.ind;
 		inputProducts.forEach((val, i) => {
 			if (i !== ind) {

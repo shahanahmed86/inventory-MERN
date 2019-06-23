@@ -65,6 +65,14 @@ const styles = (theme) => ({
 	}
 });
 
+const getNowDate = () => {
+	const x = new Date();
+	let date = '2019-';
+	date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+	date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+	return date;
+};
+
 class Payment extends Component {
 	constructor() {
 		super();
@@ -104,23 +112,21 @@ class Payment extends Component {
 	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
 		const { payments } = nextProps.store;
+		const date = getNowDate();
 		if (payments.length && !prevState.editing) {
 			const arr = [];
 			for (let key in payments) {
 				arr.push(payments[key].refNo);
 			}
 			const refNo = Math.max(...arr) + 1;
-			if (refNo !== prevState.refNo) return { refNo };
+			if (refNo !== prevState.refNo) return { refNo, date };
 			return null;
 		}
 		return null;
 	};
 	getRefNo = () => {
-		const x = new Date();
-		let date = '2019-';
-		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
-		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
 		const { payments } = this.props.store;
+		const date = getNowDate();
 		if (payments.length) {
 			const arr = [];
 			for (let key in payments) {

@@ -97,7 +97,7 @@ class Sale extends Component {
 			getSal: false
 		};
 	}
-	componentDidMount() {
+	componentDidMount = () => {
 		this.getRefNo();
 		channel.bind('sales', () => {
 			this.props.getSale();
@@ -163,6 +163,7 @@ class Sale extends Component {
 			options: false,
 			getSal: false
 		});
+		this.getRefNo();
 	};
 	onAddRow = () => {
 		const inputProducts = [ ...this.state.inputProducts ];
