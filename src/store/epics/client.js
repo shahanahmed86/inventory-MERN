@@ -1,4 +1,6 @@
 import 'rxjs/Rx';
+import { switchMap, catchError } from 'rxjs/operators';
+import { ofType } from 'redux-observable';
 import { Observable } from 'rxjs';
 
 import types from '../constants';
@@ -16,83 +18,107 @@ const checkEntries = (id, book, text) => {
 
 const client = {
 	clientSave: (action$) =>
-		action$.ofType(types.CLIENTSAVE).switchMap(({ payload }) => {
-			const isMatch = Object.values(payload).every((val) => Boolean(val));
-			if (isMatch)
-				return HttpService.post(`https://inventory-app-mern.herokuapp.com/client`, `POST`, payload)
-					.switchMap(
-						(resp) =>
-							typeof resp.response === 'string'
-								? Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response))
-								: Observable.of(actions.clientSaveFailure('Something went wrong'))
-					)
-					.catch(
-						(err) =>
-							typeof err.response === 'string'
-								? Observable.of(actions.clientSaveFailure(err.response))
-								: Observable.of(actions.clientSaveFailure('Network Error'))
+		action$.pipe(
+			ofType(types.CLIENTSAVE),
+			switchMap(({ payload }) => {
+				const isMatch = Object.values(payload).every((val) => Boolean(val));
+				if (isMatch) {
+					return HttpService.post(`https://inventory-app-mern.herokuapp.com/client`, `POST`, payload).pipe(
+						switchMap(
+							(resp) =>
+								typeof resp.response === 'string'
+									? Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response))
+									: Observable.of(actions.clientSaveFailure('Something went wrong'))
+						),
+						catchError(
+							(err) =>
+								typeof err.response === 'string'
+									? Observable.of(actions.clientSaveFailure(err.response))
+									: Observable.of(actions.clientSaveFailure('Network Error'))
+						)
 					);
-			return Observable.of(actions.clientSaveFailure('All fields are required'));
-		}),
+				} else {
+					return Observable.of(actions.clientSaveFailure('All fields are required'));
+				}
+			})
+		),
 	getClient: (action$) =>
-		action$.ofType(types.GETCLIENT).switchMap(() => {
-			return HttpService.get(`https://inventory-app-mern.herokuapp.com/client`, `GET`)
-				.switchMap(
-					(resp) =>
-						resp.response.clients.length
-							? Observable.of(actions.getClientSuccess(resp.response.clients))
-							: Observable.of(actions.getClientSuccess([]))
-				)
-				.catch(
-					(err) =>
-						typeof err.response === 'string'
-							? Observable.of(actions.getClientFailure(err.response))
-							: Observable.of(actions.getClientFailure('Network Error'))
-				);
-		}),
-	updateClient: (action$) =>
-		action$.ofType(types.UPDATECLIENT).switchMap(({ payload }) => {
-			const checkTransaction = checkEntries(payload._id, 'Client', 'Edit');
-			if (checkTransaction.condition) {
-				return Observable.of(actions.updateClientFailure(checkTransaction.message));
-			}
-			const isMatch = Object.values(payload).entries((val) => Boolean(val));
-			if (isMatch)
-				return HttpService.put(`https://inventory-app-mern.herokuapp.com/client/${payload._id}`, `PUT`, payload)
-					.switchMap(
+		action$.pipe(
+			ofType(types.GETCLIENT),
+			switchMap(() => {
+				return HttpService.get(`https://inventory-app-mern.herokuapp.com/client`, `GET`).pipe(
+					switchMap(
 						(resp) =>
-							typeof resp.response === 'string'
-								? Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response))
-								: Observable.of(actions.updateClientFailure('Something went Wrong'))
-					)
-					.catch(
+							resp.response.clients.length
+								? Observable.of(actions.getClientSuccess(resp.response.clients))
+								: Observable.of(actions.getClientSuccess([]))
+					),
+					catchError(
 						(err) =>
 							typeof err.response === 'string'
-								? Observable.of(actions.updateClientFailure(err.response))
-								: Observable.of(actions.updateClientFailure('Network Failure'))
-					);
-			return Observable.of(actions.updateClientFailure('All fields are required'));
-		}),
-	deleteClient: (action$) =>
-		action$.ofType(types.DELETECLIENT).switchMap(({ payload }) => {
-			const checkTransaction = checkEntries(payload, 'Client', 'Delete');
-			if (checkTransaction.condition) {
-				return Observable.of(actions.deleteClientFailure(checkTransaction.message));
-			}
-			return HttpService.delete(`https://inventory-app-mern.herokuapp.com/client/${payload}`, `DELETE`)
-				.switchMap(
-					(resp) =>
-						typeof resp.response === 'string'
-							? Observable.of(actions.deleteClientSuccess(resp.response))
-							: Observable.of(actions.deleteClientFailure('Something went Wrong'))
-				)
-				.catch(
-					(err) =>
-						typeof err.response === 'string'
-							? Observable.of(actions.deleteClientFailure(err.response))
-							: Observable.of(actions.deleteClientFailure('Network Failure'))
+								? Observable.of(actions.getClientFailure(err.response))
+								: Observable.of(actions.getClientFailure('Network Error'))
+					)
 				);
-		})
+			})
+		),
+	updateClient: (action$) =>
+		action$.pipe(
+			ofType(types.UPDATECLIENT),
+			switchMap(({ payload }) => {
+				const checkTransaction = checkEntries(payload._id, 'Client', 'Edit');
+				if (checkTransaction.condition) {
+					return Observable.of(actions.updateClientFailure(checkTransaction.message));
+				}
+				const isMatch = Object.values(payload).entries((val) => Boolean(val));
+				if (isMatch) {
+					return HttpService.put(
+						`https://inventory-app-mern.herokuapp.com/client/${payload._id}`,
+						`PUT`,
+						payload
+					).pipe(
+						switchMap(
+							(resp) =>
+								typeof resp.response === 'string'
+									? Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response))
+									: Observable.of(actions.updateClientFailure('Something went Wrong'))
+						),
+						catchError(
+							(err) =>
+								typeof err.response === 'string'
+									? Observable.of(actions.updateClientFailure(err.response))
+									: Observable.of(actions.updateClientFailure('Network Failure'))
+						)
+					);
+				} else {
+					return Observable.of(actions.updateClientFailure('All fields are required'));
+				}
+			})
+		),
+	deleteClient: (action$) =>
+		action$.pipe(
+			ofType(types.DELETECLIENT),
+			switchMap(({ payload }) => {
+				const checkTransaction = checkEntries(payload, 'Client', 'Delete');
+				if (checkTransaction.condition) {
+					return Observable.of(actions.deleteClientFailure(checkTransaction.message));
+				}
+				return HttpService.delete(`https://inventory-app-mern.herokuapp.com/client/${payload}`, `DELETE`).pipe(
+					switchMap(
+						(resp) =>
+							typeof resp.response === 'string'
+								? Observable.of(actions.deleteClientSuccess(resp.response))
+								: Observable.of(actions.deleteClientFailure('Something went Wrong'))
+					),
+					catchError(
+						(err) =>
+							typeof err.response === 'string'
+								? Observable.of(actions.deleteClientFailure(err.response))
+								: Observable.of(actions.deleteClientFailure('Network Failure'))
+					)
+				);
+			})
+		)
 };
 
 export default client;
