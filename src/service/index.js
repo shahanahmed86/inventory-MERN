@@ -1,5 +1,4 @@
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/dom/ajax';
+import { Observable } from 'rxjs/Rx';
 
 const HttpService = {
 	//Post request HTTP service
