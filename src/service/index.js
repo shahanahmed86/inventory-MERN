@@ -1,8 +1,12 @@
 import { Observable } from 'rxjs/Rx';
 
+// const api = 'http://localhost:8080/api'
+const api = 'https://inventory-app-mern.herokuapp.com/api'
+
 const HttpService = {
 	//Post request HTTP service
-	post: (url, method, body) => {
+	post: (apiCall, method, body) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,
@@ -16,7 +20,8 @@ const HttpService = {
 		});
 	},
 	//Get request HTTP service
-	get: (url, method) => {
+	get: (apiCall, method) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,
@@ -29,7 +34,8 @@ const HttpService = {
 		});
 	},
 	//Put request HTTP service
-	put: (url, method, body) => {
+	put: (apiCall, method, body) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,
@@ -43,7 +49,8 @@ const HttpService = {
 		});
 	},
 	//Delete request HTTP service
-	delete: (url, method) => {
+	delete: (apiCall, method) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,
@@ -56,7 +63,8 @@ const HttpService = {
 		});
 	},
 	//Signup request HTTP service
-	signUp: (url, method, body) => {
+	signUp: (apiCall, method, body) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,
@@ -69,7 +77,8 @@ const HttpService = {
 		});
 	},
 	//Signup request HTTP service
-	signOut: (url, method) => {
+	signOut: (apiCall, method) => {
+		const url = api + apiCall;
 		return Observable.ajax({
 			url,
 			method,

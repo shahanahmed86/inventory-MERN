@@ -50,7 +50,7 @@ const sale = {
 					return Observable.of(actions.saleSaveFailure('Please resolve errors'));
 				} else {
 					if (isFilled.every((val) => Boolean(val))) {
-						return HttpService.post(`https://inventory-app-mern.herokuapp.com/sale`, `POST`, payload).pipe(
+						return HttpService.post(`/sale`, `POST`, payload).pipe(
 							switchMap(
 								(resp) =>
 									typeof resp.response === 'string'
@@ -74,7 +74,7 @@ const sale = {
 		action$.pipe(
 			ofType(types.GETSALE),
 			switchMap(() => {
-				return HttpService.get(`https://inventory-app-mern.herokuapp.com/sale`, `GET`).pipe(
+				return HttpService.get(`/sale`, `GET`).pipe(
 					switchMap(
 						(resp) =>
 							resp.response.length
@@ -128,11 +128,7 @@ const sale = {
 					return Observable.of(actions.updateSaleFailure('Please resolve errors'));
 				} else {
 					if (isFilled.every((val) => Boolean(val))) {
-						return HttpService.put(
-							`https://inventory-app-mern.herokuapp.com/sale/${payload._id}`,
-							`PUT`,
-							payload
-						).pipe(
+						return HttpService.put(`/sale/${payload._id}`, `PUT`, payload).pipe(
 							switchMap(
 								(resp) =>
 									typeof resp.response === 'string'
@@ -163,10 +159,7 @@ const sale = {
 				if (checkTransaction.condition) {
 					return Observable.of(actions.deleteSaleFailure(checkTransaction.message));
 				} else {
-					return HttpService.delete(
-						`https://inventory-app-mern.herokuapp.com/sale/${payload}`,
-						`DELETE`
-					).pipe(
+					return HttpService.delete(`/sale/${payload}`, `DELETE`).pipe(
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'

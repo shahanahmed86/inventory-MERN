@@ -23,7 +23,7 @@ const vendor = {
 			switchMap(({ payload }) => {
 				const isMatch = Object.values(payload).every((val) => Boolean(val));
 				if (isMatch) {
-					return HttpService.post(`https://inventory-app-mern.herokuapp.com/vendor`, `POST`, payload).pipe(
+					return HttpService.post(`/vendor`, `POST`, payload).pipe(
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
@@ -46,7 +46,7 @@ const vendor = {
 		action$.pipe(
 			ofType(types.GETVENDOR),
 			switchMap(() => {
-				return HttpService.get(`https://inventory-app-mern.herokuapp.com/vendor`, `GET`).pipe(
+				return HttpService.get(`/vendor`, `GET`).pipe(
 					switchMap(
 						(resp) =>
 							resp.response.vendors.length
@@ -72,11 +72,7 @@ const vendor = {
 				}
 				const isMatch = Object.values(payload).entries((val) => Boolean(val));
 				if (isMatch) {
-					return HttpService.put(
-						`https://inventory-app-mern.herokuapp.com/vendor/${payload._id}`,
-						`PUT`,
-						payload
-					).pipe(
+					return HttpService.put(`/vendor/${payload._id}`, `PUT`, payload).pipe(
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
@@ -103,7 +99,7 @@ const vendor = {
 				if (checkTransaction.condition) {
 					return Observable.of(actions.deleteVendorFailure(checkTransaction.message));
 				}
-				return HttpService.delete(`https://inventory-app-mern.herokuapp.com/vendor/${payload}`, `DELETE`).pipe(
+				return HttpService.delete(`/vendor/${payload}`, `DELETE`).pipe(
 					switchMap(
 						(resp) =>
 							typeof resp.response === 'string'

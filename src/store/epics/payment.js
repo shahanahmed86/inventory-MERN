@@ -18,7 +18,7 @@ const payment = {
 				});
 				isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 				if (isFilled.every((val) => Boolean(val))) {
-					return HttpService.post(`https://inventory-app-mern.herokuapp.com/payment`, `POST`, payload).pipe(
+					return HttpService.post(`/payment`, `POST`, payload).pipe(
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
@@ -41,7 +41,7 @@ const payment = {
 		action$.pipe(
 			ofType(types.GETPAYMENT),
 			switchMap(() => {
-				return HttpService.get(`https://inventory-app-mern.herokuapp.com/payment`, `GET`).pipe(
+				return HttpService.get(`/payment`, `GET`).pipe(
 					switchMap(
 						(resp) =>
 							resp.response.length
@@ -67,11 +67,7 @@ const payment = {
 				});
 				isFilled.push(Object.values(payload).every((val) => Boolean(val)));
 				if (isFilled.every((val) => Boolean(val))) {
-					return HttpService.put(
-						`https://inventory-app-mern.herokuapp.com/payment/${payload._id}`,
-						`PUT`,
-						payload
-					).pipe(
+					return HttpService.put(`/payment/${payload._id}`, `PUT`, payload).pipe(
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
@@ -94,7 +90,7 @@ const payment = {
 		action$.pipe(
 			ofType(types.DELETEPAYMENT),
 			switchMap(({ payload }) => {
-				return HttpService.delete(`https://inventory-app-mern.herokuapp.com/payment/${payload}`, `DELETE`).pipe(
+				return HttpService.delete(`/payment/${payload}`, `DELETE`).pipe(
 					switchMap(
 						(resp) =>
 							typeof resp.response === 'string'

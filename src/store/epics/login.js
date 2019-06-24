@@ -12,7 +12,7 @@ const login = {
 		action$.pipe(
 			ofType(types.SIGNUP),
 			switchMap(({ payload }) => {
-				return HttpService.signUp(`https://inventory-app-mern.herokuapp.com/user/signup`, `POST`, payload).pipe(
+				return HttpService.signUp(`/user/signup`, `POST`, payload).pipe(
 					switchMap(
 						(res) =>
 							typeof res.response === 'string' &&
@@ -44,11 +44,7 @@ const login = {
 			switchMap(({ payload }) => {
 				const isMatch = Object.values(payload).every((x) => Boolean(x));
 				if (isMatch) {
-					return HttpService.post(
-						`https://inventory-app-mern.herokuapp.com/user/signin`,
-						`POST`,
-						payload
-					).pipe(
+					return HttpService.post(`/user/signin`, `POST`, payload).pipe(
 						switchMap(
 							(res) =>
 								typeof res.response === 'string' &&
@@ -86,7 +82,7 @@ const login = {
 		action$.pipe(
 			ofType(types.SIGNOUT),
 			switchMap(() => {
-				return HttpService.signOut(`https://inventory-app-mern.herokuapp.com/user/logout`, `POST`).pipe(
+				return HttpService.signOut(`/user/logout`, `POST`).pipe(
 					switchMap(
 						(res) =>
 							typeof res.response === 'string' &&
@@ -114,7 +110,7 @@ const login = {
 		action$.pipe(
 			ofType(types.ISLOGGEDIN),
 			switchMap(() => {
-				return HttpService.get(`https://inventory-app-mern.herokuapp.com/user`, `GET`).pipe(
+				return HttpService.get(`/user`, `GET`).pipe(
 					switchMap(
 						(res) =>
 							res.response.doc
