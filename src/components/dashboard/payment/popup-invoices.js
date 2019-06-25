@@ -11,7 +11,7 @@ class PopupInvoices extends Component {
 			.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
 		const payments = store.payments.filter((x) => x.vendorId._id === vendorId);
 		let bills = [];
-		const realized = { bill: 0, pay: 0, refId: '' };
+		const realized = { bill: 0, pay: 0 };
 		payments.forEach((x) => {
 			x.details.forEach((y) => {
 				if (y.invoice.toLowerCase().indexOf(search) !== -1) {
@@ -50,8 +50,8 @@ class PopupInvoices extends Component {
 						);
 					})
 				) : (
-					<h4 className="simple-flex">Empty</h4>
-				)}
+						<h4 className="simple-flex">Empty</h4>
+					)}
 			</Paper>
 		);
 	};

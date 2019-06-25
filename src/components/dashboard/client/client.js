@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Paper, TextField, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
+import { CircularProgress } from '@material-ui/core';
 
 import channel from '../../../config';
 import Search from './search';
@@ -21,11 +22,14 @@ class Client extends Component {
 			isPopup: false
 		};
 	}
-	componentDidMount() {
+	componentDidMount = () => {
 		channel.bind('clients', () => {
 			this.props.getClient();
 		});
-	}
+	};
+	componentWillUpdate = () => {
+		if (this.props.store.partialLoader) return this.onClearHandler();
+	};
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
 		this.setState({
@@ -58,16 +62,18 @@ class Client extends Component {
 		}));
 	};
 	onClearHandler = () => {
-		this.setState({
-			_id: '',
-			clientName: '',
-			address: '',
-			telephone: '',
-			email: '',
-			ntn: '',
-			editing: false,
-			isSearch: false,
-			isPopup: false
+		this.setState(() => {
+			return {
+				_id: '',
+				clientName: '',
+				address: '',
+				telephone: '',
+				email: '',
+				ntn: '',
+				editing: false,
+				isSearch: false,
+				isPopup: false
+			};
 		});
 	};
 	validateSearch = (ev) => {
@@ -75,6 +81,14 @@ class Client extends Component {
 		if (ev.keyCode === 27) return this.setState({ isPopup: false });
 	};
 	render() {
+		const { partialLoader } = this.props.store;
+		if (partialLoader) {
+			return (
+				<div className="loader-container">
+					<CircularProgress color="primary" />
+				</div>
+			);
+		}
 		const { clientName, address, telephone, email, ntn } = this.state;
 		return (
 			<div>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Paper, TextField, Typography } from '@material-ui/core';
 import { connect } from 'react-redux';
+import { CircularProgress } from '@material-ui/core';
 
 import channel from '../../../config';
 import Search from './search';
@@ -19,11 +20,14 @@ class Product extends Component {
 			isSearch: false
 		};
 	}
-	componentDidMount() {
+	componentDidMount = () => {
 		channel.bind('products', () => {
 			this.props.getProduct();
 		});
-	}
+	};
+	componentWillUpdate = () => {
+		if (this.props.store.partialLoader) return this.onClearHandler();
+	};
 	handleChange = (ev) => {
 		const { name, value } = ev.target;
 		this.setState({
@@ -69,6 +73,14 @@ class Product extends Component {
 		if (ev.keyCode === 27) return this.setState({ isPopup: false });
 	};
 	render() {
+		const { partialLoader } = this.props.store;
+		if (partialLoader) {
+			return (
+				<div className="loader-container">
+					<CircularProgress color="primary" />
+				</div>
+			);
+		}
 		const { productName, manufacturer, description } = this.state;
 		return (
 			<div>

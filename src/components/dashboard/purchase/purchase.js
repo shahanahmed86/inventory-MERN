@@ -15,6 +15,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
+import { CircularProgress } from '@material-ui/core';
 
 import channel from '../../../config';
 import Search from './search';
@@ -111,7 +112,10 @@ class Purchase extends Component {
 		channel.bind('vendors', () => {
 			this.props.getVendor();
 		});
-	}
+	};
+	componentWillUpdate = () => {
+		if (this.props.store.partialLoader) return this.onClearHandler();
+	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
 		const { purchases } = nextProps.store;
 		const date = getNowDate();
@@ -358,6 +362,14 @@ class Purchase extends Component {
 		this.setState({ inputProducts });
 	};
 	render() {
+		const { partialLoader } = this.props.store;
+		if (partialLoader) {
+			return (
+				<div className="loader-container">
+					<CircularProgress color="primary" />
+				</div>
+			);
+		}
 		const { date, invoice, vendorName, inputProducts, editing } = this.state;
 		const { classes } = this.props;
 		return (

@@ -12,8 +12,10 @@ const initialState = {
 
 	isLoading: false,
 
+	partialLoader: false,
+
 	isSnackOpen: false,
-	snackMessage: '',
+	snackMessage: ''
 };
 
 const reducer = (state = initialState, action) => {
@@ -71,6 +73,13 @@ const reducer = (state = initialState, action) => {
 				isLoading: false
 			};
 		}
+		case types.UPDATECLIENT: 
+		case types.CLIENTSAVE: {
+			return {
+				...state,
+				partialLoader: true,
+			}
+		}
 		case types.UPDATEVENDORSUCCESS:
 		case types.DELETEVENDORSUCCESS:
 		case types.VENDORSAVESUCCESS:
@@ -94,7 +103,7 @@ const reducer = (state = initialState, action) => {
 		case types.DELETERECOVERYSUCCESS: {
 			return {
 				...state,
-				isLoading: false,
+				partialLoader: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};
@@ -122,6 +131,7 @@ const reducer = (state = initialState, action) => {
 		case types.DELETERECOVERYFAILURE: {
 			return {
 				...state,
+				partialLoader: false,
 				isSnackOpen: true,
 				snackMessage: action.payload
 			};
@@ -132,19 +142,6 @@ const reducer = (state = initialState, action) => {
 				products: action.payload
 			};
 		}
-		// case types.GETPRODUCTFAILURE:
-		// case types.GETVENDORFAILURE:
-		// case types.GETCLIENTFAILURE:
-		// case types.GETPURCHASEFAILURE:
-		// case types.GETSALEFAILURE:
-		// case types.GETPAYMENTFAILURE:
-		// case types.GETRECOVERYFAILURE: {
-		// 	return {
-		// 		...state,
-		// 		isSnackOpen: true,
-		// 		snackMessage: action.payload
-		// 	};
-		// }
 		case types.GETVENDORSUCCESS: {
 			return {
 				...state,
@@ -183,7 +180,7 @@ const reducer = (state = initialState, action) => {
 		}
 		default: {
 			return {
-				...state
+				...state,
 			};
 		}
 	}

@@ -51,8 +51,17 @@ const routes = [
 ];
 
 class Dashboard extends Component {
-	componentDidMount() {
-		if (!this.props.store.profile.email) return this.props.history.push('/');
+	constructor() {
+		super();
+		this.state = {
+			locationPath: ''
+		}
+	}
+	static getDerivedStateFromProps = (nextProps) => {
+		if (nextProps.store.profile.email) return { locationPath: nextProps.location.pathname };
+		return { locationPath: '/' };
+	}
+	componentDidMount = () => {
 		this.props.getClient();
 		this.props.getPayment();
 		this.props.getRecovery();
@@ -60,6 +69,10 @@ class Dashboard extends Component {
 		this.props.getPurchase();
 		this.props.getSale();
 		this.props.getVendor();
+		return this.props.history.push(this.state.locationPath);
+	}
+	componentWillUnmount = () => {
+		return this.props.history.push(this.props.location.pathname);
 	}
 	render() {
 		return (

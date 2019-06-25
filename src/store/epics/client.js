@@ -27,7 +27,7 @@ const client = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.clientSaveSuccess(resp.response))
+									? Observable.of(actions.clientSaveSuccess(resp.response))
 									: Observable.of(actions.clientSaveFailure('Something went wrong'))
 						),
 						catchError(
@@ -76,7 +76,7 @@ const client = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.updateClientSuccess(resp.response))
+									? Observable.of(actions.updateClientSuccess(resp.response))
 									: Observable.of(actions.updateClientFailure('Something went Wrong'))
 						),
 						catchError(

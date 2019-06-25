@@ -15,6 +15,7 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { connect } from 'react-redux';
+import { CircularProgress } from '@material-ui/core';
 
 import channel from '../../../config';
 import Search from './search';
@@ -101,6 +102,9 @@ class Recovery extends Component {
 		channel.bind('clients', () => {
 			this.props.getClient();
 		});
+	};
+	componentWillUpdate = () => {
+		if (this.props.store.partialLoader) return this.onClearHandler();
 	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
 		const { recoveries } = nextProps.store;
@@ -355,6 +359,14 @@ class Recovery extends Component {
 		this.setState({ details });
 	};
 	render() {
+		const { partialLoader } = this.props.store;
+		if (partialLoader) {
+			return (
+				<div className="loader-container">
+					<CircularProgress color="primary" />
+				</div>
+			);
+		}
 		const { date, refNo, clientName, details, editing } = this.state;
 		const { classes } = this.props;
 		return (

@@ -2,7 +2,7 @@ const types = {
     ONSNACK: 'ONSNACK',
     
     ONLOADER: 'ONLOADER',
-
+    
     SIGNUP: 'SIGNUP',
     SIGNUPACCESS: 'SIGNUPACCESS',
 
