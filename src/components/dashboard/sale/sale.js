@@ -113,19 +113,36 @@ class Sale extends Component {
 			this.props.getClient();
 		});
 	};
-	componentWillUpdate = () => {
-		if (this.props.store.partialLoader) return this.onClearHandler();
-	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
 		const { sales } = nextProps.store;
 		const date = getNowDate();
-		if (sales.length && !prevState.editing) {
+		if ((sales.length && !prevState.editing) || nextProps.store.partialLoader) {
 			const arr = [];
 			for (let key in sales) {
 				arr.push(sales[key].invoice);
 			}
 			const invoice = Math.max(...arr) + 1;
-			if (invoice !== prevState.invoice) return { invoice, date };
+			if (invoice !== prevState.invoice) return {
+				invoice, date,
+				clientId: '',
+				clientName: '',
+				inputProducts: [
+					{
+						productId: '',
+						productName: '',
+						quantity: '0',
+						sellingPrice: '0',
+						value: '0',
+						productList: false,
+						err: false
+					}
+				],
+				editing: false,
+				clientList: false,
+				search: '',
+				options: false,
+				getSal: false
+			};
 			return null;
 		}
 		return null;
@@ -359,7 +376,7 @@ class Sale extends Component {
 		const { partialLoader } = this.props.store;
 		if (partialLoader) {
 			return (
-				<div className="loader-container">
+				<div className="partial-loader-container">
 					<CircularProgress color="primary" />
 				</div>
 			);

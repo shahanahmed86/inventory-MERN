@@ -11,7 +11,6 @@ const initialState = {
 	recoveries: [],
 
 	isLoading: false,
-
 	partialLoader: false,
 
 	isSnackOpen: false,
@@ -73,8 +72,20 @@ const reducer = (state = initialState, action) => {
 				isLoading: false
 			};
 		}
-		case types.UPDATECLIENT: 
-		case types.CLIENTSAVE: {
+		case types.UPDATEVENDOR:
+		case types.VENDORSAVE:
+		case types.UPDATEPRODUCT:
+		case types.PRODUCTSAVE:
+		case types.CLIENTSAVE:
+		case types.UPDATECLIENT:
+		case types.PURCHASESAVE:
+		case types.UPDATEPURCHASE:
+		case types.SALESAVE:
+		case types.UPDATESALE:
+		case types.PAYMENTSAVE:
+		case types.UPDATEPAYMENT:
+		case types.RECOVERYSAVE:
+		case types.UPDATERECOVERY: {
 			return {
 				...state,
 				partialLoader: true,

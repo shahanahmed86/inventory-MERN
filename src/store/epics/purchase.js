@@ -36,7 +36,7 @@ const purchase = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.purchaseSaveSuccess(resp.response))
+									? Observable.of(actions.purchaseSaveSuccess(resp.response))
 									: Observable.of(actions.purchaseSaveFailure('Something went wrong'))
 						),
 						catchError(
@@ -103,10 +103,7 @@ const purchase = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(
-											actions.onLoader(true),
-											actions.updatePurchaseSuccess(resp.response)
-										)
+									? Observable.of(actions.updatePurchaseSuccess(resp.response))
 									: Observable.of(actions.updatePurchaseFailure('something wrong'))
 						),
 						catchError(

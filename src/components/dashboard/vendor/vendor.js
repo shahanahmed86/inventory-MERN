@@ -82,7 +82,7 @@ class Vendor extends Component {
 		const { partialLoader } = this.props.store;
 		if (partialLoader) {
 			return (
-				<div className="loader-container">
+				<div className="partial-loader-container">
 					<CircularProgress color="primary" />
 				</div>
 			);

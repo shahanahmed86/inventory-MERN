@@ -8,6 +8,14 @@
   align-items: center;
 }
 
+.partial-loader-container {
+  width: 85vw;
+  height: 85vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .the-form {
   min-height: 'fit-content';
   max-height: 100%;

@@ -22,7 +22,7 @@ const payment = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.paymentSaveSuccess(resp.response))
+									? Observable.of(actions.paymentSaveSuccess(resp.response))
 									: Observable.of(actions.paymentSaveFailure('Something went wrong'))
 						),
 						catchError(
@@ -71,7 +71,7 @@ const payment = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.updatePaymentSuccess(resp.response))
+									? Observable.of(actions.updatePaymentSuccess(resp.response))
 									: Observable.of(actions.updatePaymentFailure('something wrong'))
 						),
 						catchError(

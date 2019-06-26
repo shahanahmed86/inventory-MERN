@@ -22,7 +22,7 @@ const recovery = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.recoverySaveSuccess(resp.response))
+									? Observable.of(actions.recoverySaveSuccess(resp.response))
 									: Observable.of(actions.recoverySaveFailure('Something went wrong'))
 						),
 						catchError(
@@ -71,10 +71,7 @@ const recovery = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(
-											actions.onLoader(true),
-											actions.updateRecoverySuccess(resp.response)
-										)
+									? Observable.of(actions.updateRecoverySuccess(resp.response))
 									: Observable.of(actions.updateRecoveryFailure('something wrong'))
 						),
 						catchError(

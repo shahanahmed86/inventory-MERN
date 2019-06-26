@@ -27,7 +27,7 @@ const vendor = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.vendorSaveSuccess(resp.response))
+									? Observable.of(actions.vendorSaveSuccess(resp.response))
 									: Observable.of(actions.vendorSaveFailure('Something went wrong'))
 						),
 						catchError(
@@ -76,7 +76,7 @@ const vendor = {
 						switchMap(
 							(resp) =>
 								typeof resp.response === 'string'
-									? Observable.of(actions.onLoader(true), actions.updateVendorSuccess(resp.response))
+									? Observable.of(actions.updateVendorSuccess(resp.response))
 									: Observable.of(actions.updateVendorFailure('Something went Wrong'))
 						),
 						catchError(

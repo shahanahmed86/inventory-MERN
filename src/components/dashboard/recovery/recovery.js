@@ -66,6 +66,14 @@ const styles = (theme) => ({
 	}
 });
 
+const getNowDate = () => {
+	const x = new Date();
+	let date = '2019-';
+	date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
+	date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+	return date;
+};
+
 class Recovery extends Component {
 	constructor() {
 		super();
@@ -103,19 +111,34 @@ class Recovery extends Component {
 			this.props.getClient();
 		});
 	};
-	componentWillUpdate = () => {
-		if (this.props.store.partialLoader) return this.onClearHandler();
-	};
 	static getDerivedStateFromProps = (nextProps, prevState) => {
 		const { recoveries } = nextProps.store;
+		const date = getNowDate();
 		if (recoveries) {
-			if (recoveries.length && !prevState.editing) {
+			if ((recoveries.length && !prevState.editing) || nextProps.store.partialLoader) {
 				const arr = [];
 				for (let key in recoveries) {
 					arr.push(recoveries[key].refNo);
 				}
 				const refNo = Math.max(...arr) + 1;
-				if (refNo !== prevState.refNo) return { refNo };
+				if (refNo !== prevState.refNo) return {
+					date, refNo,
+					clientId: '',
+					clientName: '',
+					clientList: false,
+					details: [
+						{
+							invoice: '',
+							balance: '0',
+							pay: '0',
+							description: '',
+							detailList: false
+						}
+					],
+					search: '',
+					options: false,
+					getEntry: false					
+				};
 				return null;
 			}
 			return null;
@@ -123,10 +146,7 @@ class Recovery extends Component {
 		return null;
 	};
 	getRefNo = () => {
-		const x = new Date();
-		let date = '2019-';
-		date += x.getMonth() < 9 ? '0' + (x.getMonth() + 1) + '-' : x.getMonth() + '-';
-		date += x.getDate() < 10 ? '0' + (x.getDate() + 1) : x.getDate();
+		const date = getNowDate();
 		const { recoveries } = this.props.store;
 		if (recoveries) {
 			if (recoveries.length) {
@@ -362,7 +382,7 @@ class Recovery extends Component {
 		const { partialLoader } = this.props.store;
 		if (partialLoader) {
 			return (
-				<div className="loader-container">
+				<div className="partial-loader-container">
 					<CircularProgress color="primary" />
 				</div>
 			);
