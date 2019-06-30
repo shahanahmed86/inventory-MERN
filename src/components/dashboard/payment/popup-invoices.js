@@ -16,14 +16,12 @@ class PopupInvoices extends Component {
 			};
 			payments.forEach((x) => {
 				x.details.forEach((y) => {
-					console.log(allBills[key].invoice, y.invoice);
 					if (allBills[key].invoice === y.invoice) {
 						getBills[allBills[key].invoice].paid += +y.pay;
 					}
 				});
 			});
 		}
-		console.log(getBills);
 		let bills = [];
 		const realized = { bill: 0, pay: 0 };
 		payments.forEach((x) => {
