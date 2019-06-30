@@ -25,6 +25,8 @@ class PopupInvoices extends Component {
 					realized.bill = z.products.reduce((acc, cur) => acc + cur.value, 0);
 					if (realized.bill > realized.pay) {
 						bills.push(z);
+					} else {
+						bills = allBills;
 					}
 				}
 			});

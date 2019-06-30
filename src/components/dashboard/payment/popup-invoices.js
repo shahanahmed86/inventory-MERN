@@ -6,10 +6,24 @@ class PopupInvoices extends Component {
 	renderSearchBlockProduct = () => {
 		const { invoice, vendorId, getInvoiceField, editing, store } = this.props;
 		const search = invoice.toLowerCase();
-		const allBills = store.purchases
-			.filter((val) => val.vendorId._id === vendorId)
-			.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
+		const allBills = store.purchases.filter((val) => val.invoice.toLowerCase().indexOf(search) !== -1);
 		const payments = store.payments.filter((x) => x.vendorId._id === vendorId);
+		const getBills = {};
+		for (let key in allBills) {
+			getBills[allBills[key].invoice] = {
+				billed: allBills[key].products.reduce((acc, cur) => acc + +cur.value, 0),
+				paid: 0
+			};
+			payments.forEach((x) => {
+				x.details.forEach((y) => {
+					console.log(allBills[key].invoice, y.invoice);
+					if (allBills[key].invoice === y.invoice) {
+						getBills[allBills[key].invoice].paid += +y.pay;
+					}
+				});
+			});
+		}
+		console.log(getBills);
 		let bills = [];
 		const realized = { bill: 0, pay: 0 };
 		payments.forEach((x) => {
@@ -25,6 +39,8 @@ class PopupInvoices extends Component {
 					realized.bill = z.products.reduce((acc, cur) => acc + cur.value, 0);
 					if (realized.bill > realized.pay) {
 						bills.push(z);
+					} else {
+						bills = allBills;
 					}
 				}
 			});
@@ -50,8 +66,8 @@ class PopupInvoices extends Component {
 						);
 					})
 				) : (
-						<h4 className="simple-flex">Empty</h4>
-					)}
+					<h4 className="simple-flex">Empty</h4>
+				)}
 			</Paper>
 		);
 	};

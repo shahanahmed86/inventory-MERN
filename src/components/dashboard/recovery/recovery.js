@@ -175,12 +175,8 @@ class Recovery extends Component {
 	};
 	onSaveHandler = () => {
 		const { _id, date, refNo, clientId, details, editing } = this.state;
-		if (!editing) {
-			this.props.recoverySave({ date, refNo, clientId, details });
-		} else {
-			this.props.updateRecovery({ _id, date, refNo, clientId, details });
-		}
-		this.getRefNo();
+		if (!editing) return this.props.recoverySave({ date, refNo, clientId, details });
+		return this.props.updateRecovery({ _id, date, refNo, clientId, details });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({

@@ -169,12 +169,8 @@ class Payment extends Component {
 	};
 	onSaveHandler = () => {
 		const { _id, date, refNo, vendorId, details, editing } = this.state;
-		if (!editing) {
-			this.props.paymentSave({ date, refNo, vendorId, details });
-		} else {
-			this.props.updatePayment({ _id, date, refNo, vendorId, details });
-		}
-		this.getRefNo();
+		if (!editing) return this.props.paymentSave({ date, refNo, vendorId, details });
+		return this.props.updatePayment({ _id, date, refNo, vendorId, details });
 	};
 	onBrowseHandler = () => {
 		this.setState((state) => ({
